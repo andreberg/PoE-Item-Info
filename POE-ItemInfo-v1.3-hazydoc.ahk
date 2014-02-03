@@ -156,7 +156,7 @@ Menu, tray, Icon, data\poe-bw.ico
  
 If (A_AhkVersion <= "1.0.45")
 {
-    msgbox, You need AutoHotkey v1.0.45 or later to run this script. `n`nPlease go to http://ahkscript.org/download to download a recent version.
+    msgbox, You need AutoHotkey v1.0.45 or later to run this script. `n`nPlease go to http://ahkscript.org/download and download a recent version.
     exit
 }
 
@@ -326,8 +326,8 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
         }
         IfInString, A_LoopField, Bow
         {
-            ; Yeah, I know one handed bow doesn't make much sense but that's how 
-            ; the game classifies it (mainly because you can equip a quiver in 2nd hand slot)
+            ; Not really sure if I should classify bow as 2H (because that would make sense)
+            ; but you can equip a quiver in 2nd hand slot, so it could be 1H?
             BaseType = Weapon
             SubType = Bow
             GripType = 1H
@@ -526,13 +526,12 @@ SetClipboardContents(String)
     Clipboard := String
 }
 
-; Currently unused
+; attempted to create a nice re-usable function for all the string splitting
+; doesn't work correctly yet!
 SplitString(StrInput, StrDelimiter)
 {
     TempDelim := "``"
-    ;Global TempResult
     StringReplace, TempResult, StrInput, %StrDelimiter%, %TempDelim%, All
-    ;Global Parts0
     StringSplit, Parts, TempResult, %TempDelim%
     return Parts
 }
@@ -553,6 +552,7 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="")
         ValueHi := Value             ; for single values (which most of them are) ValueLo == ValueHi
         ParseRange(Value, ValueHi, ValueLo)
     }
+;    msgbox, Filename: %Filename%`, Value: %Value%`, ValueLo: %ValueLo%`, ValueHi: %ValueHi%
     LookupIsDoubleRange := False ; for affixes like "Adds +# ... Damage" which have a lower AND an upper bound range
     BracketRange := "n/a"
     Loop, Read, %A_WorkingDir%\%Filename%
@@ -594,7 +594,7 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="")
             }
             LBPart = %LBMin%
             UBPart = %UBMax%
-            ; record bracket range if it is withing bounds of the text file entry
+            ; record bracket range if it is within bounds of the text file entry
             If (Value == "" or (((ValueLo >= LBMin) and (ValueLo <= LBMax)) and ((ValueHi >= UBMin) and (ValueHi <= UBMax))))
             {
                 BracketRange = %LBPart%-%UBPart%
@@ -604,7 +604,7 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="")
         Else
         {
             ParseRange(RangeValues, HiVal, LoVal)
-            ; record bracket range if it is withing bounds of the text file entry
+            ; record bracket range if it is within bounds of the text file entry
             If (Value == "" or ((ValueLo >= LoVal) and (ValueHi <= HiVal)))
             {
                 BracketRange = %LoVal%-%HiVal%
@@ -612,6 +612,7 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="")
             }
         }
     }
+    BracketLevel := AffixLevel
     return BracketRange
 }
 
@@ -1008,41 +1009,113 @@ StrPad(String, Length, Side="right", PadChar=" ")
     return Result
 }
 
-AppendAffixInfo(AffixLine, AffixType, ValueRange, ByRef AffixInfo)
+; estimate indicator, marks end user display values that were guesstimated
+PadValueRange(ValueRange, Side="left", EstimateIndicator=" * ")
 {
-    Global AffixDetailDelimiter
-    Global AffixDetailEllipsis
-    Global MirrorAffixLines
-    Global MirrorLineFieldWidth
     Global ValueRangeFieldWidth
-    Global CompactAffixTypes
-    Delim := AffixDetailDelimiter
+    return StrPad(ValueRange . EstimateIndicator, ValueRangeFieldWidth + StrLen(EstimateIndicator), Side)
+}
+
+MakeAffixDetailLine(AffixLine, AffixType, ValueRange)
+{
+    Delim := "|"
     Ellipsis := AffixDetailEllipsis
-    Line =
-    If (MirrorAffixLines = 1)
+    Line := AffixLine . Delim . ValueRange . Delim . AffixType
+    return Line
+}
+
+;PostProcessAffixDetails()
+;{
+;    Global AffixDetailDelimiter
+;    Global AffixDetailEllipsis
+;    Global MirrorAffixLines
+;    Global MirrorLineFieldWidth
+;    Global ValueRangeFieldWidth
+;    Global CompactAffixTypes
+;    Global AffixInfo
+;
+;    Delim := AffixDetailDelimiter
+;    Ellipsis := AffixDetailEllipsis
+;
+;    Loop, Parse, AffixInfo, `n, `r
+;    {
+;        Line := 
+;        If (MirrorAffixLines = 1)
+;        {
+;            If (MirrorLineFieldWidth > 0)
+;            {
+;                If(StrLen(AffixLine) > MirrorLineFieldWidth)
+;                {   
+;                    AffixLine := StrTrimSpaceRight(SubStr(AffixLine, 1, MirrorLineFieldWidth)) . Ellipsis
+;                }
+;                AffixLine := StrPad(AffixLine, MirrorLineFieldWidth + StrLen(Ellipsis))
+;            }
+;            Line := AffixLine . Delim
+;        }
+;        If (ValueRangeFieldWidth > 0)
+;        {
+;            ValueRange := StrPad(ValueRange, ValueRangeFieldWidth, "left")
+;        }
+;        If (CompactAffixTypes > 0)
+;        {
+;            AffixType := RegExReplace(AffixType, "Comp\. ", "C")
+;            AffixType := RegExReplace(AffixType, "Suffix", "S")
+;            AffixType := RegExReplace(AffixType, "Prefix", "P")
+;        }
+;        Line := Line . ValueRange . Delim . AffixType
+;    }
+;}
+
+AppendAffixInfo(Line, AffixPos)
+{
+    Global
+;    AffixInfo := AffixInfo . "`n" . Line
+    AffixLines%AffixPos% := Line
+}
+
+AssembleAffixDetails()
+{
+    Global
+    Local Result
+    Local Delim
+    Local Ellipsis
+    Loop, %NumAffixLines%
     {
-        If (MirrorLineFieldWidth > 0)
+        CurLine := AffixLines%A_Index%
+        StringSplit, AffixLineParts, CurLine, |
+        AffixLine := AffixLineParts1
+        ValueRange := AffixLineParts2
+        AffixType := AffixLineParts3
+
+        Delim := AffixDetailDelimiter
+        Ellipsis := AffixDetailEllipsis
+
+        If (MirrorAffixLines = 1)
         {
-            If(StrLen(AffixLine) > MirrorLineFieldWidth)
-            {   
-                AffixLine := StrTrimSpaceRight(SubStr(AffixLine, 1, MirrorLineFieldWidth)) . Ellipsis
+            If (MirrorLineFieldWidth > 0)
+            {
+                If(StrLen(AffixLine) > MirrorLineFieldWidth)
+                {   
+                    AffixLine := StrTrimSpaceRight(SubStr(AffixLine, 1, MirrorLineFieldWidth)) . Ellipsis
+                }
+                AffixLine := StrPad(AffixLine, MirrorLineFieldWidth + StrLen(Ellipsis))
             }
-            AffixLine := StrPad(AffixLine, MirrorLineFieldWidth + StrLen(Ellipsis))
+            ProcessedLine := AffixLine . Delim
         }
-        Line := AffixLine . Delim
+        If (ValueRangeFieldWidth > 0)
+        {
+            ValueRange := StrPad(ValueRange, ValueRangeFieldWidth, "left")
+        }
+        If (CompactAffixTypes > 0)
+        {
+            AffixType := RegExReplace(AffixType, "Comp\. ", "C")
+            AffixType := RegExReplace(AffixType, "Suffix", "S")
+            AffixType := RegExReplace(AffixType, "Prefix", "P")
+        }
+        ProcessedLine := ProcessedLine . ValueRange . Delim . AffixType
+        Result := Result . "`n" . ProcessedLine
     }
-    If (ValueRangeFieldWidth > 0)
-    {
-        ValueRange := StrPad(ValueRange, ValueRangeFieldWidth, "left")
-    }
-    If (CompactAffixTypes > 0)
-    {
-        AffixType := RegExReplace(AffixType, "Comp\. ", "C")
-        AffixType := RegExReplace(AffixType, "Suffix", "S")
-        AffixType := RegExReplace(AffixType, "Prefix", "P")
-    }
-    Line := Line . ValueRange . Delim . AffixType
-    AffixInfo := AffixInfo . "`n" . Line
+    return Result
 }
 
 ; Same as AdjustRangeForQuality, except that Value is just
@@ -1100,11 +1173,15 @@ AdjustRangeForQuality(ValueRange, ItemQuality, Direction="up")
     return ValueRange
 }
 
-IsOutOfBounds(ValueRange, ActualValue)
+; checks ActualValue against ValueRange, returning 1 
+; if ActualValue is within bounds of ValueRange, 0 otherwise
+WithinBounds(ValueRange, ActualValue)
 {
+;    msgbox, ValueRange: %ValueRange%`, ActualValue: %ActualValue%
     VHi := 0
     VLo := 0
     ParseRange(ValueRange, VHi, VLo)
+    Result := 1
     IfInString, ActualValue, -
     {
         AVHi := 0
@@ -1112,17 +1189,34 @@ IsOutOfBounds(ValueRange, ActualValue)
         ParseRange(ActualValue, AVHi, AVLo)
         If ((AVLo < VLo) or (AVHi > VHi))
         {
-            return True
+            Result := 0
         }
     }
     Else
     {
         If ((ActualValue < VLo) or (ActualValue > VHi))
         {
-            return True
+            Result := 0
         }
     }
-    return False
+;    msgbox, Result: %Result%
+    return Result
+}
+
+GetAffixTypeFromProcessedLine(PartialAffixString)
+{
+    Global
+    Loop, %NumAffixLines%
+    {
+        Local AffixLine
+        AffixLine := AffixLines%A_Index%
+        IfInString, AffixLine, %PartialAffixString%
+        {
+            Local AffixLineParts
+            StringSplit, AffixLineParts, AffixLine, |
+            return AffixLineParts3
+        }
+    }
 }
 
 ; Get actual value from a line of the ingame tooltip as a number
@@ -1144,7 +1238,7 @@ GetColonValue(Line)
     }
 }
 
-RangeAverage(Range)
+RangeMid(Range)
 {
     If (Range = 0 or Range = "0" or Range = "0-0")
     {
@@ -1153,7 +1247,36 @@ RangeAverage(Range)
     RHi := 0
     RLo := 0
     ParseRange(Range, RHi, RLo)
+    RSum := RHi+RLo
+    If (RSum == 0)
+    {
+        return 0
+    }
     return Floor((RHi+RLo)/2)
+}
+
+RangeMin(Range)
+{
+    If (Range = 0 or Range = "0" or Range = "0-0")
+    {
+        return 0
+    }
+    RHi := 0
+    RLo := 0
+    ParseRange(Range, RHi, RLo)
+    return RLo
+}
+
+RangeMax(Range)
+{
+    If (Range = 0 or Range = "0" or Range = "0-0")
+    {
+        return 0
+    }
+    RHi := 0
+    RLo := 0
+    ParseRange(Range, RHi, RLo)
+    return RHi
 }
 
 AddRange(Range1, Range2)
@@ -1170,26 +1293,48 @@ AddRange(Range1, Range2)
     return FinalRange
 }
 
-ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats, ByRef AffixInfo, ByRef NumPrefixes, ByRef NumSuffixes, ByRef NumExtras)
+IsValidBracket(Bracket)
+{
+    If (Bracket == "n/a")
+    {
+        return False
+    }
+    return True
+}
+
+ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats, ByRef NumPrefixes, ByRef NumSuffixes)
 {
     Global ItemBaseType
     Global ItemSubType
     Global ItemGripType
+    Global NumAffixLines
+    Global ValueRangeFieldWidth  ; for StrPad on guesstimated values
+
+    ; keeps track of how many affix lines we have so they can be assembled later
+    ; acts as a loop index variable when iterating each affix data part
+    NumAffixLines := 0
     
     ; Composition flags
     ; these are required for later descision making when guesstimating
-    ; value sources from same type affixes
-    HasIIQ := False
-    HasIncrEvasion := False
-    HasIncrEnergyShield := False
-    HasHybridDefences := False
-    HasIncrLightRadius := False
-    HasIncrAccuracyRating := False
-    HasIncrPhysDmg := False
-    HasToAccuracyRating := False
-    HasStunRecovery := False
-    HasSpellDamage := False
-    HasMaxMana := False
+    ; sources for parts of a value from composite and/or same name affixes
+    ; They will be set to the line number where they occur in the pre-pass
+    ; loop so that details for that line can be changed later after we
+    ; have more clues for possible compositions.
+    HasIIQ := 0
+    HasIncrArmour := 0
+    HasIncrEvasion := 0
+    HasIncrEnergyShield := 0
+    HasHybridDefences := 0
+    HasIncrArmourAndES := 0
+    HasIncrArmourAndEvasion := 0
+    HasIncrEvasionAndES := 0
+    HasIncrLightRadius := 0
+    HasIncrAccuracyRating := 0
+    HasIncrPhysDmg := 0
+    HasToAccuracyRating := 0
+    HasStunRecovery := 0
+    HasSpellDamage := 0
+    HasMaxMana := 0
 
     ; max mana already accounted for in case of composite prefix+prefix "Spell Damage / Max Mana" + "Max Mana"
     MaxManaPartial =
@@ -1199,13 +1344,12 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
     ;   composite prefix + suffix: "increased Physical Damage / to Accuracy Rating" + "to Accuracy Rating"
     ARPartial =
 
-    ; indicates a composite stun recovery affix if true
-    CompStunRecovery := False
+    ; Partial for Block and Stun Recovery
+    BSRecPartial =
 
-    ; estimate indicator, marks end user display values that were guesstimated
-    EstInd := " * "
-
-    ; Pre-pass to determine composition flags
+    ; --- PRE-PASS ---
+    
+    ; to determine composition flags
     Loop, Parse, ItemDataChunk, `n, `r
     {    
         If StrLen(A_LoopField) = 0
@@ -1216,72 +1360,85 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         {
             Break ; not interested in unidentified items
         }
+        
+        NumAffixLines += 1
+        
         IfInString, A_LoopField, increased Light Radius
         {
-            HasIncrLightRadius := True
+            HasIncrLightRadius := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Quantity
         {
-            HasIIQ := True
+            HasIIQ := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Physical Damage
         {
-            HasIncrPhysDmg := True
+            HasIncrPhysDmg := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Accuracy Rating
         {
-            HasIncrAccuracyRating := True
+            HasIncrAccuracyRating := A_Index
             Continue
         }
         IfInString, A_LoopField, to Accuracy Rating
         {
-            HasToAccuracyRating := True
+            HasToAccuracyRating := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Armour and Evasion
         {
-            HasHybridDefences := True
+            HasHybridDefences := A_Index
+            HasIncrArmourAndEvasion := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Armour and Energy Shield
         {
-            HasHybridDefences := True
+            HasHybridDefences := A_Index
+            HasIncrArmourAndES := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Evasion and Energy Shield
         {
-            HasHybridDefences := True
+            HasHybridDefences := A_Index
+            HasIncrEvasionAndES := A_Index
+            Continue
+        }
+        IfInString, A_LoopField, increased Armour
+        {
+            HasIncrArmour := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Evasion Rating
         {
-            HasIncrEvasion := True
+            HasIncrEvasion := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Energy Shield
         {
-            HasIncrEnergyShield := True
+            HasIncrEnergyShield := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Block and Stun Recovery
         {
-            HasStunRecovery := True
+            HasStunRecovery := A_Index
             Continue
         }
         IfInString, A_LoopField, increased Spell Damage
         {
-            HasSpellDamage := True
+            HasSpellDamage := A_Index
             Continue
         }
         IfInString, A_LoopField, to maximum Mana
         {
-            HasMaxMana := True
+            HasMaxMana := A_Index
             Continue
         }
     }
+
+    ; --- SIMPLE AFFIXES ---
 
     Loop, Parse, ItemDataChunk, `n, `r
     {
@@ -1319,50 +1476,50 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             {
                 ValueRange := LookupAffixData("data\AttackSpeed_ArmourAndItems.txt", ItemLevel, CurrValue)
             }
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Accuracy Rating
         {
             AffixType := "Comp. Suffix"
-            ValueRange := LookupAffixData("data\IncrAccuracyRating_LightRadius_A.txt", ItemLevel, CurrValue)
+            ValueRange := LookupAffixData("data\IncrAccuracyRating_LightRadius.txt", ItemLevel, CurrValue)
             NumSuffixes += 1
-            AppendAffixInfo(A_LoopField, AffixType, ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to all Attributes 
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ToAllAttributes.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Strength
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ToStrength.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Intelligence
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ToIntelligence.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Dexterity
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ToDexterity.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Cast Speed
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\CastSpeed.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         ; This needs to come before "Critical Strike Chance" !
@@ -1370,7 +1527,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\SpellCritChance.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Critical Strike Chance
@@ -1384,7 +1541,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
                 ValueRange := LookupAffixData("data\CritChance_Weapons.txt", ItemLevel, CurrValue)
             }
             NumSuffixes += 1
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Critical Strike Multiplier
@@ -1397,7 +1554,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             {
                 ValueRange := LookupAffixData("data\CritMultiplier_Weapons.txt", ItemLevel, CurrValue)
             }
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             NumSuffixes += 1
             Continue
         }
@@ -1405,34 +1562,34 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\IncrFireDamage.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Cold Damage
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\IncrColdDamage.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Lightning Damage
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\IncrLightningDamage.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Light Radius
         {
-            ValueRange := LookupAffixData("data\IncrAccuracyRating_LightRadius_B.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Comp. Suffix", ValueRange, AffixInfo)
+            ValueRange := LookupAffixData("data\LightRadius_AccuracyRating.txt", ItemLevel, CurrValue)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Comp. Suffix", ValueRange), A_Index)
             Continue
         }
-        IfInString, A_LoopField, Block chance
+        IfInString, A_LoopField, Block Chance
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\BlockChance.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         
@@ -1441,21 +1598,21 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\FlaskChargesUsed.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Flask Charges gained
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\FlaskChargesGained.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Flask effect duration
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\FlaskDuration.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         
@@ -1498,28 +1655,28 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\IIQ.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Life gained on Kill
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\LifeOnKill.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Life gained for each enemy hit by your Attacks
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\LifeOnHit.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Life Regenerated per second
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\LifeRegen.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Mana Gained on Kill
@@ -1527,63 +1684,63 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             ; Not a typo: 'G' in Gained is capital here as opposed to 'Life gained'
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ManaOnKill.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Mana Regeneration Rate
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ManaRegen.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Projectile Speed
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ProjectileSpeed.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, reduced Attribute Requirements
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ReducedAttrReqs.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to all Elemental Resistances
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\AllResist.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Fire Resistance
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\FireResist.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Lightning Resistance
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\LightningResist.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Cold Resistance
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ColdResist.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Chaos Resistance
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ChaosResist.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         If RegExMatch(A_LoopField, ".*to (Cold|Fire|Lightning) and (Cold|Fire|Lightning) Resistances")
@@ -1593,43 +1750,43 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             {
                 NumSuffixes += 1
                 ValueRange := LookupAffixData("data\FireResist.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
                 Continue
             }
             IfInString, A_LoopField, Lightning
             {
                 NumSuffixes += 1
                 ValueRange := LookupAffixData("data\LightningResist.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
                 Continue
             }
             IfInString, A_LoopField, Cold
             {
                 NumSuffixes += 1
                 ValueRange := LookupAffixData("data\ColdResist.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
                 Continue
             }
-            IfInString, A_LoopField, Chaos
-            {
-                NumSuffixes += 1
-                ValueRange := LookupAffixData("data\ChaosResist.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
-                Continue
-            }
+;            IfInString, A_LoopField, Chaos
+;            {
+;                NumSuffixes += 1
+;                ValueRange := LookupAffixData("data\ChaosResist.txt", ItemLevel, CurrValue)
+;                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
+;                Continue
+;            }
         }
         IfInString, A_LoopField, increased Stun Duration on enemies
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\StunDuration.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, reduced Enemy Stun Threshold
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\StunThreshold.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
             Continue
         }
         
@@ -1642,57 +1799,258 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             {
                 ; Global
                 ValueRange := LookupAffixData("data\ToArmour_Items.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             }
             Else
             {
                 ; Local
                 ValueRange := LookupAffixData("data\ToArmour_WeaponsAndArmour.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             }
             Continue
         }
         IfInString, A_LoopField, increased Armour and Evasion
         {
             AffixType := "Prefix"
+            AEBracketLevel := 0
+            ValueRange := LookupAffixData("data\ArmourAndEvasion.txt", ItemLevel, CurrValue, AEBracketLevel)
             If (HasStunRecovery) 
             {
+                If (AEBracketLevel == 0)
+                {
+                    ValueRange := LookupAffixData("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue, EESBracketLevel)
+                }
                 AffixType := "Comp. Prefix"
+                BSRecBracketLevel := 0
+                BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", AEBracketLevel, "", BSRecBracketLevel)
+                BSRecValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Block and Stun Recovery")
+                If (Not IsValidBracket(BSRecPartial))
+                {
+                    ; This means that we are actually dealing with a Prefix + Comp. Prefix.
+                    ; To get the part for the hybrid defence that is contributed by the straight prefix, 
+                    ; lookupthe bracket level for the B&S Recovery line and then work out the partials
+                    ; for the hybrid stat from the bracket level of B&S. 
+                    ; Example: 
+                    ;   87% increased Armour and Evasion
+                    ;   7% increased Block and Stun Recovery
+                    ;
+                    ; 1) 7% B&S indicates bracket level 2 (6-7)
+                    ; 2) lookup bracket level 2 from the hybrid stat + block and stun recovery table
+                    ; This works out to be 6-14.
+                    ; 3) subtract 6-14 from 87 to get the rest contributed by the hybrid stat as pure prefix.
+                    ; Currently when subtracting a range from a single value we just use the range's 
+                    ; max as single value. This may need changing depending on circumstance but it
+                    ; works for now.
+                    ; 87-14 = 73
+                    ; 4) lookup affix data for increased Armour and Evasion with value of 73
+                    ; We now know, this is a Comp. Prefix+Prefix
+                    BSRecBracketLevel := 0
+                    BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, BSRecValue, BSRecBracketLevel)
+                    If (Not IsValidBracket(BSRecPartial))
+                    {
+                        ; This means that the hybrid stat is a Comp. Prefix+Prefix and BS rec is a Comp. Prefix+Suffix
+                        ; This is ambiguous and tough to resolve, but we'll try anyway...
+                        BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, "", BSRecBracketLevel)
+
+                    }
+;                    msgbox, BSRecValue: %BSRecValue%`, BSRecBracketLevel: %BSRecBracketLevel%`, BSRecPartial: %BSRecPartial%
+                   
+                    AEBSBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", BSRecBracketLevel)
+                    AERest := CurrValue - RangeMid(AEBSBracket)
+
+                    If (AERest >= 1)
+                    {
+                        AEBracket := LookupAffixBracket("data\ArmourAndEvasion.txt", ItemLevel, AERest)
+;                        msgbox, AEBracket: %AEBracket%`, AEBSBracket: %AEBSBracket%`,AERest: %AERest%
+
+                        ValueRange := AddRange(AEBSBracket, AEBracket)
+                        ValueRange := PadValueRange(ValueRange)
+                        AffixType := "Comp. Prefix+Prefix"
+                        NumPrefixes += 1
+                    }
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        ; BS Recovery value within bounds, this means BS Rec is all acounted for
+                        BSRecPartial =
+                    }
+                }
+                Else
+                {
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        BSRecPartial =
+                    }
+                }
             }
             NumPrefixes += 1
-            ValueRange := LookupAffixData("data\ArmourAndEvasion.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, AffixType, ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Armour and Energy Shield
         {
+            AffixType := "Prefix"
+            AESBracketLevel := 0
+            ValueRange := LookupAffixData("data\ArmourAndEnergyShield.txt", ItemLevel, CurrValue, AESBracketLevel)
+            If (HasStunRecovery) 
+            {
+                If (AESBracketLevel == 0)
+                {
+                    ValueRange := LookupAffixData("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue, EESBracketLevel)
+                }
+                AffixType := "Comp. Prefix"
+                BSRecBracketLevel := 0
+                BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", AESBracketLevel, "", BSRecBracketLevel)
+                If (Not IsValidBracket(BSRecPartial))
+                {
+                    BSRecValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Block and Stun Recovery")
+                    BSRecBracketLevel := 0
+                    BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, BSRecValue, BSRecBracketLevel)
+                    If (Not IsValidBracket(BSRecPartial))
+                    {
+                        BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, "", BSRecBracketLevel)
+                    }
+
+                    AESBSBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", BSRecBracketLevel)
+                    AESRest := CurrValue - RangeMid(AESBSBracket)
+
+                    If (AESRest >= 1)
+                    {
+                        AESBracket := LookupAffixBracket("data\ArmourAndEnergyShield.txt", ItemLevel, AESRest)
+
+                        ValueRange := AddRange(AESBSBracket, AESBracket)
+                        ValueRange := PadValueRange(ValueRange)
+                        AffixType := "Comp. Prefix+Prefix"
+                        NumPrefixes += 1
+                    }
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        ; BS Recovery value within bounds, this means BS Rec is all acounted for
+                        BSRecPartial =
+                    }
+                }
+                Else
+                {
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        BSRecPartial =
+                    }
+                }
+            }
             NumPrefixes += 1
-            ValueRange := LookupAffixData("data\ArmourAndEnergyShield.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Evasion and Energy Shield
         {
+            AffixType := "Prefix"
+            EESBracketLevel := 0
+            ValueRange := LookupAffixData("data\EvasionAndEnergyShield.txt", ItemLevel, CurrValue, EESBracketLevel)
+            If (HasStunRecovery) 
+            {
+                If (EESBracketLevel == 0)
+                {
+                    ValueRange := LookupAffixData("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue, EESBracketLevel)
+                }
+                AffixType := "Comp. Prefix"
+                BSRecBracketLevel := 0
+                BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", EESBracketLevel, "", BSRecBracketLevel)
+                If (Not IsValidBracket(BSRecPartial))
+                {
+                    BSRecValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Block and Stun Recovery")
+                    BSRecBracketLevel := 0
+                    BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, BSRecValue, BSRecBracketLevel)
+                    If (Not IsValidBracket(BSRecPartial))
+                    {
+                        BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, "", BSRecBracketLevel)
+                    }
+
+                    EESBSBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", BSRecBracketLevel)
+                    EESRest := CurrValue - RangeMid(EESBSBracket)
+
+                    If (EESRest >= 1)
+                    {
+                        EESBracket := LookupAffixBracket("data\EvasionAndEnergyShield.txt", ItemLevel, EESRest)
+
+                        ValueRange := AddRange(EESBSBracket, EESBracket)
+                        ValueRange := PadValueRange(ValueRange)
+                        AffixType := "Comp. Prefix+Prefix"
+                        NumPrefixes += 1
+                    }
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        ; BS Recovery value within bounds, this means BS Rec is all acounted for
+                        BSRecPartial =
+                    }
+                }
+                Else
+                {
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        BSRecPartial =
+                    }
+                }
+            }
             NumPrefixes += 1
-            ValueRange := LookupAffixData("data\EvasionAndEnergyShield.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Armour
         {
-            NumPrefixes += 1
+            AffixType := "Prefix"
+            IABracketLevel := 0
             If (ItemBaseType == "Item")
             {
                 ; Global
-                ValueRange := LookupAffixData("data\IncrArmour_Items.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+                PrefixPath := "data\IncrArmour_Items.txt"
             }
             Else
             {
                 ; Local
-                ValueRange := LookupAffixData("data\IncrArmour_WeaponsAndArmour.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+                PrefixPath := "data\IncrArmour_WeaponsAndArmour.txt"
             }
+            ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IABracketLevel)
+            If (HasStunRecovery) 
+            {
+                AffixType := "Comp. Prefix"
+                BSRecBracketLevel := 0
+                BSRecPartial := LookupAffixBracket("data\StunRecovery_Armour.txt", IABracketLevel, "", BSRecBracketLevel)
+                BSRecValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Block and Stun Recovery")
+                If (Not IsValidBracket(BSRecPartial))
+                {
+                    BSRecBracketLevel := 0
+                    BSRecPartial := LookupAffixBracket("data\StunRecovery_Armour.txt", ItemLevel, BSRecValue, BSRecBracketLevel)             
+                    If (Not IsValidBracket(BSRecPartial))
+                    {
+                        BSRecPartial := LookupAffixBracket("data\StunRecovery_Armour.txt", ItemLevel, "", BSRecBracketLevel)
+                    }
+;                    msgbox, BSRecValue: %BSRecValue%`, BSRecBracketLevel: %BSRecBracketLevel%`, BSRecPartial: %BSRecPartial%
+
+                    IABSBracket := LookupAffixBracket("data\Armour_StunRecovery.txt", BSRecBracketLevel)
+                    IARest := CurrValue - RangeMid(IABSBracket)
+                    IABracket := LookupAffixBracket(PrefixPath, ItemLevel, AERest)
+;                    msgbox, IABracket: %IABracket%`, IABSBracket: %IABSBracket%`, IARest: %IARest%
+
+                    ValueRange := AddRange(IABSBracket, IABracket)
+                    ValueRange := PadValueRange(ValueRange)
+                    AffixType := "Comp. Prefix+Prefix"
+                    NumPrefixes += 1
+
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        ; BS Recovery value within bounds, this means BS Rec is all acounted for
+                        BSRecPartial =
+                    }
+                }
+                Else
+                {
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        BSRecPartial =
+                    }
+                }
+            }
+            NumPrefixes += 1
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to Evasion Rating
@@ -1701,115 +2059,143 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             If (ItemBaseType == "Item")
             {
                 ValueRange := LookupAffixData("data\ToEvasion_Items.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             }
             Else
             {
                 ValueRange := LookupAffixData("data\ToEvasion_Armour.txt", ItemLevel, CurrValue)
-                AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             }
             Continue
         }
         IfInString, A_LoopField, increased Evasion Rating
         {
-            NumPrefixes += 1
+            AffixType := "Prefix"
+            IEBracketLevel := 0
             If (ItemBaseType == "Item")
             {
-                ValueRange := LookupAffixData("data\IncrEvasion_Items.txt", ItemLevel, CurrValue)
+                ; Global
+                PrefixPath := "data\IncrEvasion_Items.txt"
             }
             Else
             {
-                ValueRange := LookupAffixData("data\IncrEvasion_Armour.txt", ItemLevel, CurrValue)
+                ; Local
+                PrefixPath := "data\IncrEvasion_Armour.txt"
             }
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
-            Continue
-        }
-        IfInString, A_LoopField, to Energy Shield
-        {
+            ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IEBracketLevel)
+            If (HasStunRecovery) 
+            {
+                AffixType := "Comp. Prefix"
+                BSRecBracketLevel := 0
+                BSRecPartial := LookupAffixBracket("data\StunRecovery_Evasion.txt", IEBracketLevel, "", BSRecBracketLevel)
+                BSRecValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Block and Stun Recovery")
+                If (Not IsValidBracket(BSRecPartial))
+                {
+                    BSRecBracketLevel := 0
+                    BSRecPartial := LookupAffixBracket("data\StunRecovery_Evasion.txt", ItemLevel, BSRecValue, BSRecBracketLevel)
+                    If (Not IsValidBracket(BSRecPartial))
+                    {
+                        BSRecPartial := LookupAffixBracket("data\StunRecovery_Evasion.txt", ItemLevel, "", BSRecBracketLevel)
+                    }
+                   
+                    IEBSBracket := LookupAffixBracket("data\Evasion_StunRecovery.txt", BSRecBracketLevel)
+                    IERest := CurrValue - RangeMid(IEBSBracket)
+                    IEBracket := LookupAffixBracket(PrefixPath, ItemLevel, IERest)
+
+                    ValueRange := AddRange(IEBSBracket, IEBracket)
+                    ValueRange := PadValueRange(ValueRange)
+                    AffixType := "Comp. Prefix+Prefix"
+                    NumPrefixes += 1
+
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        ; BS Recovery value within bounds, this means BS Rec is all acounted for
+                        BSRecPartial =
+                    }
+                }
+                Else
+                {
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        BSRecPartial =
+                    }
+                }
+            }
             NumPrefixes += 1
-            ValueRange := LookupAffixData("data\ToEnergyShield_ArmourAndShields.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, to maximum Energy Shield
         {
-            If (ItemSubType == "Ring")
+            PrefixType := "Prefix"
+            If (ItemSubType == "Ring" or ItemSubType == "Amulet" or ItemSubType == "Belt")
             {
-                ValueRange := LookupAffixData("data\ToMaxEnergyShield_Rings.txt", ItemLevel, CurrValue)
+                ValueRange := LookupAffixData("data\ToMaxEnergyShield.txt", ItemLevel, CurrValue)
             }
             Else
             {
-                ValueRange := LookupAffixData("data\ToMaxEnergyShield_AmuletsAndBelts.txt", ItemLevel, CurrValue)
+                ValueRange := LookupAffixData("data\ToEnergyShield.txt", ItemLevel, CurrValue)
+
             }
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             NumPrefixes += 1
             Continue
         }
         IfInString, A_LoopField, increased Energy Shield
         {
+            AffixType := "Prefix"
+            IESBracketLevel := 0
+            PrefixPath := "data\IncrEnergyShield.txt"
+            ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IESBracketLevel)
+            If (HasStunRecovery) 
+            {
+                AffixType := "Comp. Prefix"
+                BSRecBracketLevel := 0
+                BSRecPartial := LookupAffixBracket("data\StunRecovery_EnergyShield.txt", IESBracketLevel, "", BSRecBracketLevel)
+                BSRecValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Block and Stun Recovery")
+                If (Not IsValidBracket(BSRecPartial))
+                {
+                    BSRecBracketLevel := 0
+                    BSRecPartial := LookupAffixBracket("data\StunRecovery_EnergyShield.txt", ItemLevel, BSRecValue, BSRecBracketLevel)
+                    If (Not IsValidBracket(BSRecPartial))
+                    {
+                        BSRecPartial := LookupAffixBracket("data\StunRecovery_EnergyShield.txt", ItemLevel, "", BSRecBracketLevel)
+                    }
+                   
+                    IESBSBracket := LookupAffixBracket("data\EnergyShield_StunRecovery.txt", BSRecBracketLevel)
+                    IESRest := CurrValue - RangeMid(IESBSBracket)
+                    IESBracket := LookupAffixBracket(PrefixPath, ItemLevel, IESRest)
+
+                    ValueRange := AddRange(IESBSBracket, IESBracket)
+                    ValueRange := PadValueRange(ValueRange)
+                    AffixType := "Comp. Prefix+Prefix"
+                    NumPrefixes += 1
+
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        ; BS Recovery value within bounds, this means BS Rec is all acounted for
+                        BSRecPartial =
+                    }
+                }
+                Else
+                {
+                    If (WithinBounds(BSRecPartial, BSRecValue))
+                    {
+                        BSRecPartial =
+                    }
+                }
+            }
             NumPrefixes += 1
-            ValueRange := LookupAffixData("data\IncrEnergyShield_ArmourAndShields.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased maximum Energy Shield
         {
             NumPrefixes += 1
             ValueRange := LookupAffixData("data\IncrMaxEnergyShield_Amulets.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
-        IfInString, A_LoopField, increased Physical Damage
-        {
-            AffixType := "Prefix"
-            NumPrefixes += 1
-            If (HasToAccuracyRating)
-            {
-                If (ItemSubType == "Mace" and ItemGripType == "2H")
-                {
-                    ValueRange := LookupAffixBracket("data\IncrPhysDamage_AccuracyRating_2HMaces.txt", ItemLevel, CurrValue)
-                }
-                Else
-                {
-                    ValueRange := LookupAffixBracket("data\IncrPhysDamage_AccuracyRating.txt", ItemLevel, CurrValue)
-                }
-                If (ValueRange == "n/a") 
-                {
-                    ; no bracket found? treat as non-composite prefix
-                    ValueRange := LookupAffixData("data\IncrPhysDamage.txt", ItemLevel, CurrValue)
-                    HasIncrPhysDmg := False
-                    ARPartial =
-                }
-                Else
-                {
-                    BracketLevel := 0
-                    If (ItemSubType == "Mace" and ItemGripType == "2H")
-                    {
-                        ValueRange := LookupAffixData("data\IncrPhysDamage_AccuracyRating_2HMaces.txt", ItemLevel, CurrValue, BracketLevel)
-                        ValueRangeAR := LookupAffixBracket("data\IncrPhysDamage_AccuracyRating_AROnly_2HMaces.txt", BracketLevel)
-                        If (Not ValueRangeAR == "n/a")
-                        {
-                            ARPartial := ValueRangeAR
-                        }
-                    }
-                    Else
-                    {
-                        ValueRange := LookupAffixData("data\IncrPhysDamage_AccuracyRating.txt", ItemLevel, CurrValue, BracketLevel)
-                        ValueRangeAR := LookupAffixBracket("data\IncrPhysDamage_AccuracyRating_AROnly.txt", BracketLevel)
-                        If (Not ValueRangeAR == "n/a")
-                        {
-                            ARPartial := ValueRangeAR
-                        }
-                    }
-                }
-            }
-            Else
-            {
-                ValueRange := LookupAffixData("data\IncrPhysDamage.txt", ItemLevel, CurrValue)
-            }
-            AppendAffixInfo(A_LoopField, AffixType, ValueRange, AffixInfo)
-            Continue
-        }        
         If RegExMatch(A_LoopField, "Adds \d+?\-\d+? Physical Damage")
         {
             If (ItemBaseType == "Weapon")
@@ -1857,7 +2243,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
                     }
                 }
             }
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             NumPrefixes += 1
             Continue
         }
@@ -1892,7 +2278,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
                     }
                 }
             }
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             NumPrefixes += 1
             Continue
         }
@@ -1927,7 +2313,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
                     }
                 }
             }
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             NumPrefixes += 1
             Continue
         }
@@ -1964,7 +2350,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             }
             ActualRange := GetActualValue(A_LoopField)
             AffixType := "Prefix"
-            AppendAffixInfo(A_LoopField, AffixType, ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             NumPrefixes += 1
             Continue
         }
@@ -1972,7 +2358,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         {
             NumPrefixes += 1
             ValueRange := LookupAffixData("data\PhysDamageReturn.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Gems in this item
@@ -2008,124 +2394,35 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
                 ValueRange := LookupAffixData("data\GemLevel_Minion.txt", ItemLevel, CurrValue)
             }
             NumPrefixes += 1
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, maximum Life
         {
             ValueRange := LookupAffixData("data\MaxLife.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             NumPrefixes += 1
-            Continue
-        }
-        IfInString, A_LoopField, maximum Mana
-        {
-            AffixType := "Prefix"
-            If (HasSpellDamage and MaxManaPartial)
-            {
-;                msgbox, MaxManaPartial: %MaxManaPartial%
-                If (NumPrefixes < 3)
-                {
-                    NumPrefixes += 1
-                    AffixType := "Comp. Prefix+Prefix"
-                    ValueRange := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, CurrValue)
-                    If (ValueRange == "n/a")
-                    {
-                        ; avg of the already existing max mana
-                        ActualValue := CurrValue-RangeAverage(MaxManaPartial)
-                        ValueRange1 := LookupAffixBracket("data\MaxMana.txt", ItemLevel, ActualValue)
-                        ValueRange2 := MaxManaPartial
-                        ValueRange := AddRange(ValueRange1, ValueRange2)
-                        Global ValueRangeFieldWidth
-                        ValueRange :=  StrPad(ValueRange . EstInd, ValueRangeFieldWidth + StrLen(EstInd), "left")
-                    }
-                    Else
-                    {
-                        ValueRange := LookupAffixData("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, CurrValue)
-                    }
-                }
-                Else
-                {
-                    AffixType := "Comp. Prefix"
-                    ValueRange := LookupAffixData("data\MaxMana.txt", ItemLevel, CurrValue)
-                }
-            }
-            Else
-            {
-                NumPrefixes += 1
-                ValueRange := LookupAffixData("data\MaxMana.txt", ItemLevel, CurrValue)
-            }
-            AppendAffixInfo(A_LoopField, AffixType, ValueRange, AffixInfo)
             Continue
         }
         IfInString, A_LoopField, Physical Attack Damage Leeched as
         {
             NumPrefixes += 1
             ValueRange := LookupAffixData("data\LifeLeech.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, Movement Speed
         {
             NumPrefixes += 1
             ValueRange := LookupAffixData("data\MovementSpeed.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
-            Continue
-        }
-        IfInString, A_LoopField, increased Spell Damage
-        {
-            AffixType := "Prefix"
-            If (HasMaxMana)
-            {
-                If (ItemSubType == "Staff")
-                {
-                    BracketLevel := 0
-                    ValueRange := LookupAffixData("data\SpellDamage_MaxMana_Staves.txt", ItemLevel, CurrValue, BracketLevel)
-                    MaxManaRange := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", BracketLevel)
-                }
-                Else
-                {
-                    BracketLevel := 0
-                    ValueRange := LookupAffixData("data\SpellDamage_MaxMana_1H.txt", ItemLevel, CurrValue, BracketLevel)
-                    MaxManaRange := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", BracketLevel)
-                }
-                If (Not MaxManaRange == "n/a")
-                {
-                    MaxManaPartial := MaxManaRange
-                }
-                Else
-                {
-                    HasSpellDamage := False
-                }
-                AffixType := "Comp. Prefix"
-            }
-            Else
-            {
-                If (ItemSubType == "Amulet")
-                {
-                    ValueRange := LookupAffixData("data\SpellDamage_Amulets.txt", ItemLevel, CurrValue)
-                }
-                Else
-                {
-                    If (ItemSubType == "Staff")
-                    {
-                        ValueRange := LookupAffixData("data\SpellDamage_Staves.txt", ItemLevel, CurrValue)
-                    }
-                    Else
-                    {
-                        ValueRange := LookupAffixData("data\SpellDamage_1H.txt", ItemLevel, CurrValue)
-                    }
-                }
-            }
-            NumPrefixes += 1
-            AppendAffixInfo(A_LoopField, AffixType, ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Elemental Damage with Weapons
         {
             NumPrefixes += 1
             ValueRange := LookupAffixData("data\IncrWeaponElementalDamage.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
 
@@ -2134,14 +2431,14 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         {
             NumPrefixes += 1
             ValueRange := LookupAffixData("data\FlaskManaRecoveryRate.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
         IfInString, A_LoopField, increased Flask Life Recovery rate
         {
             NumPrefixes += 1
             ValueRange := LookupAffixData("data\FlaskLifeRecoveryRate.txt", ItemLevel, CurrValue)
-            AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
 
@@ -2186,79 +2483,356 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             NumPrefixes += 1
             Continue
         }
+    }
 
-        ; Prefixes OR Suffixes
+    ; --- COMPLEX AFFIXES ---
+
+    Loop, Parse, ItemDataChunk, `n, `r
+    {
+        If StrLen(A_LoopField) = 0
+        {
+            Break ; not interested in blank lines
+        }
+        IfInString, ItemDataChunk, Unidentified
+        {
+            Break ; not interested in unidentified items
+        }
+
+        CurrValue := GetActualValue(A_LoopField)
+
+        ; "Spell Damage +%" (simple prefix)
+        ; "Spell Damage +% (1H)" / "Base Maximum Mana" - Limited to sceptres, wands, and daggers. 
+        ; "Spell Damage +% (Staff)" / "Base Maximum Mana"
+        IfInString, A_LoopField, increased Spell Damage
+        {
+            AffixType := "Prefix"
+            If (HasMaxMana)
+            {
+                SDBracketLevel := 0
+                MMBracketLevel := 0
+                MaxManaValue := ExtractValueFromAffixLine(ItemDataChunk, "maximum Mana")
+                If (ItemSubType == "Staff")
+                {
+                    SpellDamageBracket := LookupAffixBracket("data\SpellDamage_MaxMana_Staff.txt", ItemLevel, CurrValue, SDBracketLevel)
+                    If (IsValidBracket(SpellDamageBracket))
+                    {
+                        AffixType := "Comp. Prefix+Prefix"
+                        NumPrefixes += 1
+                        
+                        ; need to find the bracket level by looking at max mana value instead
+                        MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, MaxManaValue, MMBracketLevel)
+                        If (IsValidBracket(MaxManaBracket))
+                        {
+                            ; this actually means that both the "increased Spell Damage" line and 
+                            ; the "to maximum Mana" line are made up of composite prefix + prefix 
+                            ; I haven't seen such an item yet but you never know. In any case this
+                            ; is completely ambiguous and can't be resolved. Mark line with EstInd
+                            ; so user knows she needs to take a look at it.
+                            AffixType := "Comp. Prefix+Comp. Prefix"
+                            ValueRange := StrPad(EstInd, ValueRangeFieldWidth + StrLen(EstInd), "left")
+                        }
+                        Else
+                        {
+                            SpellDamageBracketFromComp := LookupAffixBracket("data\SpellDamage_MaxMana_Staff.txt", MMBracketLevel)
+                            SDValueRest := CurrValue - RangeMid(SpellDamageBracketFromComp)
+                            SpellDamageBracket := LookupAffixBracket("data\SpellDamage_Staff.txt", ItemLevel, SDValueRest, SDBracketLevel)
+                            ValueRange := AddRange(SpellDamageBracket, SpellDamageBracketFromComp)
+                            ValueRange := PadValueRange(ValueRange)
+                        }
+                    }
+                    Else
+                    {
+                        ValueRange := LookupAffixData("data\SpellDamage_MaxMana_Staff.txt", ItemLevel, CurrValue, BracketLevel)
+                        MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", BracketLevel)
+                        AffixType := "Comp. Prefix"
+                    }
+                }
+                Else
+                {
+                    SpellDamageBracket := LookupAffixBracket("data\SpellDamage_MaxMana_1H.txt", ItemLevel, CurrValue, SDBracketLevel)
+                    If (Not IsValidBracket(SpellDamageBracket))
+                    {
+                        AffixType := "Comp. Prefix+Prefix"
+                        NumPrefixes += 1
+                        
+                        ; need to find the bracket level by looking at max mana value instead
+                        MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, MaxManaValue, MMBracketLevel)
+                        If (Not IsValidBracket(MaxManaBracket))
+                        {
+                            AffixType := "Comp. Prefix+Comp. Prefix"
+                            ValueRange := StrPad(EstInd, ValueRangeFieldWidth + StrLen(EstInd), "left")
+                        }
+                        Else
+                        {
+                            SpellDamageBracketFromComp := LookupAffixBracket("data\SpellDamage_MaxMana_1H.txt", MMBracketLevel)
+                            SDValueRest := CurrValue - RangeMid(SpellDamageBracketFromComp)
+                            SpellDamageBracket := LookupAffixBracket("data\SpellDamage_1H.txt", ItemLevel, SDValueRest, SDBracketLevel)
+                            ValueRange := AddRange(SpellDamageBracket, SpellDamageBracketFromComp)
+                            ValueRange := PadValueRange(ValueRange)
+                        }
+                    }
+                    Else
+                    {
+                        ValueRange := LookupAffixData("data\SpellDamage_MaxMana_1H.txt", ItemLevel, CurrValue, BracketLevel)
+                        MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", BracketLevel)
+                        AffixType := "Comp. Prefix"
+                    }
+                }
+                ; if MaxManaValue falls withing bounds of MaxManaBracket this means the max mana value is already fully accounted for
+                If (Not IsValidBracket(MaxManaBracket) or WithinBounds(MaxManaBracket, MaxManaValue))
+                {
+                    MaxManaPartial := 0
+                }
+                Else
+                {
+                    MaxManaPartial := MaxManaBracket
+                }
+            }
+            Else
+            {
+                If (ItemSubType == "Amulet")
+                {
+                    ValueRange := LookupAffixData("data\SpellDamage_Amulets.txt", ItemLevel, CurrValue)
+                }
+                Else
+                {
+                    If (ItemSubType == "Staff")
+                    {
+                        ValueRange := LookupAffixData("data\SpellDamage_Staves.txt", ItemLevel, CurrValue)
+                    }
+                    Else
+                    {
+                        ValueRange := LookupAffixData("data\SpellDamage_1H.txt", ItemLevel, CurrValue)
+                    }
+                }
+                NumPrefixes += 1
+            }
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
+            Continue
+        }
+
+        ; "Base Maximum Mana" (simple prefix)
+        ; "1H Spell Damage" / "Base Maximum Mana" (complex prefix)
+        ; "Staff Spell Damage" / "Base Maximum Mana" (complex prefix)
+        IfInString, A_LoopField, maximum Mana
+        {
+            AffixType := "Prefix"
+            If (ItemBaseType == "Weapon")
+            {
+                If (HasSpellDamage)
+                {
+                    If (MaxManaPartial and (NumPrefixes >= 0 and NumPrefixes <= 2))
+                    {
+                        NumPrefixes += 1
+                        AffixType := "Comp. Prefix+Prefix"
+
+                        ValueRange := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, CurrValue)
+                        MaxManaRest := CurrValue-RangeMax(MaxManaPartial)
+
+                        If (MaxManaRest >= 15) ; 15 because the lowest possible value at this time for Max Mana is 15 at bracket level 1
+                        {
+                            ; Lookup remaining Max Mana bracket that comes from Max Mana being concatenated as simple prefix
+                            ValueRange1 := LookupAffixBracket("data\MaxMana.txt", ItemLevel, MaxManaRest)
+                            ValueRange2 := MaxManaPartial
+
+                            ; Add these ranges together to get an estimated range
+                            ValueRange := AddRange(ValueRange1, ValueRange2)
+
+                        }
+                        ValueRange := PadValueRange(ValueRange)
+                    }
+                    Else
+                    {
+                        ; it's on a weapon, there is Spell Damage but no MaxManaPartial or NumPrefixes already is 3
+                        AffixType := "Comp. Prefix"
+                        ValueRange := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, CurrValue)
+                        ValueRange := PadValueRange(ValueRange)
+                    }
+                    ; check if we still need to increment for the Spell Damage part
+                    If (NumPrefixes < 3)
+                    {
+                        NumPrefixes += 1
+                    }
+                }
+                Else
+                {
+                    ; it's on a weapon but there is no Spell Damage, which makes it a simple prefix
+                    Goto, SimpleMaxManaPrefix
+                }
+            }
+            Else
+            {
+                ; Armour... 
+                ; Max Mana cannot appear on belts but I won't exclude them for now 
+                ; to future-proof against when max mana on belts might be added.
+                Goto, SimpleMaxManaPrefix
+            }
+
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
+            Continue
+
+        SimpleMaxManaPrefix:
+            NumPrefixes += 1
+            ValueRange := LookupAffixData("data\MaxMana.txt", ItemLevel, CurrValue)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
+            Continue
+        }
+
+        ; "Local Physical Damage +%" (simple prefix) 
+        ; "Local Physical Damage +%" / "Local Accuracy Rating" (complex prefix)
+        ; only on Weapons
+        ; needs to come before Accuracy Rating stuff 
+        IfInString, A_LoopField, increased Physical Damage
+        {
+            AffixType := "Prefix"
+            IPDPath := "data\IncrPhysDamage.txt"
+            If (HasToAccuracyRating)
+            {
+                ARIPDPath := "data\AccuracyRating_IncrPhysDamage.txt"
+                IPDARPath := "data\IncrPhysDamage_AccuracyRating.txt"
+                ARValue := ExtractValueFromAffixLine(ItemDataChunk, "to Accuracy Rating")
+                If (HasIncrLightRadius)
+                {
+                    ; first check if the AR value that comes with the Comp. Prefix AR / Light Radius 
+                    ; already covers the complete AR value. If so, from that follows that the Incr. 
+                    ; Phys Damage value can only be a Damage Scaling prefix.
+                    LRBracketLevel := 0
+                    LRBracket := LookupAffixBracket("data\LightRadius_AccuracyRating.txt", ItemLevel, "", LRBracketLevel)
+                    ARLRBracket := LookupAffixBracket("data\AccuracyRating_LightRadius.txt", LRBracketLevel)
+                    If (IsValidBracket(ARLRBracket))
+                    {
+                        If (WithinBounds(ARLRBracket, ARValue))
+                        {
+                            Goto, SimpleIPDPrefix
+                        }
+                    }
+                }
+
+                ; look up IPD bracket, and use its bracket level to cross reference the corresponding
+                ; AR bracket. If both check out (are within bounds of their bracket level) case is
+                ; simple: Comp. Prefix (IPD / AR)
+                IPDBracketLevel := 0
+                IPDBracket := LookupAffixBracket(IPDARPath, ItemLevel, CurrValue, IPDBracketLevel)
+                ARBracket := LookupAffixBracket(ARIPDPath, IPDBracketLevel)
+
+;                msgbox, IPDBracket: %IPDBracket%`, ARBracket: %ARBracket%
+
+                If (IsValidBracket(IPDBracket) and IsValidBracket(ARBracket))
+                {
+                    If (Not WithinBounds(ARBracket, ARValue))
+                    {
+                        Goto, CompIPDARPrefix
+                    }
+                    HasIncrPhysDmg := 0
+                    Goto, SimpleIPDPrefix
+                }
+                If (Not IsValidBracket(IPDBracket))
+                {
+                    ARBracketLevel := 0
+                    ARBracket := LookupAffixBracket(ARIPDPath, ItemLevel, ARValue, ARBracketLevel)
+                    If (IsValidBracket(ARBracket))
+                    {
+                        IPDARBracket := LookupAffixBracket(IPDARPath, ARBracketLevel)
+                        IPDRest := CurrValue - RangeMid(IPDARBracket)
+                        IPDBracket := LookupAffixBracket(IPDPath, ItemLevel, IPDRest)
+                        ValueRange := AddRange(IPDARBracket, IPDBracket)
+                        ValueRange := PadValueRange(ValueRange)
+                        Goto, CompIPDARPrefixPrefix
+                    }
+                }
+
+                If ((Not IsValidBracket(IPDBracket)) and (Not IsValidBracket(ARBracket)))
+                {
+                    HasIncrPhysDmg := 0
+                    Goto, CompIPDARPrefix
+                }
+
+                If (IsValidBracket(ARBracket))
+                {
+                    ; AR bracket not found in the composite IPD/AR table
+                    ARValue := ExtractValueFromAffixLine(ItemDataChunk, "to Accuracy Rating")
+                    ARBracket := LookupAffixBracket(ARPath, ItemLevel, ARValue)
+
+                    Goto, CompIPDARPrefix
+                }
+                If (IsValidBracket(IPDBracket))
+                {
+                    ; AR bracket was found in the comp. IPD/AR table, but not the IPD bracket
+                    Goto, SimpleIPDPrefix
+                }
+                Else
+                {
+                    ValueRange := LookupAffixData(IPDPath, ItemLevel, CurrValue)
+                }
+            }
+            Else
+            {
+                Goto, SimpleIPDPrefix
+            }
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
+            Continue
+
+        SimpleIPDPrefix:
+            NumPrefixes += 1
+            ValueRange := LookupAffixData("data\IncrPhysDamage.txt", ItemLevel, CurrValue)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
+            Continue
+        CompIPDARPrefix:
+            AffixType := "Comp. Prefix"
+            ValueRange := LookupAffixData(IPDPath, ItemLevel, CurrValue)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
+            ARPartial := ARBracket
+            Continue
+        CompIPDARPrefixPrefix:
+            NumPrefixes += 1
+            AffixType := "Comp. Prefix+Prefix"
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
+            ARPartial := ARBracket
+            Continue
+        }
 
         IfInString, A_LoopField, increased Block and Stun Recovery
         {
-            ; Unfortunately Block and Stun Recovery is completely ambiguous. There is no reliable 
-            ; way to tell if it is a prefix or suffix.
-            ;
-            ; I have seen items that had block and stun recovery together with augmented ES or Armour 
-            ; so BS Recovery should have been a prefix but actually was a suffix and vice versa.
-            ; Best I can do right now is to monkeypatch. That is, check tables in order of most probable
-            ; occurence, add things together in a way that makes the most sense and determine if the resulting
-            ; range is out-of-bounds for the actual value as displayed in the ingame tooltip. If so, switch to 
-            ; the other affix type and re-check the range. If it still doesn't fit, try a compound prefix-suffix
-            ; approach.
-
-;            ; Get actual value on ingame tooltip as a number
-;            ActualValue := RegExReplace(A_LoopField, "(\d+).*", "$1") ; matches "16% increased Block and Stun Recovery", returns "16"
-
-            AffixType := "Suffix"
-            ArmourHi := 0
-            ArmourLo := 0
-            If (InStr(AugmentedStats, "'Armour'"))
-            {
-                ValueRangeArmour := LookupAffixData("data\StunRecovery_Armour.txt", ItemLevel, CurrValue)
-                ParseRange(ValueRangeArmour, ArmourHi, ArmourLo)
-            }
-            ESHi := 0
-            ESLo := 0
-            If (InStr(AugmentedStats, "'Energy Shield'"))
-            {
-                ValueRangeES := LookupAffixData("data\StunRecovery_EnergyShield.txt", ItemLevel, CurrValue)
-                ParseRange(ValueRangeES, ESHi, ESLo)
-            }
-            ERHi := 0
-            ERLo := 0
-            If (InStr(AugmentedStats, "'Evasion Rating'"))
-            {
-                ValueRangeER := LookupAffixData("data\StunRecovery_Evasion.txt", ItemLevel, CurrValue)
-                ParseRange(ValueRangeER, ERHi, ERLo)
-            }
-            HybridHi := 0
-            HybridLo := 0
+            AffixType := "Prefix"
             If (HasHybridDefences)
             {
-                ValueRangeHybrid := LookupAffixData("data\StunRecovery_Hybrid.txt", ItemLevel, CurrValue)
-                ParseRange(ValueRangeHybrid, HybridHi, HybridLo)
-                AppendAffixInfo(A_LoopField, "Comp. Prefix", ValueRangeHybrid, AffixInfo)
-                Continue
+                AffixType := "Comp. Prefix"
+                ValueRange := LookupAffixData("data\StunRecovery_Hybrid.txt", ItemLevel, CurrValue)
+                If (BSRecPartial)
+                {
+                    If (NumSuffixes < 3)
+                    {
+                        AffixType := "Comp. Prefix+Suffix"
+                        BSRest := CurrValue - RangeMid(BSRecPartial)
+                        BSRecSuffixBracket := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, BSRest)
+                        ValueRange := AddRange(BSRecPartial, BSRecSuffixBracket)
+                        ValueRange := PadValueRange(ValueRange)
+                        NumSuffixes += 1
+                    }
+                }
             }
-
-            ; Probably a prefix (but could be a suffix)
-            ValueRange := LookupAffixData("data\StunRecovery_Prefix.txt", ItemLevel, CurrValue)
-            PrefixHi := 0
-            PrefixLo := 0
-            ParseRange(ValueRange, PrefixHi, PrefixLo)
-            If ((CurrValue >= PrefixLo) and (CurrValue <= PrefixHi)) 
+            Else
             {
-                AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
-                NumPrefixes += 1
-                Continue ; Between bounds: all good, don't bother with the rest...
+                If (BSRecPartial)
+                {
+                    If (NumSuffixes < 3)
+                    {
+                        AffixType := "Comp. Prefix+Suffix"
+                        BSRest := CurrValue - RangeMid(BSRecPartial)
+                        BSRecSuffixBracket := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, BSRest)
+                        ValueRange := AddRange(BSRecPartial, BSRecSuffixBracket)
+                        ValueRange := PadValueRange(ValueRange)
+                        NumSuffixes += 1
+                    }
+                }
+                Else
+                {
+                    AffixType := "Suffix"
+                    NumSuffixes += 1
+                    ValueRange := LookupAffixData("data\StunRecovery_Suffix.txt", ItemLevel, CurrValue)
+                }
             }
-
-            ValueRange := LookupAffixData("data\StunRecovery_Suffix.txt", ItemLevel, CurrValue)
-            SuffixHi := 0
-            SuffixLo := 0
-            ParseRange(ValueRange, SuffixHi, SuffixLo)
-            If ((CurrValue >= SuffixLo) and (CurrValue <= SuffixHi)) ; between bounds: all good
-            {
-                AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
-                NumSuffixes += 1
-                Continue
-            }
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
         }
         
@@ -2269,9 +2843,9 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
         ; 4) "Local Physical Dmg +% / Local Accuracy Rating" (Prefix)
 
         ; the difficulty lies in those cases that combine multiple of these affixes into one final display value
-        ; currently I try and tackle this by using a trickle-through account balance approach. That is, go from
-        ; most special case to most nominal, while subtracting the value that each case most likely contributes
-        ; until you have a value left that can be found in the most nominal case (which is usually to AR as global suffix)
+        ; currently I try and tackle this by using a trickle-through partial balance approach. That is, go from
+        ; most special case to most normal, while subtracting the value that each case most likely contributes
+        ; until you have a value left that can be found in the most nominal case
         ;
         ; Important to note here: 
         ;   ARPartial will be set during the "increased Physical Damage" case above
@@ -2289,26 +2863,49 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             If (HasIncrLightRadius and Not HasIncrAccuracyRating) 
             {
                 ; "of Shining" and "of Light"
-                ValueRange := LookupAffixData("data\AccuracyRating_LightRadius_A.txt", ItemLevel, CurrValue)
-                ARLRRange := LookupAffixBracket("data\AccuracyRating_LightRadius_A.txt", ItemLevel, CurrValue)
-                ARLRHi := 0
-                ARLRLo := 0
-                ParseRange(ARLRRange, ARLRHi, ARLRLo)
+                LightRadiusValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Light Radius")
+                
+                ; get bracket level of the light radius so we can look up the corresponding AR bracket
+                BracketLevel := 0
+                LookupAffixBracket("data\LightRadius_AccuracyRating.txt", ItemLevel, LightRadiusValue, BracketLevel)
+                ARLRBracket := LookupAffixBracket("data\AccuracyRating_LightRadius.txt", BracketLevel)
+
+                AffixType := AffixType . "Comp. Suffix"
+                ValueRange := LookupAffixData("data\AccuracyRating_LightRadius.txt", ItemLevel, CurrValue)
+                NumSuffixes += 1
+
                 If (ARPartial)
                 {
                     ; append this affix' contribution to our partial AR range
-                    ARPartial := AddRange(ARPartial, ARLRRange)
+                    ARPartial := AddRange(ARPartial, ARLRBracket)
                 }
-                NumSuffixes += 1
-                AffixType := AffixType . "Comp. Suffix"
+
                 ; test if candidate range already covers current  AR value
-                CurrValueCovered := False
-                If (CurrValue >= ARLRLo and CurrValue <= ARLRHi) 
+                If (WithinBounds(ARLRBracket, CurrValue))
                 {
-                    CurrValueCovered := True
+                    Goto, FinalizeAR
                 }
-                If (NumPrefixes >= 3 or NumSuffixes >= 3 or CurrValueCovered)
+                Else
                 {
+                    If (HasIncrPhysDmg)
+                    {
+                        AffixType := "Comp. Suffix+Suffix"
+                        IPDAffixType := GetAffixTypeFromProcessedLine("increased Physical Damage")
+;                        msgbox, IPDAffixType: %IPDAffixType%
+                        IfInString, IPDAffixType, Comp. Prefix
+                        {
+                            AffixType := "Comp. Prefix+Comp. Suffix+Suffix"
+                            If (NumPrefixes <= 3)
+                            {
+                                NumPrefixes += 1
+                            }
+                        }
+                    }
+                    ARRest := CurrValue - RangeMid(ARLRBracket)
+                    ARBracket := LookupAffixBracket("data\AccuracyRating_Global.txt", ItemLevel, ARRest)
+                    ValueRange := AddRange(ARBracket, ARLRBracket)
+                    ValueRange := PadValueRange(ValueRange)
+                    NumSuffixes += 1
                     Goto, FinalizeAR
                 }
             }
@@ -2317,78 +2914,81 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
                 ; this is one of the trickiest cases currently: if this If-construct is reached that means the item has 
                 ; multiple composites - "To Accuracy Rating / Increased Light Radius" and "Increased Physical Damage 
                 ; / To Accuracy Rating". On top of that it might also contain part "To Accuracy Rating" suffix, all of
-                ; which are concatenated into one single "to Accuracy Rating" entry. Currently it handled most cases 
-                ; if not all, but there is still the chance that the guesstimation loop in particular might fail.
+                ; which are concatenated into one single "to Accuracy Rating" entry. Currently it handles most cases, 
+                ; if not all, but I still have a feeling I am missing something...
                 If (ARPartial)
                 {
-                    ActualValue := CurrValue - (RangeAverage(ARPartial))
+                    If (WithinBounds(ARPartial, CurrValue))
+                    {
+                        AffixType := "Comp. Prefix"
+                        If (NumPrefixes < 3)
+                        {
+                            NumPrefixes += 1
+                        }
+                        ValueRange := LookupAffixData("data\AccuracyRating_IncrPhysDamage.txt", ItemLevel, RangeMid(ARPartial))
+                        Goto, FinalizeAR
+                    }
+
+                    ARPartialMid := RangeMid(ARPartial)
+                    ARRest := CurrValue - ARPartialMid
+                    If (ItemSubType == "Mace" and ItemGripType == "2H")
+                    {
+                        ARBracket := LookupAffixBracket("data\AccuracyRating_Global.txt", ItemLevel, ARRest)
+                    }
+                    Else
+                    {
+                        ARBracket := LookupAffixBracket("data\AccuracyRating_Local.txt", ItemLevel, ARRest)
+                    }
+
+                    msgbox, ItemLevel: %ItemLevel%`, ARRest: %ARRest%`, ARBracket: %ARBracket%`, ARPartial: %ARPartial%
+
+                    AffixType := "Comp. Prefix+Suffix"
+                    If (NumSuffixes < 3) 
+                    {
+                        NumSuffixes += 1
+                    }
+                    Else
+                    {
+                        AffixType := "Comp. Prefix"
+                        If (NumPrefixes < 3)
+                        {
+                            NumPrefixes += 2
+                        }
+                    }
+                    NumPrefixes += 1
+                    ValueRange := AddRange(ARBracket, ARPartial)
+                    ValueRange := PadValueRange(ValueRange)
+
+                    Goto, FinalizeAR
                 }
                 Else
                 {
                     ActualValue := CurrValue
                 }
-                If (ItemSubType == "Mace" and ItemGripType == "2H")
+
+                ValueRangeAR := LookupAffixBracket("data\AccuracyRating_Global.txt", ItemLevel, ActualValue)
+                If (IsValidBracket(ValueRangeAR))
                 {
-                    ValueRangeAR := LookupAffixBracket("data\IncrPhysDamage_AccuracyRating_AROnly_2HMaces.txt", ItemLevel, CurrValue)
+                    AffixType := "Comp. Prefix"
+                    NumPrefixes += 1
+                    Goto, FinalizeAR
                 }
                 Else
                 {
-                    ValueRangeAR := LookupAffixBracket("data\IncrPhysDamage_AccuracyRating_AROnly.txt", ItemLevel, CurrValue)
-                }
-                If (ValueRangeAR == "n/a")
-                {
-                    If (StrLen(AffixType) > 0)
+                    ARValueRest := CurrValue - (RangeMid(ValueRangeAR))
+                    If (HasIncrLightRadius and Not HasIncrAccuracyRating)
                     {
-                        AffixType := AffixType . "+" . "Comp. Prefix+Suffix"
+                        AffixType := "Comp. Prefix+Comp. Suffix+Suffix"
                     }
                     Else
                     {
                         AffixType := "Comp. Prefix+Suffix"
                     }
-
-                    NumSuffixes += 1
                     NumPrefixes += 1
-                    ; try to reverse engineer composition of both ranges
-                    PrefixDivisor := 1
-                    SuffixDivisor := 1
-                    TryIndex := 0
-                    GuessFound := False
-                    Loop
-                    {
-                        TryIndex += 1
-                        ValueRangeSuffix := LookupAffixBracket("data\AccuracyRating_Global.txt", ItemLevel, Floor(ActualValue/SuffixDivisor))
-                        ValueRangePrefix := LookupAffixBracket("data\IncrPhysDamage_AccuracyRating_AROnly.txt", ItemLevel, Floor(ActualValue/PrefixDivisor))
-                        If (ValueRangeSuffix == "n/a")
-                        {
-                            SuffixDivisor += 0.5
-                        }
-                        If (ValueRangePrefix == "n/a")
-                        {
-                            PrefixDivisor += 0.5
-                        }
-                        If ((Not ValueRangeSuffix == "n/a") and (Not ValueRangePrefix == "n/a"))
-                        {
-                            GuessFound := True
-                            Break
-                        }
-                        If (TryIndex > 100)
-                        {
-                            ; guard against infinite loops
-                            msgbox, TODO: handle case TryIndex > 100
-                            Break
-                        }
-                    }
-                    If (GuessFound)
-                    {
-                        ValueRange := AddRange(ValueRangePrefix, ValueRangeSuffix)
-                        Global ValueRangeFieldWidth
-                        ValueRange :=  StrPad(ValueRange . EstInd, ValueRangeFieldWidth + StrLen(EstInd), "left")
-                    }
-                }
-                Else
-                {
-                    AffixType := "Comp. Prefix"
-                    ValueRange := LookupAffixData("data\IncrPhysDamage_AccuracyRating_AROnly.txt", ItemLevel, CurrValue)
+                    NumSuffixes += 1
+;                    ValueRange := LookupAffixData("data\AccuracyRating_IncrPhysDamage.txt", ItemLevel, CurrValue)
+                    ValueRange := AddRange(ARPartial, ValueRangeAR)
+                    ValueRange := PadValueRange(ValueRange)
                 }
                 ; NumPrefixes should be incremented already by "increased Physical Damage" case
                 Goto, FinalizeAR
@@ -2399,18 +2999,26 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
             Goto, FinalizeAR
 
         FinalizeAR:
-            AppendAffixInfo(A_LoopField, AffixType, ValueRange, AffixInfo)
+            AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
         }
 
         IfInString, A_LoopField, increased Rarity
         {
             ActualValue := CurrValue
-            ValueRangeSuffix := LookupAffixBracket("data\IIR_Suffix.txt", ItemLevel, ActualValue)
-            If (ValueRangeSuffix == "n/a")
+            If (NumSuffixes <= 3)
             {
-                ValueRangePrefix := LookupAffixBracket("data\IIR_Prefix.txt", ItemLevel, ActualValue)
-                If (ValueRangePrefix == "n/a")
+                ValueRange := LookupAffixBracket("data\IIR_Suffix.txt", ItemLevel, ActualValue)
+                ValueRangeAlt := LookupAffixBracket("data\IIR_Prefix.txt", ItemLevel, ActualValue)
+            }
+            Else
+            {
+                ValueRange := LookupAffixBracket("data\IIR_Prefix.txt", ItemLevel, ActualValue)
+                ValueRangeAlt := LookupAffixBracket("data\IIR_Suffix.txt", ItemLevel, ActualValue)
+            }
+            If (Not IsValidBracket(ValueRange))
+            {
+                If (Not IsValidBracket(ValueRangeAlt))
                 {
                     NumPrefixes += 1
                     NumSuffixes += 1
@@ -2421,43 +3029,112 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ImplicitMods, AugmentedStats
                     {
                         ValueRangeSuffix := LookupAffixBracket("data\IIR_Suffix.txt", ItemLevel, Floor(ActualValue/SuffixDivisor))
                         ValueRangePrefix := LookupAffixBracket("data\IIR_Prefix.txt", ItemLevel, Floor(ActualValue/PrefixDivisor))
-                        If (ValueRangeSuffix == "n/a")
+                        If (Not IsValidBracket(ValueRangeSuffix))
                         {
                             SuffixDivisor += 0.25
                         }
-                        If (ValueRangePrefix == "n/a")
+                        If (Not IsValidBracket(ValueRangePrefix))
                         {
                             PrefixDivisor += 0.25
                         }
-                        If ((Not ValueRangeSuffix == "n/a") and (Not ValueRangePrefix == "n/a"))
+                        If ((IsValidBracket(ValueRangeSuffix)) and (IsValidBracket(ValueRangePrefix)))
                         {
                             Break
                         }
                     }
                     ValueRange := AddRange(ValueRangePrefix, ValueRangeSuffix)
-                    Global ValueRangeFieldWidth
-                    ValueRange :=  StrPad(ValueRange . EstInd, ValueRangeFieldWidth + StrLen(EstInd), "left")
-                    AppendAffixInfo(A_LoopField, "Prefix+Suffix", ValueRange, AffixInfo)
+                    Goto, FinalizeIIRAsPrefixAndSuffix
                 }
                 Else
                 {
-                    NumPrefixes += 1
-                    ValueRange := LookupAffixData("data\IIR_Prefix.txt", ItemLevel, ActualValue)
-                    AppendAffixInfo(A_LoopField, "Prefix", ValueRange, AffixInfo)
+                    ValueRange := ValueRangePrefix
+                    Goto, FinalizeIIRAsPrefix
                 }
             }
             Else
             {
+                If (NumSuffixes >= 3) {
+                    Goto, FinalizeIIRAsPrefix
+                }
+                Goto, FinalizeIIRAsSuffix
+            }
+
+            FinalizeIIRAsPrefix:
+                NumPrefixes += 1
+                ValueRange := LookupAffixData("data\IIR_Prefix.txt", ItemLevel, ActualValue)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
+                Continue
+
+            FinalizeIIRAsSuffix:
                 NumSuffixes += 1
                 ValueRange := LookupAffixData("data\IIR_Suffix.txt", ItemLevel, ActualValue)
-                AppendAffixInfo(A_LoopField, "Suffix", ValueRange, AffixInfo)
-            }
-            Continue
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
+                Continue
+
+            FinalizeIIRAsPrefixAndSuffix:
+                ValueRange := PadValueRange(ValueRange)
+                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix+Suffix", ValueRange), A_Index)
+                Continue
+        }
+    }
+}
+
+; change a detail line that was already processed and added to the 
+; AffixLines "stack". This can be used for example to change the
+; affix type when more is known about a possible affix combo. 
+; For example with a IPD / AR combo, if IPD was thought to be a
+; prefix but later (when processing AR) found to be a composite
+; prefix.
+ChangeAffixDetailLine(PartialAffixString, SearchRegex, ReplaceRegex)
+{
+    Global
+    Loop, %NumAffixLines%
+    {
+        CurAffixLine := AffixLines%A_Index%
+        IfInString, CurAffixLine, %PartialAffixString%
+        {
+            local NewLine
+            NewLine := RegExReplace(CurAffixLine, SearchRegex, ReplaceRegex)
+            AffixLines%A_Index% := NewLine
+            return True
+        }
+    }
+    return False
+}
+
+ExtractValueFromAffixLine(ItemDataChunk, PartialAffixString)
+{
+    Loop, Parse, ItemDataChunk, `n, `r
+    {
+        If StrLen(A_LoopField) = 0
+        {
+            Break ; not interested in blank lines
+        }
+        IfInString, ItemDataChunk, Unidentified
+        {
+            Break ; not interested in unidentified items
         }
 
-        ; counting "extra" (e.g. unreckognized) affixes is just a 
-        ; placeholder until unique items get their special treatment
-        NumExtras := NumExtras + 1
+        CurrValue := GetActualValue(A_LoopField)
+
+        IfInString, A_LoopField, %PartialAffixString%
+        {
+            return CurrValue
+        }
+    }
+}
+
+ResetAffixDetailVars()
+{
+    Global
+    NumPrefixes := 0
+    NumSuffixes := 0
+    NumAffixLines := 0
+    NumAffixLines := 0
+    TotalAffixes := 0
+    Loop, 10
+    {
+        AffixLines%A_Index% = 
     }
 }
 
@@ -2466,6 +3143,7 @@ ParseClipBoardChanges()
 {
     Global IsWeapon
     Global IsUnidentified
+
     NameIsDone := False
     ItemName := 
     ItemLevel := -1
@@ -2502,14 +3180,16 @@ ParseClipBoardChanges()
     ItemDataNamePlate := ItemDataParts%ItemDataParts%1
     Global ItemDataStats ; d
     ItemDataStats := ItemDataParts%ItemDataParts%2
-    Global ItemDataRequirements
+    Global ItemDataRequirements ; d
     ItemDataRequirements := ItemDataParts%ItemDataParts%3
 
-    Global RequiredAttributes
-    Global RequiredLevel
-    Global RequiredAttributeValues
+    Global RequiredAttributes ; d
+    Global RequiredLevel ; d
+    Global RequiredAttributeValues ; d
     ParseRequirements(ItemDataRequirements, RequiredLevel, RequiredAttributes, RequiredAttributeValues)
 ;    msgbox, RequiredLevel: %RequiredLevel%`, RequiredAttributes: %RequiredAttributes%`, RequiredAttributeValues: %RequiredAttributeValues%
+
+    IsWeapon := (ItemBaseType == "Weapon")
 
     Global ItemQuality ; d
     ItemQuality := ParseQuality(ItemDataStats)
@@ -2522,7 +3202,7 @@ ParseClipBoardChanges()
 
     ; assign length of the "array" so we can either grab the 
     ; last item (if non unique) or the item before last
-    Global ItemDataPartsIndexLast ; for debugging
+    Global ItemDataPartsIndexLast ; d
     ItemDataPartsIndexLast := ItemDataParts0
 
     Global ItemDataPartsLast ; d
@@ -2535,7 +3215,7 @@ ParseClipBoardChanges()
 
     ; this function should return the second part of the "Rarity: ..." line
     ; in the case of "Rarity: Unique" it should return "Unique"
-    Global ItemDataRarity ; for debugging
+    Global ItemDataRarity ; d
     ItemDataRarity := ParseRarity(ItemDataNamePlate)
 
     Global RarityLevel
@@ -2572,11 +3252,6 @@ ParseClipBoardChanges()
     Global ItemDataAffixes ; d
     ItemDataAffixes := ItemDataParts%ItemDataParts%%ItemDataPartsIndexAffixes%
 
-    ; need to check and see what is actually being augmented for the item stats
-    ; this is needed to distinguish between prefix and suffix in cases like 
-    ; armour and stun recover (prefix) or just stun recovery (suffix). They would 
-    ; both show as "+% increased block and stun recovery" on the item card but in 
-    ; the first case the armour stat would be augmented
     Global ItemDataStats ; d
     ItemDataStats := ItemDataParts%ItemDataParts%2
 
@@ -2601,21 +3276,17 @@ ParseClipBoardChanges()
     Global ItemDataImplicitMods ; d
     ItemDataImplicitMods := ItemDataParts%ItemDataParts%%ItemDataPartsIndexImplicitMods%
 
-    Global AffixInfo
-    AffixInfo =
+    Global NumPrefixes
+    Global NumSuffixes
+    Global NumAffixLines
+    Global TotalAffixes
 
-    Global NumPrefixes ; d
-    Global NumSuffixes ; d
-    Global TotalAffixes ; d
-    TotalAffixes := 0
-    NumPrefixes := 0
-    NumSuffixes := 0
-    NumExtras := 0
+    ResetAffixDetailVars()
 
     If (RarityLevel > 1)
     {
-        ParseAffixes(ItemDataAffixes, ItemLevel, ItemQuality, ItemDataImplicitMods, AugmentedStats, AffixInfo, NumPrefixes, NumSuffixes, NumExtras)
-        TotalAffixes := NumPrefixes + NumSuffixes + NumExtras
+        ParseAffixes(ItemDataAffixes, ItemLevel, ItemQuality, ItemDataImplicitMods, AugmentedStats, NumPrefixes, NumSuffixes)
+        TotalAffixes := NumPrefixes + NumSuffixes
     }
 
     Loop, Parse, Clipboard, `n, `r
@@ -2738,10 +3409,6 @@ ParseClipBoardChanges()
     If IsWeapon 
     {
         SetFormat, FloatFast, 5.1
-
-        ;Global PhysDps
-        ;Global EleDps
-        ;Global TotalDps
         PhysDps := ((PhysLo + PhysHi) / 2) * AttackSpeed
         EleDps := ((ChaoLo + ChaoHi + ColdLo + ColdHi + FireLo + FireHi + LighLo + LighHi) / 2) * AttackSpeed
         TotalDps := PhysDps + EleDps
@@ -2824,7 +3491,8 @@ ParseClipBoardChanges()
         {
             If (RarityLevel > 1 and RarityLevel < 4)
             {
-                TT = %TT%`n--------%AffixInfo%
+                AffixDetails := AssembleAffixDetails()
+                TT = %TT%`n--------%AffixDetails%
             }
             If (RarityLevel == 4)
             {
