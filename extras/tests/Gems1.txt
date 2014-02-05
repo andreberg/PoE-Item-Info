@@ -1,0 +1,12 @@
+#################### 1
+Rarity: Gem
+Portal
+--------
+Spell
+Level: 1 (Max)
+Mana Cost: 0
+--------
+Requirements:
+Level: 10
+--------
+Place into an item socket of the right colour to gain this skill. Right click to remove from a socket.

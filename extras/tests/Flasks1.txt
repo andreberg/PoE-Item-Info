@@ -1,0 +1,17 @@
+#################### 1
+Rarity: Magic
+Granite Flask of Adrenaline
+--------
+Lasts 4 Seconds
+Consumes 30 of 60 Charges on use
+Currently has 60 Charges
++3000 to Armour (augmented)
+--------
+Requirements:
+Level: 27
+--------
+Itemlevel: 51
+--------
+28% increased Movement Speed during flask effect
+--------
+Right click to drink. Can only hold charges while in belt. Refills as you kill monsters.

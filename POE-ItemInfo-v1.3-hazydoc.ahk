@@ -5,14 +5,6 @@
 ; This script is based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
 ;
-; Original author's comment:
-; If you have any questions or comments please post them there as well. If you think you can help
-; improve this project. I am looking for contributors. So Pm me if you think you can help.
-;
-; If you have a issue please post what version you are using.
-; Reason being is that something that might be a issue might already be fixed.
-; End Original author's comment
-;
 ; The script has been added to substantially to enable the following features in addition to 
 ; itemlevel and weapon DPS reveal:
 ;
@@ -21,7 +13,7 @@
 ;   - reveal the combination of difficult compound affixes (you might be surprised what you find)
 ;   - show affix ranges for uniques
 ;   - has the ability to convert currency items to chaos orbs (you can adjust the rates by editing
-;     <datadir>\CurrencRates.txt)
+;     <datadir>\CurrencyRates.txt)
 ;   - can show which gems are valuable and/or drop-only (all user adjustable)
 ;   - adds a system tray icon and proper system tray description tooltip
 ;
@@ -99,6 +91,14 @@
 ;   kongyuyu - for base item level display.
 ;   Fayted - for testing the script.
 ;
+; Original author's comment:
+;
+; If you have any questions or comments please post them there as well. If you think you can help
+; improve this project. I am looking for contributors. So Pm me if you think you can help.
+;
+; If you have a issue please post what version you are using.
+; Reason being is that something that might be a issue might already be fixed.
+;
 
 ; Run test suites (see end of script)
 ; Note: don't set this to true for normal every day use...
@@ -149,6 +149,7 @@ CompactDoubleRanges = 1         ; Show double ranges as "1-172" instead of "1-8 
 CompactAffixTypes = 1           ; Use compact affix type designations: Suffix = S, Prefix = P, Comp. Suffix = CS, Comp. Prefix = CP
 
 MirrorAffixLines = 1            ; Show a copy of the affix line in question when showing affix details. 
+                                ;
                                 ; For example, would display "Prefix, 5-250" instead of "+246 to Accuracy Rating, Prefix, 5-250". 
                                 ; Since the affixes are processed in order one can attribute which is which to the ordering of 
                                 ; the lines in the tooltip to the item data in game.
@@ -156,14 +157,27 @@ MirrorAffixLines = 1            ; Show a copy of the affix line in question when
 MirrorLineFieldWidth = 18       ; Mirrored affix line width. Set to a number above 0 to truncate (or pad) to this many characters. 
                                 ; Appends AffixDetailEllipsis when truncating.
 ValueRangeFieldWidth = 7        ; Width of field that displays the affix' value range(s). Set to a number larger than 0 to truncate (or pad) to this many characters. 
+                                ;
+                                ; Keep in mind that there are sometimes double ranges to be displayed. Like for example on an axe, implicit physical damage might
+                                ; have a lower bound range and a upper bound range. In this case the lower bound range can have at most a 3 digit minimum value,
+                                ; and at most a 3 digit maximum value. To then display just the lower bound (which constitutes one value range field), you would need
+                                ; at least 7 characters (ex: 132-179). To complete the example here is how it would look like with 2 fields (lower and upper bound)
+                                ; 132-179 168-189. Note that you don't need to set 15 as option value to display both fields correctly. As the name implies the option
+                                ; is per field, so a value of 8 can display two 8 character wide fields correctly.
 
-AffixDetailDelimiter := " "     ; Field delimiter for affix detail lines.
+AffixDetailDelimiter := " "     ; Field delimiter for affix detail lines. This is put between value range fields. If this value were set to a comma, the above
+                                ; double range example would become 132-179,168-189.
+
 AffixDetailEllipsis := "…"      ; If the MirrorLineFieldWidth is set to a value that is smaller than the actual length of the affix line text
                                 ; the affix line will be cut off and this text will be appended at the end to indicate tha the line was truncated.
+                                ;
                                 ; Usually this is set to the ASCII or Unicode value of the three dot ellipsis (alt code: 0133).
                                 ; Note that the correct display of text characters outside the ASCII standard depend on the file encoding and the 
                                 ; AHK version used. For best results, save this file as ANSI encoding which can be read and displayed correctly by
                                 ; either ANSI based AutoHotkey or Unicode based AutoHotkey.
+                                ;
+                                ; Example: assume the affix line to be mirrored is '+#% increased Spell Damage'.
+                                ; If the MirrorLineFieldWidth is set to 18, this field would be shown as '+#% increased Spel…'
 
 ; Pixels mouse must move to auto-dismiss tooltip
 MouseMoveThreshold := 40
@@ -1020,6 +1034,10 @@ StrTrimSpace(String)
     return RegExReplace(String, " *(.+?) *", "$1")
 }
 
+; Pads a string with a multiple of PadChar to become a wanted total length.
+; Note that Side is the side that is padded not the anchored side.
+; Meaning, if you pad right side, the text will move left. If Side was an 
+; anchor instead, the text would move right if anchored right.
 StrPad(String, Length, Side="right", PadChar=" ")
 {
 ;    Result := String
@@ -1094,9 +1112,14 @@ AssembleAffixDetails()
         IfInString, ValueRange, @
         {
             IsImplicitMod := True
-            ValueRange := SubStr(ValueRange, 2)
+            StringReplace, ValueRange, ValueRange, @
+            ValueRange := " " . ValueRange
+;            msgbox, AffixLine: %AffixLine%`, ValueRange: %ValueRange%`, AffixType: %AffixType%
         }
-;        msgbox, AffixLine: %AffixLine%`, ValueRange: %ValueRange%`, AffixType: %AffixType%
+        If (ValueRangeFieldWidth > 0)
+        {
+            ValueRange := StrPad(ValueRange, ValueRangeFieldWidth, "left")
+        }
         If (MirrorAffixLines = 1)
         {
             If (MirrorLineFieldWidth > 0)
@@ -1108,10 +1131,6 @@ AssembleAffixDetails()
                 AffixLine := StrPad(AffixLine, MirrorLineFieldWidth + StrLen(Ellipsis))
             }
             ProcessedLine := AffixLine . Delim
-        }
-        If (ValueRangeFieldWidth > 0)
-        {
-            ValueRange := StrPad(ValueRange, ValueRangeFieldWidth, "left")
         }
         If (CompactAffixTypes > 0)
         {
@@ -3615,13 +3634,14 @@ ParseUnique(ItemName)
                         StringSplit, CurLineParts, CurLinePart, :
                         AffixLine := CurLineParts2
                         ValueRange := CurLineParts1
+                        ValueRange := RegExReplace(ValueRange, "(\d+\.\d+)-(\d+\.\d+)", "$1,$2") ; fix Attacks per Second double floats to be like a double range
                         IfInString, ValueRange, `,
                         {
                             ; double range
                             StringSplit, ValueRangeParts, ValueRange, `,
                             LowerBound := ValueRangeParts1
                             UpperBound := ValueRangeParts2
-                            ValueRange := StrPad(LowerBound, ValueRangeFieldWidth, "left") . StrPad(UpperBound, ValueRangeFieldWidth, "left")
+                            ValueRange := StrPad(LowerBound, ValueRangeFieldWidth, "left") . AffixDetailDelimiter . StrPad(UpperBound, ValueRangeFieldWidth, "left")
 
                         }
                         AffixLines%Idx% := AffixLine . Delim . ValueRange
@@ -3989,7 +4009,7 @@ ShowToolTip(String)
 
 ; ############## TESTS #################
 
-RunTestSuite(Path, SuiteNumber)
+RunRareTestSuite(Path, SuiteNumber)
 {
     NumTestCases := 0
     Loop, Read, %Path%
@@ -4042,22 +4062,88 @@ RunTestSuite(Path, SuiteNumber)
     Return Result
 }
 
+RunUniqueTestSuite(Path, SuiteNumber)
+{
+    NumTestCases := 0
+    Loop, Read, %Path%
+    {  
+;        msgbox, % TestCaseText
+        IfInString, A_LoopReadLine, ####################
+        {
+            NumTestCases += 1
+            Continue
+        }
+        TestCaseText := A_LoopReadLine
+        TestCases%NumTestCases% := TestCases%NumTestCases% . TestCaseText . "`r`n"
+    }
+
+;    msgbox, NumTestCases: %NumTestCases%
+    Fails := 0
+    Successes := 0
+    FailsNumbers =
+    TestCase =
+    Loop, %NumTestCases%
+    {
+        TestCase := TestCases%A_Index%
+        TestCaseResult := ParseItemData(TestCase)
+
+        FailedToSepImplicit := InStr(TestCaseResult, "@")  ; failed to properly seperate implicit from normal affixes
+        ; TODO: add more unique item test failure conditions
+
+        If (FailedToSepImplicit)
+        {
+            Fails += 1
+            FailsNumbers := FailsNumbers . A_Index . ","
+        }
+        Else
+        {
+            Successes += 1
+        }
+        ; needed so global variables can be yanked from memory and reset between calls 
+        ; (if you reload the script really fast globals vars that are out of date can 
+        ; cause fails where there are none)
+        Sleep, 1
+    }
+
+    Result := "Suite " . SuiteNumber . ": " . StrPad(Successes, 5, "left") . " OK" . ", " . StrPad(Fails, 5, "left")  . " Failed"
+    If (Fails > 0)
+    {
+        FailsNumbers := SubStr(FailsNumbers, 1, -1)
+        Result := Result . " (" . FailsNumbers . ")"
+    }
+    Return Result
+}
+
 RunAllTests()
 {
     ; change this to the number of available test suites
-    NumTestSuites := 3
     TestDataBasePath = %A_WorkingDir%\extras\tests
 
-    Loop, %NumTestSuites%
+    NumRareTestSuites := 3
+    RareResults := "Rare Items"
+    Loop, %NumRareTestSuites%
     {
-        If (A_Index > 0)
+        If (A_Index > 0) ; change condition to only run certain tests
         {
-            TestSuitePath = %TestDataBasePath%\TestSuite%A_Index%.txt
-            TestSuiteResult := RunTestSuite(TestSuitePath, A_Index)
-            Results := Results . "`n" . TestSuiteResult
+            TestSuitePath = %TestDataBasePath%\Rares%A_Index%.txt
+            TestSuiteResult := RunRareTestSuite(TestSuitePath, A_Index)
+            RareResults := RareResults . "`n    " . TestSuiteResult
         }
     }
-    msgbox, % Results
+
+    NumUniqueTestSuites := 1
+    UniqResults := "Unique Items"
+    Loop, %NumUniqueTestSuites%
+    {
+        If (A_Index > 0) ; change condition to only run certain tests
+        {
+            TestSuitePath = %TestDataBasePath%\Uniques%A_Index%.txt
+            TestSuiteResult := RunUniqueTestSuite(TestSuitePath, A_Index)
+            UniqResults := UniqResults . "`n    " . TestSuiteResult
+        }
+    }
+
+    msgbox, %RareResults%`n`n%UniqResults%
 }
 
 If (RunTests)

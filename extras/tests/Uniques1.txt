@@ -1,0 +1,63 @@
+#################### 1
+Rarity: Unique
+Hrimnor's Hymn
+Sledgehammer
+--------
+Two Handed Mace
+Physical Damage: 65-98 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.25
+--------
+Requirements:
+Level: 17
+Str: 62
+--------
+Sockets: R-R 
+--------
+Itemlevel: 24
+--------
+40% increased Stun Duration on enemies
+--------
+158% increased Physical Damage
++10 to Strength
+15% reduced Enemy Stun Threshold
+5% of Physical Attack Damage Leeched as Life
+47% increased Stun Duration on enemies
+--------
+"The crack of bone, the spray of blood.
+Is there sweeter music?"
+- Hrimnor of the Ezomytes.
+#################### 2
+Rarity: Unique
+Rebuke of the Vaal
+Vaal Blade
+--------
+One Handed Sword
+Quality: +10% (augmented)
+Physical Damage: 64-105 (augmented)
+Elemental Damage: 20-34 (augmented), 24-39 (augmented), 1-56 (augmented)
+Chaos Damage: 19-31 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.55 (augmented)
+--------
+Requirements:
+Level: 64
+Str: 113
+Dex: 113
+--------
+Sockets: G-G G 
+--------
+Itemlevel: 66
+--------
+18% increased Accuracy Rating
+--------
+Adds 23-31 Physical Damage
+Adds 20-34 Fire Damage
+Adds 24-39 Cold Damage
+Adds 1-56 Lightning Damage
+Adds 19-31 Chaos Damage
+19% increased Attack Speed
+--------
+Though the Vaal revered peace, it would have 
+been suicide for any culture to rouse them to war.
+- Icius Perandus, Scholar to the Empire.
