@@ -1,0 +1,697 @@
+#################### 1
+Rarity: Rare
+Soul Blast
+Sniper Bow
+--------
+Bow
+Physical Damage: 31-94 (augmented)
+Elemental Damage: 22-39 (augmented), 2-33 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.15
+--------
+Requirements:
+Level: 44
+Dex: 143
+--------
+Sockets: G 
+--------
+Itemlevel: 62
+--------
+40% increased Physical Damage
+Adds 22-39 Cold Damage
+Adds 2-33 Lightning Damage
++149 to Accuracy Rating
+#################### 2
+Rarity: Rare
+Tempest Scratch
+Apex Rapier
+--------
+One Handed Sword
+Physical Damage: 25-58
+Elemental Damage: 31-55 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.35
+--------
+Requirements:
+Level: 55
+Dex: 119 (augmented)
+--------
+Sockets: G-G G 
+--------
+Itemlevel: 62
+--------
+35% increased Global Critical Strike Multiplier
+--------
++10 to Dexterity
+Adds 31-55 Fire Damage
+32% reduced Attribute Requirements
+6% increased Accuracy Rating
+15% increased Light Radius
+#################### 3
+Rarity: Rare
+Agony Salvation
+Commander's Brigandine
+--------
+Armour: 367 (augmented)
+Evasion Rating: 406 (augmented)
+--------
+Requirements:
+Level: 50
+Str: 73
+Dex: 73
+--------
+Sockets: R-R-G 
+--------
+Itemlevel: 58
+--------
++22 to Strength
++21 to Evasion Rating
+87% increased Armour and Evasion
++19% to Cold Resistance
+7% increased Block and Stun Recovery
+#################### 4
+Rarity: Rare
+Gloom Hand
+Trapper Mitts
+--------
+Evasion Rating: 62 (augmented)
+Energy Shield: 19 (augmented)
+--------
+Requirements:
+Level: 47
+Dex: 29
+Int: 29
+--------
+Sockets: G-R 
+--------
+Itemlevel: 62
+--------
++23 to Intelligence
++170 to Accuracy Rating
+9% increased Evasion and Energy Shield
+5.1 Life Regenerated per second
++44 to maximum Mana
+7% increased Block and Stun Recovery
+#################### 5
+Rarity: Rare
+Fate Stride
+Goliath Greaves
+--------
+Armour: 190 (augmented)
+--------
+Requirements:
+Level: 54
+Str: 95
+--------
+Sockets: B-R 
+--------
+Itemlevel: 67
+--------
++16 to Strength
++3 to Armour
+21% increased Armour
++29 to maximum Life
++13% to Fire Resistance
++19% to Chaos Resistance
+8% increased Block and Stun Recovery
+#################### 6
+Rarity: Rare
+Storm Mast
+Highborn Staff
+--------
+Staff
+Physical Damage: 84-203 (augmented)
+Critical Strike Chance: 6.5%
+Attacks per Second: 1.00
+--------
+Requirements:
+Level: 52
+Str: 89
+Int: 89
+--------
+Sockets: B 
+--------
+Itemlevel: 68
+--------
+12% Chance to Block
+--------
++1 to Level of Melee Gems in this item
+35% increased Spell Damage
+Adds 33-49 Physical Damage
+6% increased Lightning Damage
++17 to maximum Mana
++14% to Fire Resistance
++34% to Cold Resistance
+#################### 7
+Rarity: Rare
+Apocalypse Gutter
+Royal Skean
+--------
+Dagger
+Physical Damage: 18-66 (augmented)
+Elemental Damage: 18-36 (augmented)
+Critical Strike Chance: 6.8%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 50
+Dex: 71
+Int: 102
+--------
+Sockets: G-G 
+--------
+Itemlevel: 58
+--------
+40% increased Global Critical Strike Chance
+--------
+Adds 4-9 Physical Damage
+Adds 18-36 Cold Damage
++218 to Accuracy Rating
+10% increased Light Radius
+#################### 8
+Rarity: Rare
+Dusk Halo
+Magistrate Crown
+--------
+Armour: 139
+Energy Shield: 45 (augmented)
+--------
+Requirements:
+Level: 58
+Str: 64
+Int: 64
+--------
+Sockets: B 
+--------
+Itemlevel: 62
+--------
++24 to Intelligence
+5.8 Life Regenerated per second
++55 to maximum Mana
++4 to maximum Energy Shield
+13% increased Rarity of Items found
++32% to Lightning Resistance
+#################### 9
+Rarity: Rare
+Phoenix Shell
+Destroyer Regalia
+--------
+Energy Shield: 151 (augmented)
+--------
+Requirements:
+Level: 53
+Int: 144
+--------
+Sockets: B B-G 
+--------
+Itemlevel: 58
+--------
++12 to Intelligence
++13 to maximum Life
+2.9 Life Regenerated per second
+36% increased Energy Shield
++10% to Cold Resistance
+13% increased Block and Stun Recovery
+Reflects 11 Physical Damage to Melee Attackers
+#################### 10
+Rarity: Rare
+Corpse Wrap
+Bone Armour
+--------
+Evasion Rating: 291 (augmented)
+Energy Shield: 89 (augmented)
+--------
+Requirements:
+Level: 44
+Dex: 53
+Int: 53
+--------
+Sockets: G G 
+--------
+Itemlevel: 57
+--------
++34 to Dexterity
++153 to Evasion Rating
++48 to maximum Energy Shield
++32% to Fire Resistance
+18% increased Block and Stun Recovery
+#################### 11
+Rarity: Rare
+Viper Stinger
+Boot Blade
+--------
+Dagger
+Physical Damage: 18-72 (augmented)
+Elemental Damage: 2-4 (augmented), 4-52 (augmented)
+Critical Strike Chance: 6.8%
+Attacks per Second: 1.40
+--------
+Requirements:
+Level: 46
+Dex: 63
+Int: 90
+--------
+Sockets: G 
+--------
+Itemlevel: 68
+--------
+40% increased Global Critical Strike Chance
+--------
+31% increased Physical Damage
+Adds 2-4 Fire Damage
+Adds 4-52 Lightning Damage
+32% increased Stun Duration on enemies
++206 to Accuracy Rating
+#################### 12
+Rarity: Rare
+Death Emblem
+Etched Shield
+--------
+Chance to Block: 26%
+Armour: 219 (augmented)
+Energy Shield: 108 (augmented)
+--------
+Requirements:
+Level: 52
+Str: 52
+Int: 52
+--------
+Sockets: B B B 
+--------
+Itemlevel: 68
+--------
++8% to all Elemental Resistances
+--------
++41 to Intelligence
++109 to Armour
++75 to maximum Energy Shield
++10% to Fire Resistance
+#################### 13
+Rarity: Rare
+Doom Visage
+Solaris Circlet
+--------
+Energy Shield: 133 (augmented)
+--------
+Requirements:
+Level: 59
+Int: 122
+--------
+Sockets: B-B 
+--------
+Itemlevel: 66
+--------
++1 to Level of Minion Gems in this item
++97 to Accuracy Rating
+5.4 Life Regenerated per second
++58 to maximum Energy Shield
+10% increased Rarity of Items found
++35% to Fire Resistance
+#################### 14
+Rarity: Rare
+Rift Palm
+Zealot Gloves
+--------
+Armour: 140 (augmented)
+Energy Shield: 41 (augmented)
+--------
+Requirements:
+Level: 48
+Str: 34
+Int: 34
+--------
+Sockets: B-R-R 
+--------
+Itemlevel: 62
+--------
++32 to Strength
+106% increased Armour and Energy Shield
+17% increased Rarity of Items found
++4 Mana Gained on Kill
+6% increased Block and Stun Recovery
+#################### 15
+Rarity: Rare
+Horror Bulwark
+Polished Spiked Shield
+--------
+Chance to Block: 30%
+Evasion Rating: 173 (augmented)
+Energy Shield: 67 (augmented)
+--------
+Requirements:
+Level: 49
+Dex: 64
+Int: 64
+--------
+Sockets: G 
+--------
+Itemlevel: 58
+--------
+Reflects 74 Physical Damage to Melee Attackers
+--------
++77 to Evasion Rating
++19 to maximum Life
++39 to maximum Energy Shield
++34% to Lightning Resistance
+#################### 16
+Rarity: Rare
+Behemoth Razor
+Gutting Knife
+--------
+Dagger
+Physical Damage: 21-82
+Elemental Damage: 17-36 (augmented)
+Critical Strike Chance: 6.2%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 56
+Dex: 113
+Int: 78
+--------
+Sockets: G 
+--------
+Itemlevel: 58
+--------
+40% increased Global Critical Strike Chance
+--------
++1 to Level of Lightning Gems in this item
+Adds 17-36 Cold Damage
++264 to Accuracy Rating
+5% increased Light Radius
+#################### 17
+Rarity: Rare
+Plague Hunger
+Slaughter Knife
+--------
+Dagger
+Physical Damage: 9-78
+Elemental Damage: 11-17 (augmented)
+Critical Strike Chance: 6.8%
+Attacks per Second: 1.40
+--------
+Requirements:
+Level: 58
+Dex: 81
+Int: 117
+--------
+Sockets: R-G G 
+--------
+Itemlevel: 58
+--------
+40% increased Global Critical Strike Chance
+--------
+17% increased Spell Damage
+Adds 11-17 Fire Damage
++15 to maximum Mana
++4 Life gained for each enemy hit by your Attacks
++1 Mana Gained on Kill
+5% increased Accuracy Rating
+15% increased Light Radius
+#################### 18
+Rarity: Rare
+Soul Bulwark
+Alder Spike Shield
+--------
+Chance to Block: 26%
+Evasion Rating: 273 (augmented)
+Energy Shield: 80 (augmented)
+--------
+Requirements:
+Level: 58
+Dex: 74
+Int: 74
+--------
+Sockets: B G 
+--------
+Itemlevel: 63
+--------
+Reflects 140 Physical Damage to Melee Attackers
+--------
++12 to Dexterity
+50% increased Evasion and Energy Shield
++16% to Cold Resistance
+33% increased Block and Stun Recovery
+#################### 19
+Rarity: Rare
+Viper Goad
+Military Staff
+--------
+Staff
+Physical Damage: 40-121
+Elemental Damage: 3-81 (augmented)
+Critical Strike Chance: 6.5%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 48
+Str: 53 (augmented)
+Int: 53 (augmented)
+--------
+Sockets: G 
+--------
+Itemlevel: 68
+--------
+12% Chance to Block
+--------
+36% increased Spell Damage
+Adds 3-81 Lightning Damage
+66% increased Critical Strike Chance for Spells
++19 to maximum Mana
+3% of Physical Attack Damage Leeched as Life
+32% reduced Attribute Requirements
++18 to Accuracy Rating
+5% increased Light Radius
+#################### 20
+Rarity: Rare
+Doom Visage
+Solaris Circlet
+--------
+Energy Shield: 133 (augmented)
+--------
+Requirements:
+Level: 59
+Int: 122
+--------
+Sockets: B-B 
+--------
+Itemlevel: 66
+--------
++1 to Level of Minion Gems in this item
++97 to Accuracy Rating
+5.4 Life Regenerated per second
++58 to maximum Energy Shield
+10% increased Rarity of Items found
++35% to Fire Resistance
+#################### 21
+Rarity: Rare
+Loath Slayer
+Siege Axe
+--------
+One Handed Axe
+Physical Damage: 43-78 (augmented)
+Elemental Damage: 8-18 (augmented), 3-51 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 59
+Str: 97 (augmented)
+Dex: 67 (augmented)
+--------
+Sockets: R 
+--------
+Itemlevel: 68
+--------
+33% increased Physical Damage
++32 to Strength
+Adds 8-18 Fire Damage
+Adds 3-51 Lightning Damage
++36% to Fire Resistance
+18% reduced Attribute Requirements
+#################### 22
+Rarity: Rare
+Grim Sanctuary
+Redwood Spiked Shield
+--------
+Chance to Block: 26%
+Evasion Rating: 178 (augmented)
+Energy Shield: 52 (augmented)
+--------
+Requirements:
+Level: 48
+Dex: 52
+Int: 52
+--------
+Sockets: B-G G 
+--------
+Itemlevel: 64
+--------
+Reflects 43 Physical Damage to Melee Attackers
+--------
+45% increased Evasion and Energy Shield
++59 to maximum Life
++16% to all Elemental Resistances
+31% increased Block and Stun Recovery
+#################### 23
+Rarity: Rare
+Vortex Guardian
+Glorious Leather
+--------
+Evasion Rating: 663 (augmented)
+--------
+Requirements:
+Level: 45
+Dex: 124
+--------
+Sockets: B 
+--------
+Itemlevel: 54
+--------
++32 to Dexterity
+106% increased Evasion Rating
++34% to Fire Resistance
+12% increased Block and Stun Recovery
+#################### 24
+Rarity: Rare
+Eagle Mark
+Polished Spiked Shield
+--------
+Chance to Block: 30%
+Evasion Rating: 115 (augmented)
+Energy Shield: 34 (augmented)
+--------
+Requirements:
+Level: 49
+Dex: 64
+Int: 64
+--------
+Sockets: B-B B 
+--------
+Itemlevel: 56
+--------
+Reflects 82 Physical Damage to Melee Attackers
+--------
++35 to Dexterity
+20% increased Evasion and Energy Shield
++13 to maximum Life
++31% to Cold Resistance
+29% increased Block and Stun Recovery
+#################### 25
+Rarity: Rare
+Dire Emblem
+Sovereign Spiked Shield
+--------
+Chance to Block: 26%
+Evasion Rating: 169
+Energy Shield: 107 (augmented)
+--------
+Requirements:
+Level: 54
+Dex: 70
+Int: 70
+--------
+Sockets: B B 
+--------
+Itemlevel: 62
+--------
+Reflects 94 Physical Damage to Melee Attackers
+--------
++55 to maximum Mana
++57 to maximum Energy Shield
++9% to Fire Resistance
+Reflects 17 Physical Damage to Melee Attackers
+#################### 26
+Rarity: Rare
+Brimstone Rock
+Baroque Round Shield
+--------
+Chance to Block: 26%
+Armour: 219 (augmented)
+Evasion Rating: 219 (augmented)
+--------
+Requirements:
+Level: 54
+Str: 70
+Dex: 70
+--------
+Sockets: G 
+--------
+Itemlevel: 58
+--------
+120% increased Block Recovery
+--------
+107% increased Armour and Evasion
+1.2 Life Regenerated per second
+30% increased Block and Stun Recovery
+#################### 27
+Rarity: Rare
+Honour Sever
+Slaughter Knife
+--------
+Dagger
+Physical Damage: 11-98 (augmented)
+Critical Strike Chance: 6.8%
+Attacks per Second: 1.40
+--------
+Requirements:
+Level: 58
+Dex: 55 (augmented)
+Int: 79 (augmented)
+--------
+Sockets: B B G 
+--------
+Itemlevel: 67
+--------
+40% increased Global Critical Strike Chance
+--------
+6% increased Spell Damage
+25% increased Physical Damage
++9 to maximum Mana
++2 Mana Gained on Kill
+32% reduced Attribute Requirements
++226 to Accuracy Rating
+#################### 28
+Rarity: Rare
+Havoc Thirst
+Demon's Horn
+--------
+Wand
+Physical Damage: 27-49
+Critical Strike Chance: 8%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 56
+Int: 179
+--------
+Sockets: G 
+--------
+Itemlevel: 68
+--------
+15% increased Spell Damage
+--------
++1 to Level of Gems in this item
+45% increased Spell Damage
+46% increased Critical Strike Chance for Spells
++12 to maximum Mana
++2 Mana Gained on Kill
+#################### 29
+Rarity: Rare
+Bramble Guardian
+Siege Helmet
+--------
+Armour: 323 (augmented)
+--------
+Requirements:
+Level: 48
+Str: 101
+--------
+Sockets: R 
+--------
+Itemlevel: 67
+--------
++32 to Intelligence
++232 to Accuracy Rating
+57% increased Armour
+2.4 Life Regenerated per second

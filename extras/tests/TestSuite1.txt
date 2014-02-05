@@ -1,0 +1,537 @@
+#################### 1
+Rarity: Rare
+Sol March
+Wyrmscale Boots
+--------
+Armour: 148 (augmented)
+Evasion Rating: 148 (augmented)
+--------
+Requirements:
+Level: 51
+Str: 48
+Dex: 48
+--------
+Sockets: G G G-G 
+--------
+Itemlevel: 54
+--------
++19 to Dexterity
+85% increased Armour and Evasion
++80 to maximum Life
++30% to Lightning Resistance
+8% increased Block and Stun Recovery
+#################### 2
+Rarity: Rare
+Behemoth Salvation
+Golden Mask
+--------
+Evasion Rating: 115 (augmented)
+Energy Shield: 39 (augmented)
+--------
+Requirements:
+Level: 35
+Dex: 40
+Int: 40
+--------
+Sockets: G-G G 
+--------
+Itemlevel: 54
+--------
++159 to Accuracy Rating
+10% increased Accuracy Rating
+38% increased Evasion and Energy Shield
++71 to maximum Life
++3 to maximum Energy Shield
++12% to Cold Resistance
+13% increased Block and Stun Recovery
+15% increased Light Radius
+#################### 3
+Rarity: Rare
+Horror Song
+War Sword
+--------
+One Handed Sword
+Physical Damage: 19-37 (augmented)
+Elemental Damage: 11-26 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 20
+Str: 41
+Dex: 35
+--------
+Sockets: R-R R 
+--------
+Itemlevel: 26
+--------
+18% increased Accuracy Rating
+--------
+26% increased Physical Damage
++20 to Dexterity
+Adds 11-26 Fire Damage
++110 to Accuracy Rating
+10% increased Light Radius
+#################### 4
+Rarity: Rare
+Vengeance Scalpel
+Battle Sword
+--------
+One Handed Sword
+Physical Damage: 56-105 (augmented)
+Elemental Damage: 28-44 (augmented), 1-31 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 44
+Str: 83
+Dex: 70
+--------
+Sockets: G-R 
+--------
+Itemlevel: 54
+--------
+18% increased Accuracy Rating
+--------
+94% increased Physical Damage
++27 to Strength
+Adds 28-44 Fire Damage
+Adds 1-31 Lightning Damage
++4 Life gained for each enemy hit by your Attacks
++36 to Accuracy Rating
+10% increased Light Radius
+#################### 5
+Rarity: Rare
+Pain Scratch
+Royal Skean
+--------
+Dagger
+Physical Damage: 14-57
+Elemental Damage: 1-9 (augmented)
+Critical Strike Chance: 6.8%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 50
+Dex: 71
+Int: 102
+--------
+Sockets: G 
+--------
+Itemlevel: 54
+--------
+40% increased Global Critical Strike Chance
+--------
+19% increased Spell Damage
+Adds 1-9 Lightning Damage
++43 to maximum Mana
+49% increased Mana Regeneration Rate
++231 to Accuracy Rating
+#################### 6
+Rarity: Rare
+Dread Spell
+Serpent Wand
+--------
+Wand
+Physical Damage: 14-41
+Elemental Damage: 23-44 (augmented)
+Critical Strike Chance: 8%
+Attacks per Second: 1.30
+--------
+Requirements:
+Level: 49
+Int: 158
+--------
+Sockets: B 
+--------
+Itemlevel: 58
+--------
+14% increased Spell Damage
+--------
+6% increased Spell Damage
+3% increased Fire Damage
+Adds 23-44 Fire Damage
++8 to maximum Mana
+21% increased Projectile Speed
+#################### 7
+Rarity: Rare
+Vortex Ward
+Thorium Spirit Shield
+--------
+Quality: +7% (augmented)
+Chance to Block: 30%
+Energy Shield: 96 (augmented)
+--------
+Requirements:
+Level: 53
+Int: 128
+--------
+Sockets: B 
+--------
+Itemlevel: 54
+--------
+34% increased Energy Shield
++11% to all Elemental Resistances
++13% to Lightning Resistance
+28% increased Block and Stun Recovery
+#################### 8
+Rarity: Rare
+Horror Shelter
+Necromancer Circlet
+--------
+Energy Shield: 68
+--------
+Requirements:
+Level: 54
+Int: 112
+--------
+Sockets: B-B 
+--------
+Itemlevel: 54
+--------
++22 to Intelligence
++17 to Accuracy Rating
+19% increased Rarity of Items found
+Reflects 1 Physical Damage to Melee Attackers
+#################### 9
+Rarity: Rare
+Rift Halo
+Necromancer Circlet
+--------
+Energy Shield: 84 (augmented)
+--------
+Requirements:
+Level: 54
+Int: 112
+--------
+Sockets: B B 
+--------
+Itemlevel: 54
+--------
+4.6 Life Regenerated per second
++16 to maximum Energy Shield
+31% increased Rarity of Items found
++20% to Cold Resistance
+#################### 10
+Rarity: Rare
+Corruption Song
+Jasper Chopper
+--------
+Two Handed Axe
+Physical Damage: 66-103
+Elemental Damage: 25-44 (augmented), 4-75 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.00
+--------
+Requirements:
+Level: 46
+Str: 100
+Dex: 29
+--------
+Sockets: G-G 
+--------
+Itemlevel: 58
+--------
++9 to Strength
+Adds 25-44 Cold Damage
+Adds 4-75 Lightning Damage
+14% reduced Enemy Stun Threshold
++47 to Accuracy Rating
+#################### 11
+Rarity: Rare
+Skull Mangler
+Karui Chopper
+--------
+Two Handed Axe
+Physical Damage: 97-152
+Elemental Damage: 26-40 (augmented), 1-14 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.00
+--------
+Requirements:
+Level: 58
+Str: 151 (unmet)
+Dex: 43
+--------
+Sockets: G G 
+--------
+Itemlevel: 63
+--------
+Adds 26-40 Cold Damage
+Adds 1-14 Lightning Damage
+9% reduced Enemy Stun Threshold
++311 to Accuracy Rating
+#################### 12
+Rarity: Rare
+Vortex Edge
+Ceremonial Axe
+--------
+One Handed Axe
+Quality: +19% (augmented)
+Physical Damage: 49-90 (augmented)
+Elemental Damage: 11-20 (augmented), 6-11 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 51
+Str: 134 (unmet)
+Dex: 39
+--------
+Sockets: G 
+--------
+Itemlevel: 58
+--------
++15 to Dexterity
+Adds 11-20 Fire Damage
+Adds 6-11 Cold Damage
++5 Life gained for each enemy hit by your Attacks
+#################### 13
+Rarity: Rare
+Vengeance Bastion
+Corrugated Buckler
+--------
+Chance to Block: 34% (augmented)
+Evasion Rating: 164
+--------
+Requirements:
+Level: 46
+Dex: 112
+--------
+Sockets: G 
+--------
+Itemlevel: 57
+--------
++71 to maximum Life
++15% to Lightning Resistance
+Reflects 8 Physical Damage to Melee Attackers
+2% additional Block Chance
+#################### 14
+Rarity: Rare
+Blight Keep
+Lacquered Helmet
+--------
+Armour: 150 (augmented)
+Evasion Rating: 158 (augmented)
+--------
+Requirements:
+Level: 51
+Str: 57
+Dex: 57
+--------
+Sockets: R 
+--------
+Itemlevel: 54
+--------
++14 to Strength
++20 to Dexterity
++15 to Accuracy Rating
++6 to Evasion Rating
+25% increased Armour and Evasion
++61 to maximum Life
+11% increased Block and Stun Recovery
+5% increased Light Radius
+#################### 15
+Rarity: Rare
+Hypnotic Splitter
+Wrist Chopper
+--------
+One Handed Axe
+Quality: +5% (augmented)
+Physical Damage: 27-81 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.16 (augmented)
+--------
+Requirements:
+Level: 42
+Str: 112
+Dex: 32
+--------
+Sockets: R R 
+--------
+Itemlevel: 53
+--------
+Adds 1-3 Physical Damage
+5% increased Attack Speed
+1% of Physical Attack Damage Leeched as Mana
++247 to Accuracy Rating
+#################### 16
+Rarity: Rare
+Sol Blast
+Flanged Mace
+--------
+One Handed Mace
+Physical Damage: 46-76 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 47
+Str: 152 (unmet)
+--------
+Sockets: R 
+--------
+Itemlevel: 53
+--------
+20% increased Stun Duration on enemies
+--------
+38% increased Physical Damage
++20% to Lightning Resistance
++262 to Accuracy Rating
+10% increased Light Radius
+#################### 17
+Rarity: Rare
+Oblivion Roar
+Karui Sceptre
+--------
+One Handed Mace
+Physical Damage: 33-49
+Elemental Damage: 28-58 (augmented)
+Critical Strike Chance: 6.5%
+Attacks per Second: 1.45
+--------
+Requirements:
+Level: 56
+Str: 96
+Int: 96
+--------
+Sockets: B 
+--------
+Itemlevel: 63
+--------
+10% increased Elemental Damage
+--------
++2 to Level of Lightning Gems in this item
+Adds 28-58 Fire Damage
+5% increased Cold Damage
++33 to Accuracy Rating
+#################### 18
+Rarity: Rare
+Torment Breaker
+Plated Maul
+--------
+Two Handed Mace
+Physical Damage: 139-208 (augmented)
+Elemental Damage: 14-23 (augmented)
+Critical Strike Chance: 5.6% (augmented)
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 51
+Str: 164 (unmet)
+--------
+Sockets: R-R-R 
+--------
+Itemlevel: 63
+--------
+20% increased Stun Duration on enemies
+--------
+93% increased Physical Damage
+Adds 14-23 Cold Damage
+12% increased Critical Strike Chance
++28% to Fire Resistance
++33 to Accuracy Rating
+#################### 19
+Rarity: Rare
+Dire Song
+Decimation Bow
+--------
+Bow
+Physical Damage: 48-128 (augmented)
+Elemental Damage: 2-4 (augmented), 10-18 (augmented)
+Critical Strike Chance: 6.15% (augmented)
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 53
+Dex: 170
+--------
+Sockets: B-G G 
+--------
+Itemlevel: 53
+--------
+60% increased Physical Damage
+Adds 2-4 Fire Damage
+Adds 10-18 Cold Damage
+23% increased Critical Strike Chance
+31% increased Projectile Speed
++76 to Accuracy Rating
+#################### 20
+Rarity: Rare
+Agony Crusher
+Tyrant's Sekhem
+--------
+One Handed Mace
+Physical Damage: 44-85 (augmented)
+Critical Strike Chance: 6.5%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 58
+Str: 99
+Int: 99
+--------
+Sockets: R B 
+--------
+Itemlevel: 58
+--------
+10% increased Elemental Damage
+--------
+29% increased Spell Damage
+Adds 7-16 Physical Damage
++75 to maximum Mana
++12% to Fire Resistance
++6 Mana Gained on Kill
+#################### 21
+Rarity: Rare
+Brood Bite
+Great White Claw
+--------
+Claw
+Physical Damage: 39-99 (augmented)
+Elemental Damage: 15-26 (augmented)
+Critical Strike Chance: 8.43% (augmented)
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 58
+Dex: 81
+Int: 117
+--------
+Sockets: R B 
+--------
+Itemlevel: 58
+--------
+3% of Physical Attack Damage Leeched as Life
+--------
+Adds 6-13 Physical Damage
+Adds 15-26 Fire Damage
+24% increased Critical Strike Chance
++185 to Accuracy Rating
+#################### 22
+Rarity: Rare
+Wrath Star
+Dream Mace
+--------
+One Handed Mace
+Quality: +11% (augmented)
+Physical Damage: 29-59 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.30
+--------
+Requirements:
+Level: 40
+Str: 107
+--------
+Sockets: R-R R 
+--------
+Itemlevel: 54
+--------
+20% increased Stun Duration on enemies
+--------
+41% increased Physical Damage
++18 to Strength
++284 to Accuracy Rating
+6% increased Accuracy Rating
+15% increased Light Radius

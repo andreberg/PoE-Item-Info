@@ -1,0 +1,50 @@
+RegExr Regular Expressions For Transforming Data
+------------------------------------------------
+
+Uniques From PoE Wiki
+
+Ctrl+Copy Table Fields into new text file
+
+Use RegExr (free AIR app) to do regex based search & replace
+with the formulae below.
+
+S = Search
+R = Replace
+O = Options
+
+Options are just "global" unless otherwise noted.
+
+1) Replace xmlchar'ed minus signus with the real ASCII deal
+
+S: [––−]
+R: -
+
+2) Adds #-# ... Damage:
+
+For Weapons where double ranges can occurr:
+
+S: (Adds )?\((\d+-\d+) to (\d+-\d+)\) (\w+) Damage
+R: $2,$3:$1$4 Damage
+
+S: Adds (\d+-\d+) (\w+) Damage
+R: $1:Adds $2 Damage
+
+3) Numbers at beginning of lines
+
+S: ^([(+]\(?([0-9]+ to [0-9]+)\)[ %]? ?|[+-]?([\d\.]+)%? )
+R: $2$3:
+O: multiline, global
+
+4) Remaining # to # lines
+
+Double range version first (if needed):
+S: \(?([\d\.]+[\-][\d\.]+) to ([\d\.]+[\-][\d\.]+)\)?
+R: $1,$2
+
+S: \(?([\d\.]+) to ([\d\.]+)\)?
+R: $1-$2
+
+5) Replace #.0 floating point number with their int equivalent #
+
+S: (\d+)\.0
+R: $1

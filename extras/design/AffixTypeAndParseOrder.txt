@@ -1,0 +1,50 @@
+IDEA: re-order affix lines such that complex affixes (see below) 
+will be parsed last (after simple affixes have been dealt with).
+
+Save original order for final enduser display (see ReorderLines.ahk 
+proof-of-concept script on how to accomplish this).
+
+This gives the benefit that NumPrefixes and NumSuffixes can be used
+to draw additional conclusions when trying to reverse-engineer difficult
+composite affix combos. I have seen at most 2 complex affixes on an item.
+In the overwhelming majority of cases, if there was a complex affix
+at all there was exactly one. Because of the 3 Prefixes + 3 Suffixes max
+rule, this makes guesstimation at the point of complex evaluation more
+desidable.
+
+
+Simple Affixes
+--------------
+
+-any affix that is not a complex affix-
+
+
+Complex Affixes
+---------------
+
+(in order of difficulty to reverse-engineer, top: most difficult)
+
+Stun Recovery
+
+	- Armor and Stun Recovery
+	- Energy Shield and Stun Recovery
+	- Evasion and Stun Recovery
+	- Hybrid Defences and Stun Recovery
+
+Accuracy
+
+	- Damage Scaling and Accuracy (Comp. Prefix)
+	- Accuracy (Suffix)
+
+Spell Damage
+	- (see Max Mana)
+
+Max Mana
+	- Max Mana (Prefix)
+	- One Handed Spell Damage and Mana (Comp. Prefix)
+	- Staff Spell Damage and Mana (Comp. Prefix)
+
+Item Acquisition
+
+	- IIR (Prefix)
+	- IIQ/IIR (Suffix)
