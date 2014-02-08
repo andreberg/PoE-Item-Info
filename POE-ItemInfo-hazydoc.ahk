@@ -104,11 +104,6 @@
 ; Note: don't set this to true for normal every day use...
 ; This is just for fellow developers.
 RunTests := False
-If (Not RunTests)
-{
-    ; do nothing if Path of Exile isn't the foremost window
-    #IfWinActive, Path of Exile ahk_class Direct3DWindowClass
-}
 
 #SingleInstance force
 #NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
@@ -179,6 +174,8 @@ AffixDetailEllipsis := "…"      ; If the MirrorLineFieldWidth is set to a value 
                                 ; Example: assume the affix line to be mirrored is '+#% increased Spell Damage'.
                                 ; If the MirrorLineFieldWidth is set to 18, this field would be shown as '+#% increased Spel…'
 
+PutResultsOnClipboard = 0       ; Put result text on clipboard (overwriting the textual representation the game put there to begin with)
+
 ; Pixels mouse must move to auto-dismiss tooltip
 MouseMoveThreshold := 40
 
@@ -238,7 +235,7 @@ ParseDamage(String, DmgType, ByRef DmgLo, ByRef DmgHi)
     IfInString, String, %DmgType% Damage 
     {
         IfInString, String, Converted to or IfInString, String, taken as
-            Return
+            return
         IfNotInString, String, increased 
         {
             StringSplit, Arr, String, %A_Space%
@@ -272,7 +269,7 @@ CheckBaseLevel(ItemTypeName)
             Break
         }
     }
-    Return BaseLevel
+    return BaseLevel
 }
 
 CheckRarityLevel(RarityString)
@@ -538,7 +535,9 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
         }
     }
 
-    ; TODO: need a way to determine sub type for armour
+    ; TODO: need a reliable way to determine sub type for armour
+    ; right now it's just determine anything else first if it's
+    ; not that, it's armour.
     BaseType = Armour
     SubType = Armour
 }
@@ -665,12 +664,8 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="")
 LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="")
 {
     Global MaxLevel
-    Global ShowAffixLevel
-    Global ShowAffixBracket
-    Global ShowAffixMaxPossible
-    Global CompactDoubleRanges
     Global MaxSpanStartingFromFirst
-    Global ValueRangeFieldWidth
+    Global CompactDoubleRanges
     MaxLevel := 0
     AffixLevel := 0
     AffixDataIndex := 0
@@ -832,7 +827,19 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="")
 ;        msgbox, Filename: %Filename%`n ValueLo: %ValueLo%`, ValueHi: %ValueHi%`n LoVal: %LoVal%`, HiVal: %HiVal%
     }
    BracketLevel := AffixLevel
-   If (ShowAffixBracket)
+   FinalRange := AssembleValueRangeFields(BracketRange, BracketLevel, MaxRange, MaxLevel)
+;    msgbox, FinalRange: %FinalRange%
+    return FinalRange
+}
+
+AssembleValueRangeFields(BracketRange, BracketLevel, MaxRange="", MaxLevel=0)
+{
+    Global ShowAffixLevel
+    Global ShowAffixBracket
+    Global ShowAffixMaxPossible
+    Global ValueRangeFieldWidth
+    Global AffixDetailDelimiter
+    If (ShowAffixBracket)
     {
         FinalRange := BracketRange
         If (ValueRangeFieldWidth > 0)
@@ -841,15 +848,14 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="")
         }
         If (ShowAffixLevel)
         {
-            FinalRange := FinalRange . " " . "(" . AffixLevel . ")" . ", "
+            FinalRange := FinalRange . " " . "(" . BracketLevel . ")" . ", "
         }
         Else
         {
-            Global AffixDetailDelimiter
             FinalRange := FinalRange . AffixDetailDelimiter
         }
     }
-    If (ShowAffixMaxPossible)
+    If (MaxRange and ShowAffixMaxPossible)
     {
 
         If (ValueRangeFieldWidth > 0)
@@ -862,13 +868,11 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="")
             FinalRange := FinalRange . " " . "(" . MaxLevel . ")"
         }
     }
-    ;msgbox, FinalRange: %FinalRange%
     return FinalRange
 }
 
 ParseRarity(ItemData_NamePlate)
 {
-;    Global RarityParts0
     Loop, Parse, ItemData_NamePlate, `n, `r
     {
         IfInString, A_LoopField, Rarity:
@@ -1041,11 +1045,12 @@ StrTrimSpace(String)
 StrPad(String, Length, Side="right", PadChar=" ")
 {
 ;    Result := String
-    Len := StrLen(String)
+    StringLen, Len, String
     AddLen := Length-Len
     If (AddLen <= 0)
     {
-        Return String
+;        msgbox, String: %String%`, Length: %Length%`, Len: %Len%`, AddLen: %AddLen%
+        return String
     }
     Pad := StrMult(PadChar, AddLen)
     If (Side == "right")
@@ -1107,15 +1112,7 @@ AssembleAffixDetails()
 
         Delim := AffixDetailDelimiter
         Ellipsis := AffixDetailEllipsis
-        IsImplicitMod := False
 
-        IfInString, ValueRange, @
-        {
-            IsImplicitMod := True
-            StringReplace, ValueRange, ValueRange, @
-            ValueRange := " " . ValueRange
-;            msgbox, AffixLine: %AffixLine%`, ValueRange: %ValueRange%`, AffixType: %AffixType%
-        }
         If (ValueRangeFieldWidth > 0)
         {
             ValueRange := StrPad(ValueRange, ValueRangeFieldWidth, "left")
@@ -1132,18 +1129,7 @@ AssembleAffixDetails()
             }
             ProcessedLine := AffixLine . Delim
         }
-        If (CompactAffixTypes > 0)
-        {
-            AffixType := RegExReplace(AffixType, "Comp\. ", "C")
-            AffixType := RegExReplace(AffixType, "Suffix", "S")
-            AffixType := RegExReplace(AffixType, "Prefix", "P")
-        }
         ProcessedLine := ProcessedLine . ValueRange . Delim . AffixType
-        If (IsImplicitMod)
-        {
-            ProcessedLine := ProcessedLine . "`n" . "--------"
-            IsImplicitMod := False
-        }
         Result := Result . "`n" . ProcessedLine
     }
 ;    msgbox, Result: %Result%
@@ -1154,7 +1140,7 @@ AssembleAffixDetails()
 ; a single value and not a range.
 AdjustValueForQuality(Value, ItemQuality, Direction="up")
 {
-    If (ItemQuality == 0)
+    If (ItemQuality < 1)
         return Value
     Divisor := ItemQuality / 100
     If (Direction == "up")
@@ -1334,13 +1320,49 @@ IsValidBracket(Bracket)
     return True
 }
 
-GetAffixBalance(ItemDataChunk, ByRef CompPrefixes, ByRef CompSuffixes)
+; Note that while ExtractCompAffixBalance() can be run on processed data
+; that has compact affix type declarations (or not) for this function to
+; work properly, make sure to run it on data that has compact affix types
+; turned off. The reason being that it is hard to count prefixes by there
+; being a "P" in a line that also has mirrored affix descriptions.
+ExtractTotalAffixBalance(ProcessedData, ByRef Prefixes, ByRef Suffixes, ByRef CompPrefixes, ByRef CompSuffixes)
 {
-    Global
-    Loop, %NumAffixLines%
+;    msgbox, ProcessedData: %ProcessedData%
+    Loop, Parse, ProcessedData, `n, `r
     {
-        Local AffixLine
-        AffixLine := AffixLines%A_Index%
+        AffixLine := A_LoopField
+        IfInString, AffixLine, Comp. Prefix
+        {
+            CompPrefixes += 1
+        }
+        IfInString, AffixLine, Comp. Suffix
+        {
+            CompSuffixes += 1
+        }
+    }
+    ProcessedData := RegExReplace(ProcessedData, "Comp\. Prefix", "")
+    ProcessedData := RegExReplace(ProcessedData, "Comp\. Suffix", "")
+;    msgbox, ProcessedData: %ProcessedData%
+    Loop, Parse, ProcessedData, `n, `r
+    {
+        AffixLine := A_LoopField
+        IfInString, AffixLine, Prefix
+        {
+            Prefixes += 1
+;            ProcessedData := RegExReplace(ProcessedData, "Prefix", "")
+        }
+        IfInString, AffixLine, Suffix
+        {
+            Suffixes += 1
+;            ProcessedData := RegExReplace(ProcessedData, "Suffix", "")
+        }
+    }
+}
+ExtractCompositeAffixBalance(ProcessedData, ByRef CompPrefixes, ByRef CompSuffixes)
+{
+    Loop, Parse, ProcessedData, `n, `r
+    {
+        AffixLine := A_LoopField
         IfInString, AffixLine, Comp. Prefix
         {
             CompPrefixes += 1
@@ -1679,32 +1701,50 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
         IfInString, A_LoopField, Dispels
         {
             ; covers Shock, Burning and Frozen and Chilled
-            NumSuffixes += 1
+            If (NumSuffixes < 1)
+            {
+                NumSuffixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Removes Bleeding
         {
-            NumSuffixes += 1
+            If (NumSuffixes < 1)
+            {
+                NumSuffixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Removes Curses on use
         {
-            NumSuffixes += 1
+            If (NumSuffixes < 1)
+            {
+                NumSuffixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, during flask effect
         {
-            NumSuffixes += 1
+            If (NumSuffixes < 1)
+            {
+                NumSuffixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Adds Knockback
         {
-            NumSuffixes += 1
+            If (NumSuffixes < 1)
+            {
+                NumSuffixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Life Recovery to Minions
         {
-            NumSuffixes += 1
+            If (NumSuffixes < 1)
+            {
+                NumSuffixes += 1
+            }
             Continue
         }
         ; END Flask Suffixes
@@ -1825,13 +1865,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                 AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
                 Continue
             }
-;            IfInString, A_LoopField, Chaos
-;            {
-;                NumSuffixes += 1
-;                ValueRange := LookupAffixData("data\ChaosResist.txt", ItemLevel, CurrValue)
-;                AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange), A_Index)
-;                Continue
-;            }
         }
         IfInString, A_LoopField, increased Stun Duration on enemies
         {
@@ -1886,7 +1919,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                 {
                     ; This means that we are actually dealing with a Prefix + Comp. Prefix.
                     ; To get the part for the hybrid defence that is contributed by the straight prefix, 
-                    ; lookupthe bracket level for the B&S Recovery line and then work out the partials
+                    ; lookup the bracket level for the B&S Recovery line and then work out the partials
                     ; for the hybrid stat from the bracket level of B&S. 
                     ; Example: 
                     ;   87% increased Armour and Evasion
@@ -1898,9 +1931,10 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                     ; 3) subtract 6-14 from 87 to get the rest contributed by the hybrid stat as pure prefix.
                     ; Currently when subtracting a range from a single value we just use the range's 
                     ; max as single value. This may need changing depending on circumstance but it
-                    ; works for now.
-                    ; 87-14 = 73
-                    ; 4) lookup affix data for increased Armour and Evasion with value of 73
+                    ; works for now. EDIT: no longer the case, now uses RangeMid(...). #'s below changed to 
+                    ; reflect that...
+                    ; 87-10 = 77
+                    ; 4) lookup affix data for increased Armour and Evasion with value of 77
                     ; We now know, this is a Comp. Prefix+Prefix
                     BSRecBracketLevel := 0
                     BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, BSRecValue, BSRecBracketLevel)
@@ -1925,11 +1959,13 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         {
                             AEBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue)
                         }
-
-                        ValueRange := AddRange(AEBSBracket, AEBracket)
-                        ValueRange := PadValueRange(ValueRange)
-                        AffixType := "Comp. Prefix+Prefix"
-                        NumPrefixes += 1
+                        If (Not WithinBounds(AEBracket, CurrValue))
+                        {
+                            ValueRange := AddRange(AEBSBracket, AEBracket)
+                            ValueRange := PadValueRange(ValueRange)
+                            AffixType := "Comp. Prefix+Prefix"
+                            NumPrefixes += 1
+                        }
                     }
 
                     If (WithinBounds(BSRecPartial, BSRecValue))
@@ -1938,12 +1974,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         BSRecPartial =
                     }
                 }
-;                Else
-;                {
-;                    AffixType := "Comp. Prefix or Prefix"
-;                    HasIncrArmourAndEvasion := 0
-;                    BSRecPartial =
-;                }
             }
             NumPrefixes += 1
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
@@ -1984,11 +2014,13 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         {
                             AESBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue)
                         }
-
-                        ValueRange := AddRange(AESBSBracket, AESBracket)
-                        ValueRange := PadValueRange(ValueRange)
-                        AffixType := "Comp. Prefix+Prefix"
-                        NumPrefixes += 1
+                        If (Not WithinBounds(AESBracket, CurrValue))
+                        {
+                            ValueRange := AddRange(AESBSBracket, AESBracket)
+                            ValueRange := PadValueRange(ValueRange)
+                            AffixType := "Comp. Prefix+Prefix"
+                            NumPrefixes += 1
+                        }
                     }
                     If (WithinBounds(BSRecPartial, BSRecValue))
                     {
@@ -1996,12 +2028,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         BSRecPartial =
                     }
                 }
-;                Else
-;                {
-;                    AffixType := "Comp. Prefix or Prefix"
-;                    HasIncrArmourAndES := 0
-;                    BSRecPartial =
-;                }
             }
             NumPrefixes += 1
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
@@ -2042,11 +2068,13 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         {
                             EESBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue)
                         }
-
-                        ValueRange := AddRange(EESBSBracket, EESBracket)
-                        ValueRange := PadValueRange(ValueRange)
-                        AffixType := "Comp. Prefix+Prefix"
-                        NumPrefixes += 1
+                        If (Not WithinBounds(EESBracket, CurrValue))
+                        {
+                            ValueRange := AddRange(EESBSBracket, EESBracket)
+                            ValueRange := PadValueRange(ValueRange)
+                            AffixType := "Comp. Prefix+Prefix"
+                            NumPrefixes += 1
+                        }
                     }
 
                     If (WithinBounds(BSRecPartial, BSRecValue))
@@ -2055,12 +2083,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         BSRecPartial =
                     }
                 }
-;                Else
-;                {
-;                    AffixType := "Comp. Prefix or Prefix"
-;                    HasIncrEvasionAndES := 0
-;                    BSRecPartial =
-;                }
             }
             NumPrefixes += 1
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
@@ -2104,16 +2126,17 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         IARest := CurrValue - RangeMid(IABSBracket)
                         IABracket := LookupAffixBracket(PrefixPath, ItemLevel, IARest)
     ;                    msgbox, IABracket: %IABracket%`, IABSBracket: %IABSBracket%`, IARest: %IARest%
-
                         If (Not IsValidBracket(IABracket))
                         {
                             IABracket := LookupAffixBracket(PrefixPath, ItemLevel, CurrValue)
                         }
-
-                        ValueRange := AddRange(IABSBracket, IABracket)
-                        ValueRange := PadValueRange(ValueRange)
-                        AffixType := "Comp. Prefix+Prefix"
-                        NumPrefixes += 1
+                        If (Not WithinBounds(IABracket, CurrValue))
+                        {
+                            ValueRange := AddRange(IABSBracket, IABracket)
+                            ValueRange := PadValueRange(ValueRange)
+                            AffixType := "Comp. Prefix+Prefix"
+                            NumPrefixes += 1
+                        }
                     }
 
                     If (WithinBounds(BSRecPartial, BSRecValue))
@@ -2122,12 +2145,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         BSRecPartial =
                     }
                 }
-;                Else
-;                {
-;                    AffixType := "Comp. Prefix or Prefix"
-;                    HasIncrArmour := 0
-;                    BSRecPartial =
-;                }
             }
             NumPrefixes += 1
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
@@ -2188,11 +2205,14 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         {
                             IEBracket := LookupAffixBracket(PrefixPath, ItemLevel, CurrValue)
                         }
-                        
-                        ValueRange := AddRange(IEBSBracket, IEBracket)
-                        ValueRange := PadValueRange(ValueRange)
-                        AffixType := "Comp. Prefix+Prefix"
-                        NumPrefixes += 1
+                        If (Not WithinBounds(IEBracket, CurrValue))
+                        {
+;                            msgbox, IEBracket: %IEBracket%, IEBSBracket: %IEBSBracket%
+                            ValueRange := AddRange(IEBSBracket, IEBracket)
+                            ValueRange := PadValueRange(ValueRange)
+                            AffixType := "Comp. Prefix+Prefix"
+                            NumPrefixes += 1
+                        }
                     }
 
                     If (WithinBounds(BSRecPartial, BSRecValue))
@@ -2201,12 +2221,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         BSRecPartial =
                     }
                 }
-;                Else
-;                {
-;                    AffixType := "Comp. Prefix or Prefix"
-;                    HasIncrEvasion := 0
-;                    BSRecPartial =
-;                }
             }
             NumPrefixes += 1
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
@@ -2255,10 +2269,13 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         IESRest := CurrValue - RangeMid(IESBSBracket)
                         IESBracket := LookupAffixBracket(PrefixPath, ItemLevel, IESRest)
 
-                        ValueRange := AddRange(IESBSBracket, IESBracket)
-                        ValueRange := PadValueRange(ValueRange)
-                        AffixType := "Comp. Prefix+Prefix"
-                        NumPrefixes += 1
+                        If (Not WithinBounds(IESBracket, CurrValue))
+                        {
+                            ValueRange := AddRange(IESBSBracket, IESBracket)
+                            ValueRange := PadValueRange(ValueRange)
+                            AffixType := "Comp. Prefix+Prefix"
+                            NumPrefixes += 1
+                        }
                     }
 
                     If (WithinBounds(BSRecPartial, BSRecValue))
@@ -2267,12 +2284,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         BSRecPartial =
                     }
                 }
-;                Else
-;                {
-;                    AffixType := "Comp. Prefix or Prefix"
-;                    HasIncrEnergyShield := 0
-;                    BSRecPartial =
-;                }
             }
             NumPrefixes += 1
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
@@ -2446,7 +2457,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
         IfInString, A_LoopField, Physical Damage to Melee Attackers
         {
             NumPrefixes += 1
-            ValueRange := LookupAffixData("data\PhysDamageReturn.txt", ItemLevel, CurrValue)
+            ValueRange := LookupAffixData("data\PhysDamagereturn.txt", ItemLevel, CurrValue)
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Prefix", ValueRange), A_Index)
             Continue
         }
@@ -2534,42 +2545,66 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
         ; Flask prefixes
         IfInString, A_LoopField, Recovery Speed
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Amount Recovered
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Charges
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Instant
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Charge when
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Recovery when
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Mana Recovered
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
         IfInString, A_LoopField, Life Recovered
         {
-            NumPrefixes += 1
+            If (NumPrefixes < 1) 
+            {
+                NumPrefixes += 1
+            }
             Continue
         }
     }
@@ -2811,7 +2846,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                        }
                     }
                 }
-
                 ; look up IPD bracket, and use its bracket level to cross reference the corresponding
                 ; AR bracket. If both check out (are within bounds of their bracket level) case is
                 ; simple: Comp. Prefix (IPD / AR)
@@ -2823,16 +2857,13 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
 
                 If (IsValidBracket(IPDBracket) and IsValidBracket(ARBracket))
                 {
-;                    If (WithinBounds(ARBracket, ARValue))
-;                    {
-;                        Goto, CompIPDARPrefix
-;                    }
                     Goto, CompIPDARPrefix
                 }
                 If (Not IsValidBracket(IPDBracket))
                 {
                     IPDBracket := LookupAffixBracket(IPDPath, ItemLevel, CurrValue)
-                    If (IsValidBracket(IPDBracket) and NumPrefixes < 3)
+                    ARBracket := LookupAffixBracket(ARPath, ItemLevel, ARValue)  ; also lookup AR as if it were a simple suffix
+                    If (IsValidBracket(IPDBracket) and IsValidBracket(ARBracket) and NumPrefixes < 3)
                     {
                         HasIncrPhysDmg := 0
                         Goto, SimpleIPDPrefix
@@ -3057,7 +3088,12 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         BSRecSuffixBracket := LookupAffixBracket(BSRecSuffixPath, ItemLevel, CurrValue)
                         If (IsValidBracket(BSRecSuffixBracket))
                         {
+                            AffixType := "Suffix"
                             ValueRange := LookupAffixData(BSRecSuffixPath, ItemLevel, CurrValue)
+                            If (NumSuffixes < 3)
+                            {
+                                NumSuffixes += 1
+                            }
                         }
                         Else
                         {
@@ -3096,6 +3132,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
 
             ValueRangeAR := "0-0"
             AffixType := ""
+            IPDAffixType := GetAffixTypeFromProcessedLine("increased Physical Damage")
             If (HasIncrLightRadius and Not HasIncrAccuracyRating) 
             {
                 ; "of Shining" and "of Light"
@@ -3123,10 +3160,9 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                 }
                 Else
                 {
+                    AffixType := "Comp. Suffix+Suffix"
                     If (HasIncrPhysDmg)
                     {
-                        AffixType := "Comp. Suffix+Suffix"
-                        IPDAffixType := GetAffixTypeFromProcessedLine("increased Physical Damage")
 ;                        msgbox, IPDAffixType: %IPDAffixType%
                         IfInString, IPDAffixType, Comp. Prefix
                         {
@@ -3176,7 +3212,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         ARBracket := LookupAffixBracket("data\AccuracyRating_Local.txt", ItemLevel, ARRest)
                     }
 
-;                    msgbox, ItemLevel: %ItemLevel%`, ARRest: %ARRest%`, ARBracket: %ARBracket%`, ARPartial: %ARPartial%
+                    ; msgbox, ItemLevel: %ItemLevel%`, ARRest: %ARRest%`, ARBracket: %ARBracket%`, ARPartial: %ARPartial%
                     
                     If (IsValidBracket(ARBracket))
                     {
@@ -3209,7 +3245,14 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                 ValueRangeAR := LookupAffixBracket("data\AccuracyRating_Global.txt", ItemLevel, ActualValue)
                 If (IsValidBracket(ValueRangeAR))
                 {
-                    AffixType := "Comp. Prefix"
+                    IfInString, IPDAffixType, Comp. Prefix
+                    {
+                        AffixType := "Comp. Prefix"
+                    }
+                    Else
+                    {
+                        AffixType := "Prefix"
+                    }
                     NumPrefixes += 1
                     Goto, FinalizeAR
                 }
@@ -3380,20 +3423,86 @@ ResetAffixDetailVars()
     }
 }
 
+IsEmptyString(String)
+{
+    If (StrLen(String) == 0)
+    {
+        return True
+    }
+    Else
+    {
+        String := RegExReplace(String, "[\r\n ]", "")
+        If (StrLen(String) < 1)
+        {
+            return True
+        }
+    }
+    return False
+}
+
+PreProcessContents(CBContents)
+{
+    ; place fixes for data inconsistencies here
+
+    ; I have not determined the reason for this, but a Heartbreaker - a unique - linked in chat 
+    ; showed the following line below the Rarity: ... bit:
+    ; You cannot use this item. Its stats will be ignored. Please remove it.`n--------
+    ; This of course throws off subsequent parsing attempts so it is best to fix it beforehand.
+    Needle := "You cannot use this item. Its stats will be ignored. Please remove it.`r`n--------`r`n"
+    StringReplace, CBContents, CBContents, %Needle%, 
+
+    return CBContents
+}
+
+PostProcessData(ParsedData)
+{
+    Global CompactAffixTypes
+    If (CompactAffixTypes > 0)
+    {
+        StringReplace, TempResult, ParsedData, --------, ``, All  
+        StringSplit, ParsedDataParts, TempResult, ``
+        
+        NameAndDPSPart := ParsedDataParts1
+        SecondPart := ParsedDataParts2 ; total affix statistics for rare items or implicit mods for unique items
+        ThirdPart := ParsedDataParts3 ; affix composition for rare and unique items
+
+        ThirdPart := RegExReplace(ThirdPart, "Comp\. ", "C")
+        ThirdPart := RegExReplace(ThirdPart, "Suffix",  "S")
+        ThirdPart := RegExReplace(ThirdPart, "Prefix",  "P")
+
+        ParsedData := NameAndDPSPart 
+        If (Not IsEmptyString(SecondPart)) ; two because of possible newline control chars
+        {
+            ParsedData := ParsedData . "--------" . SecondPart 
+        }
+        If (Not IsEmptyString(ThirdPart))
+        {
+            ParsedData := ParsedData . "--------" . ThirdPart
+        }
+    }
+
+    return ParsedData
+}
+
 ParseClipBoardChanges()
 {
-    ParsedData := ParseItemData(GetClipboardContents())
-    ; TODO: enable preference setting for replacing the clipboard with constructed tooltip text
-    ; Replaces Clipboard with tooltip data
-    ;SetClipboardContents(ParsedData)
+    Global PutResultsOnClipboard
+
+    CBContents := GetClipboardContents()
+    CBContents := PreProcessContents(CBContents)
+
+    ParsedData := ParseItemData(CBContents)
+    ParsedData := PostProcessData(ParsedData)
+
+    If (PutResultsOnClipboard > 0)
+    {
+        SetClipboardContents(ParsedData)
+    }
     ShowToolTip(ParsedData)
 }
 
 AssembleDamageDetails(FullItemData)
 {
-    ; TODO: cleanup by trimming what is already known at this point
-    ; note that this loop and variables was used pretty much unchanged
-    ; from the original script
     PhysLo := 0
     PhysHi := 0
     Quality := 0
@@ -3496,7 +3605,7 @@ ParseItemName(ItemDataChunk, ByRef ItemName, ByRef ItemTypeName)
         {
             IfNotInString, A_LoopField, Rarity:
             {
-                Return
+                return
             }
             Else
             {
@@ -3505,7 +3614,7 @@ ParseItemName(ItemDataChunk, ByRef ItemName, ByRef ItemTypeName)
         }
         If (StrLen(A_LoopField) == 0 or A_LoopField == "--------" or A_Index > 3)
         {
-            Return
+            return
         }
         If (A_Index = 2)
         {
@@ -3524,10 +3633,10 @@ GemIsValuable(ItemName)
     {
         IfInString, ItemName, %A_LoopReadLine%
         {
-            Return True
+            return True
         }
     }
-    Return False
+    return False
 }
 
 GemIsDropOnly(ItemName)
@@ -3536,10 +3645,10 @@ GemIsDropOnly(ItemName)
     {
         IfInString, ItemName, %A_LoopReadLine%
         {
-            Return True
+            return True
         }
     }
-    Return False
+    return False
 }
 
 ; converts a currency stack to chaos
@@ -3592,12 +3701,12 @@ ConvertCurrency(ItemName, ItemStats)
 ;            msgbox, Name: %ItemName%`, StackSize: %StackSize%`, ChaosMult: %ChaosMult%`, ValueInChaos: %ValueInChaos%
         }
     }
-    Return ValueInChaos
+    return ValueInChaos
 }
 
 ; Parse unique affixes from text file database.
 ; Has wanted side effect of populating AffixLines "array" vars.
-; Return True if the unique was found the database
+; return True if the unique was found the database
 ParseUnique(ItemName)
 {
     Global
@@ -3614,7 +3723,10 @@ ParseUnique(ItemName)
         }
         If (StrLen(A_LoopReadLine) <= 2)
         {
-            ; blank line (at most \r\n)
+            ; blank line
+            ; 2 characters at most: \r\n. Don't bother 
+            ; checking if they are actually control chars 
+            ; or normal letters.
             Continue
         }
         IfInString, A_LoopReadLine, %ItemName%
@@ -3622,29 +3734,57 @@ ParseUnique(ItemName)
             StringSplit, LineParts, A_LoopReadLine, |
             NumLineParts := LineParts0
             NumAffixLines := NumLineParts-1 ; exclude item name at first pos
+            Local UniqueFound
             UniqueFound := True
+            Local AppendImplicitSep
+            AppendImplicitSep := False
             Idx := 1
             Loop, % (NumLineParts)
             {
                 If (A_Index > 1)
                 {
+                    Local CurLinePart
+                    Local AffixLine
+                    Local ValueRange
                     CurLinePart := LineParts%A_Index%
                     IfInString, CurLinePart, :
                     {
                         StringSplit, CurLineParts, CurLinePart, :
                         AffixLine := CurLineParts2
                         ValueRange := CurLineParts1
-                        ValueRange := RegExReplace(ValueRange, "(\d+\.\d+)-(\d+\.\d+)", "$1,$2") ; fix Attacks per Second double floats to be like a double range
+                        IfInString, ValueRange, @
+                        {
+                            AppendImplicitSep := True
+                            StringReplace, ValueRange, ValueRange, @
+                        }
+                        ; Make "Attacks per Second" float ranges to be like a double range.
+                        ; Since a 2 decimal precision float value is 4 chars wide (#.##)
+                        ; when including the radix point this means a float value range 
+                        ; is then 9 chars wide. Replacing the "-" with a "," effectively
+                        ; makes it so that float ranges are treated as double ranges and
+                        ; distributes the bounds over both value range fields. This may 
+                        ; or may not be desirable. On the plus side things will align
+                        ; nicely, but on the negative side, it will be a bit unclearer that
+                        ; both float values constitute a range and not two isolated values.
+                        ValueRange := RegExReplace(ValueRange, "(\d+\.\d+)-(\d+\.\d+)", "$1,$2") 
                         IfInString, ValueRange, `,
                         {
                             ; double range
                             StringSplit, ValueRangeParts, ValueRange, `,
+                            Local ValueRangeParts
+                            Local LowerBound
+                            Local UpperBound
                             LowerBound := ValueRangeParts1
                             UpperBound := ValueRangeParts2
                             ValueRange := StrPad(LowerBound, ValueRangeFieldWidth, "left") . AffixDetailDelimiter . StrPad(UpperBound, ValueRangeFieldWidth, "left")
-
                         }
-                        AffixLines%Idx% := AffixLine . Delim . ValueRange
+                        ProcessedLine := AffixLine . Delim . StrPad(ValueRange, ValueRangeFieldWidth, "left")
+                        If (AppendImplicitSep)
+                        {
+                            ProcessedLine := ProcessedLine . "`n" . "--------"
+                            AppendImplicitSep := False
+                        }
+                        AffixLines%Idx% := ProcessedLine
                     }
                     Else
                     {
@@ -3655,11 +3795,11 @@ ParseUnique(ItemName)
             }
         }
     }
-    Return UniqueFound
+    return UniqueFound
 }
 
 ; Main parse function
-ParseItemData(ItemData, ByRef NumPrefixes = "", NumSuffixes = "")
+ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuffixes="")
 {
     ; global var access to support user options
     Global ShowItemLevel
@@ -3737,10 +3877,6 @@ ParseItemData(ItemData, ByRef NumPrefixes = "", NumSuffixes = "")
     ItemBaseType =
     ItemSubType =
     ItemGripType =
-
-;    NumPrefixes =
-;    NumSuffixes =
-;    TotalAffixes =
 
     ; AHK only allows splitting on single chars, so first 
     ; replace the split string (\r\n--------\r\n) with AHK's escape char (`)
@@ -3829,7 +3965,7 @@ ParseItemData(ItemData, ByRef NumPrefixes = "", NumSuffixes = "")
     {
         ; ItemDataParts doesn't have the parts/text we need. Bail. 
         ; This might be because the clipboard is completely empty.
-        Return 
+        return 
     }
 
     ; hopefully this should now hold the part of the text that
@@ -4009,13 +4145,17 @@ ShowToolTip(String)
 
 ; ############## TESTS #################
 
+TestCaseSeparator := "####################"
+
 RunRareTestSuite(Path, SuiteNumber)
 {
+    Global TestCaseSeparator
+
     NumTestCases := 0
     Loop, Read, %Path%
     {  
 ;        msgbox, % TestCaseText
-        IfInString, A_LoopReadLine, ####################
+        IfInString, A_LoopReadLine, %TestCaseSeparator%
         {
             NumTestCases += 1
             Continue
@@ -4025,23 +4165,56 @@ RunRareTestSuite(Path, SuiteNumber)
     }
 
 ;    msgbox, NumTestCases: %NumTestCases%
-    Fails := 0
+    Failures := 0
     Successes := 0
-    FailsNumbers =
+    FailureNumbers =
     TestCase =
     Loop, %NumTestCases%
     {
         TestCase := TestCases%A_Index%
-        NumPrefixes =
-        NumSuffixes = 
-        TestCaseResult := ParseItemData(TestCase, NumPrefixes, NumSuffixes)
-        InvalidTotalAffixNumber := (NumPrefixes + NumSuffixes) > 6
+
+        NumPrefixes := 0
+        NumSuffixes := 0 
+        TestCaseResult := ParseItemData(TestCase, "", NumPrefixes, NumSuffixes)
+
+        StringReplace, TempResult, TestCaseResult, --------, ``, All  
+        StringSplit, TestCaseResultParts, TempResult, ``
+
+        NameAndDPSPart := TestCaseResultParts1
+        TotalAffixStatsPart := TestCaseResultParts2
+        AffixCompositionPart := TestCaseResultParts3
+
+        ; failure conditions
+        TotalAffixes := 0
+        TotalAffixes := NumPrefixes + NumSuffixes
+        InvalidTotalAffixNumber := (TotalAffixes > 6)
         BracketLookupFailed := InStr(TestCaseResult, "n/a")
         CompositeRangeCalcFailed := InStr(TestCaseResult, " - ")
-        If (InvalidTotalAffixNumber or BracketLookupFailed or CompositeRangeCalcFailed)
+
+        Prefixes := 0
+        Suffixes := 0
+        CompPrefixes := 0
+        CompSuffixes := 0
+        ExtractTotalAffixBalance(AffixCompositionPart, Prefixes, Suffixes, CompPrefixes, CompSuffixes)
+
+        HasDanglingComposites := False
+        If (Mod(CompPrefixes, 2)) ; True, if not evenly divisible by 2
         {
-            Fails += 1
-            FailsNumbers := FailsNumbers . A_Index . ","
+            HasDanglingComposites := True
+        }
+        If (Mod(CompSuffixes, 2))
+        {
+            HasDanglingComposites := True
+        }
+
+        TotalCountByAffixTypes := (Floor(CompPrefixes / 2) + Floor(CompSuffixes / 2) + Prefixes + Suffixes)
+
+;        msgbox, TotalAffixes: %TotalAffixes%`, TotalCountByAffixTypes: %TotalCountByAffixTypes%
+        AffixTypesCountedIncorrectly := (Not (TotalCountByAffixTypes == TotalAffixes))
+        If (InvalidTotalAffixNumber or BracketLookupFailed or CompositeRangeCalcFailed or HasDanglingComposites or AffixTypesCountedIncorrectly)
+        {
+            Failures += 1
+            FailureNumbers := FailureNumbers . A_Index . ","
         }
         Else
         {
@@ -4049,26 +4222,27 @@ RunRareTestSuite(Path, SuiteNumber)
         }
         ; needed so global variables can be yanked from memory and reset between calls 
         ; (if you reload the script really fast globals vars that are out of date can 
-        ; cause fails where there are none)
+        ; cause failures when there are none)
         Sleep, 1
     }
 
-    Result := "Suite " . SuiteNumber . ": " . StrPad(Successes, 5, "left") . " OK" . ", " . StrPad(Fails, 5, "left")  . " Failed"
-    If (Fails > 0)
+    Result := "Suite " . SuiteNumber . ": " . StrPad(Successes, 5, "left") . " OK" . ", " . StrPad(Failures, 5, "left")  . " Failed"
+    If (Failures > 0)
     {
-        FailsNumbers := SubStr(FailsNumbers, 1, -1)
-        Result := Result . " (" . FailsNumbers . ")"
+        FailureNumbers := SubStr(FailureNumbers, 1, -1)
+        Result := Result . " (" . FailureNumbers . ")"
     }
-    Return Result
+    return Result
 }
 
 RunUniqueTestSuite(Path, SuiteNumber)
 {
+    Global TestCaseSeparator
+
     NumTestCases := 0
     Loop, Read, %Path%
     {  
-;        msgbox, % TestCaseText
-        IfInString, A_LoopReadLine, ####################
+        IfInString, A_LoopReadLine, %TestCaseSeparator%
         {
             NumTestCases += 1
             Continue
@@ -4077,10 +4251,9 @@ RunUniqueTestSuite(Path, SuiteNumber)
         TestCases%NumTestCases% := TestCases%NumTestCases% . TestCaseText . "`r`n"
     }
 
-;    msgbox, NumTestCases: %NumTestCases%
-    Fails := 0
+    Failures := 0
     Successes := 0
-    FailsNumbers =
+    FailureNumbers =
     TestCase =
     Loop, %NumTestCases%
     {
@@ -4092,8 +4265,8 @@ RunUniqueTestSuite(Path, SuiteNumber)
 
         If (FailedToSepImplicit)
         {
-            Fails += 1
-            FailsNumbers := FailsNumbers . A_Index . ","
+            Failures += 1
+            FailureNumbers := FailureNumbers . A_Index . ","
         }
         Else
         {
@@ -4101,17 +4274,17 @@ RunUniqueTestSuite(Path, SuiteNumber)
         }
         ; needed so global variables can be yanked from memory and reset between calls 
         ; (if you reload the script really fast globals vars that are out of date can 
-        ; cause fails where there are none)
+        ; cause failures where there are none)
         Sleep, 1
     }
 
-    Result := "Suite " . SuiteNumber . ": " . StrPad(Successes, 5, "left") . " OK" . ", " . StrPad(Fails, 5, "left")  . " Failed"
-    If (Fails > 0)
+    Result := "Suite " . SuiteNumber . ": " . StrPad(Successes, 5, "left") . " OK" . ", " . StrPad(Failures, 5, "left")  . " Failed"
+    If (Failures > 0)
     {
-        FailsNumbers := SubStr(FailsNumbers, 1, -1)
-        Result := Result . " (" . FailsNumbers . ")"
+        FailureNumbers := SubStr(FailureNumbers, 1, -1)
+        Result := Result . " (" . FailureNumbers . ")"
     }
-    Return Result
+    return Result
 }
 
 RunAllTests()
@@ -4167,7 +4340,17 @@ ToolTipTimer:
     return
 
 OnClipBoardChange:
-;    If (Not RunTests)
-;    {
+    If (Not RunTests)
+    {
+        ; do nothing if Path of Exile isn't the foremost window
+        IfWinActive, Path of Exile ahk_class Direct3DWindowClass
+        {
+            ParseClipBoardChanges()
+        }
+    }
+    Else
+    {
+        ; if running tests parse clipboard regardless if PoE is foremost
+        ; so we can check individual cases from test case text files
         ParseClipBoardChanges()
-;    }
+    }

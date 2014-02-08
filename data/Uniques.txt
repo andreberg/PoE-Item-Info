@@ -1,7 +1,8 @@
 ; Data from http://pathofexile.gamepedia.com/List_of_unique_items
 ; The "@" symbol marks a mod as implicit. This means a seperator line will be appended after this mod. If there are multiple implicit mods, mark the last one in line.
-; Comments can be made with ";"
-; This file needs the same encoding as the Item Info AHK script that is to do lookups. By default that currently is ANSI.
+; Comments can be made with ";", blank lines will be ignored.
+; Note that this file needs the same encoding as the Item Info AHK script that. By default that currently is ANSI.
+
 ; -------- Amulets ---------
 
 The Anvil|@20-30:to Strength|10:reduced Attack Speed|10:reduced Cast Speed|400-500:to Armour|30-40:Life gained when you Block|15-20:Mana gained when you Block|20:reduced Movement Speed|3:to maximum Block Chance|10:Block Chance|200-250:Reflects Physical Damage to Attackers on Block
@@ -228,7 +229,7 @@ The Supreme Truth|@54-81,60-90:Physical Damage|1.32-1.44:Attacks per Second|20:i
 
 ; -------- 2H Mace ---------
 
-Chober Chaber|@82-172,90-189:Physical Damage|20:Increased Stun Duration on enemies|1:to Level of Melee Gems in this item|1:to Level of Minion Gems in this item|100-120:increased Physical Damage|25:increased Maximum Mana|Minions have 20-40% increased maximum Life|15:increased Skill Effect Duration|20:reduced Strength Requirement
+Chober Chaber|82-172,90-189:Physical Damage|@20:Increased Stun Duration on enemies|1:to Level of Melee Gems in this item|1:to Level of Minion Gems in this item|100-120:increased Physical Damage|25:increased Maximum Mana|Minions have 20-40% increased maximum Life|15:increased Skill Effect Duration|20:reduced Strength Requirement
 Geofri's Baptism|123-183:Physical Damage|@11-23:Cold Damage|20:increased Stun Duration on enemies|200:increased Physical Damage|11-23:Adds Cold Damage|10-20:increased Stun Duration on enemies|Never deal Critical Strikes
 Hrimnor's Hymn|@60-75,91-114:Physical Damage|40:increased Stun Duration on enemies|140-200:increased Physical Damage|10:to Strength|5:of Physical Attack Damage Leeched back as Life|15:reduced Enemy Stun Threshold|40-50:increased Stun Duration on enemies
 Kongor's Undying Rage|@104-374,113-464:Physical Damage|20:increased Stun Duration on enemies|27-270,36-360:Adds Physical Damage|15-20:to all Elemental Resistances|Hits can't be Evaded|Your Critical Strikes do not deal increased Damage|You gain Onslaught for 2 seconds on Critical Strike
@@ -238,7 +239,7 @@ Voidhome|@175-238:Physical Damage|20:increased Stun Duration on enemies|150:incr
 
 ; -------- 1H Sword ---------
 
-Aurumvorax|@20-44,23-50:Physical Damage|20:Increased Global Critical Strike Multiplier|120-150:increased Physical Damage|20:reduced Rarity of Items found|40-60:to all Elemental Resistances|3:Life gained for each enemy hit by your Attacks
+Aurumvorax|20-44,23-50:Physical Damage|@20:Increased Global Critical Strike Multiplier|120-150:increased Physical Damage|20:reduced Rarity of Items found|40-60:to all Elemental Resistances|3:Life gained for each enemy hit by your Attacks
 Ephemeral Edge|@30-86:Physical Damage|18:Increased Accuracy Rating|100:Increased Physical Damage|10:to Intelligence|50:Increased Global Critical Strike Chance|3-5:of Physical Attack Damage Leeched back as Mana|10:Reduced Maximum Life|40-50:Increased Maximum Energy Shield
 The Goddess Bound|11-56:Physical Damage|@3-7:Elemental Damage|20:Increased Global Critical Strike Multiplier|1:to Level of Melee Gems in this Item|Uses Both Hand Slots|250-300:Increased Physical Damage|3-7:Adds Fire Damage|20:Increased Attack Speed|30:Increased Global Critical Strike Chance|20-40:to Evasion Rating|20:Reduced Rarity of Items Found|30:Increased Movement Speed when on Low Life
 The Goddess Scorned|56-88,64-100:Physical Damage|@9.5-10.5:Critical Strike Chance|18:Increased Accuracy Rating|Uses both hand slots|250-300:increased Physical Damage|90-110:increased Critical Strike Chance|15-20:increased Global Critical Strike Multiplier|40-50:to Fire Resistance|Cannot be Ignited|100:of Physical Damage Converted to Fire Damage|Ignited Enemies Burn 50% faster|You can only deal Damage with this Weapon
@@ -250,7 +251,7 @@ Redbeak|@9-21:Physical Damage|18:Increased Accuracy Rating|100:Increased Damage 
 
 Oro's Sacrifice|425-550,475-600:Fire Damage|@1.32-1.38:Attacks per Second|30:increased Accuracy Rating|No Physical Damage|425-550,475-600:Adds Fire Damage|10-15:increased Attack Speed|20:Chance to Ignite|20:increased Physical Damage taken|20:increased Fire Damage taken|Culling Strike against Burning Enemies|Gain a Frenzy Charge if an Attack Ignites an Enemy
 Queen's Decree|@31-52:Physical Damage|18:increased Accuracy Rating|Minions have 10-15% increased maximum Life|Minions deal 10-15% increased Damage|1:to Maximum number of Zombies|1:to Maximimum number of Spectres|2:to Maximum number of Skeletons|150-200:increased Skeleton Duration|25:increased Strength Requirement
-Rigvald's Charge|@110-202,125-230:Physical Damage|18:increased Accuracy Rating|120-150:increased Physical Damage|20:increased Attack Speed|150-200:to Accuracy Rating|10:increased Movement Speed
+Rigvald's Charge|110-202,125-230:Physical Damage|@18:increased Accuracy Rating|120-150:increased Physical Damage|20:increased Attack Speed|150-200:to Accuracy Rating|10:increased Movement Speed
 Shiversting|31-50,34-56:Physical Damage|@35-70:Cold Damage|18:increased Accuracy Rating|80-100:increased Physical Damage|35-70:Adds Cold Damage|3:of Physical Attack Damage Leeched back as Mana|Cannot be Frozen
 Terminus Est|@117-194,154-255:Physical Damage|18:increased Accuracy Rating|120-180:increased Physical Damage|20:increased Attack Speed|10:to Mana Gained when you Kill an enemy|10:increased Movement Speed|Gain a Frenzy Charge on Critical Strike
 

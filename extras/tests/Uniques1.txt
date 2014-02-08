@@ -61,3 +61,237 @@ Adds 19-31 Chaos Damage
 Though the Vaal revered peace, it would have 
 been suicide for any culture to rouse them to war.
 - Icius Perandus, Scholar to the Empire.
+#################### 3
+Rarity: Unique
+You cannot use this item. Its stats will be ignored. Please remove it.
+--------
+Heartbreaker
+Royal Skean
+--------
+Dagger
+Quality: +20% (augmented)
+Physical Damage: 17-68 (augmented)
+Critical Strike Chance: 6.8%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 50
+Dex: 71
+Int: 102
+--------
+Sockets: B-G-G 
+--------
+Itemlevel: 59
+--------
+40% increased Global Critical Strike Chance
+--------
+43% increased Spell Damage
++41 to maximum Mana
++50 to maximum Energy Shield
+10% increased Energy Shield Cooldown Recovery
+Your Spells have Culling Strike
+--------
+A heart can be stabbed by thoughts, 
+If your mind is sharp enough.
+#################### 4
+Rarity: Unique
+Ambu's Charge
+Crusader Chainmail
+--------
+Armour: 458 (augmented)
+Energy Shield: 136 (augmented)
+--------
+Requirements:
+Level: 43
+Str: 64
+Int: 64
+--------
+Sockets: R-R-G 
+--------
+Itemlevel: 61
+--------
+171% increased Armour and Energy Shield
++10% to all Elemental Resistances
+Gain an Endurance Charge when an enemy Scores a Critical Strike on You
+2% of Life Regenerated per Second while on Low Life
+Share Endurance Charges with nearby party members
+--------
+Nothing stops the pain like a courageous rush into battle.
+#################### 5
+Rarity: Unique
+Chernobog's Pillar
+Ebony Tower Shield
+--------
+Chance to Block: 28%
+Armour: 866 (augmented)
+--------
+Requirements:
+Level: 61
+Str: 159 (unmet)
+--------
+Sockets: R R-R 
+--------
+Itemlevel: 67
+--------
+142% increased Armour
++40% to Fire Resistance
+25% of Physical Damage Converted to Fire Damage
+5% chance to Curse Enemies with Enfeeble on Hit
+--------
+Fire dances with those who doubt
+Licks the skin and flesh from the fearful
+Where there is no fear
+There is no flame
+#################### 6
+Rarity: Unique
+Last Resort
+Nailed Fist
+--------
+Claw
+Physical Damage: 11-37 (augmented)
+Critical Strike Chance: 6.5%
+Attacks per Second: 1.35
+--------
+Sockets: G R 
+--------
+Itemlevel: 52
+--------
++3 Life gained for each enemy hit by your Attacks
+--------
+25% increased Attack Speed when on Low Life
+83% increased Physical Damage
+Adds 2-10 Physical Damage
+100% increased Claw Physical Damage when on Low Life
+100% increased Accuracy Rating when on Low Life
+--------
+Desperate times demand desperate measures.
+#################### 7
+Rarity: Unique
+Atziri's Foible
+Paua Amulet
+--------
+Requirements:
+Level: 16
+--------
+Itemlevel: 35
+--------
+22% increased Mana Regeneration Rate
+--------
++50 to maximum Mana
+10% increased maximum Mana
+56% increased Mana Regeneration Rate
+Items and Gems have 25% reduced Attribute Requirements
+--------
+The world is but a piece of parchment, blank and symmetric. 
+We label each side: one Good, one Evil; one Black, one White. 
+The divine truth, however, is that both are one and the same. 
+-Jaetai, Vaal Advisor
+#################### 8
+Rarity: Unique
+Daresso's Courage
+Baroque Round Shield
+--------
+Quality: +6% (augmented)
+Chance to Block: 29% (augmented)
+Armour: 228 (augmented)
+Evasion Rating: 228 (augmented)
+--------
+Requirements:
+Level: 54
+Str: 70
+Dex: 70
+--------
+Sockets: R G G 
+--------
+Itemlevel: 63
+--------
+120% increased Block Recovery
+--------
+20% increased Physical Damage
+103% increased Armour and Evasion
++17% to Fire Resistance
++11% to Cold Resistance
++10% to Lightning Resistance
+120% of Block Chance applied to Spells when on Low Life
+3% additional Block Chance
+--------
+By tourney's end, Daresso bled and shivered.
+Yet even accursed treachery failed to steal the champion's victory.
+#################### 9
+Rarity: Unique
+Hrimnor's Resolve
+Samite Helmet
+--------
+Armour: 336 (augmented)
+--------
+Requirements:
+Level: 55
+Str: 114
+--------
+Sockets: R-R-R-R 
+--------
+Itemlevel: 57
+--------
+28% increased Fire Damage
+40% increased Armour
++30% to Cold Resistance
+50% chance to Avoid being Chilled
+50% chance to Avoid being Frozen
+10% increased Block and Stun Recovery
+--------
+Hrimnor's presence was as cold as ice,
+but his heart burned for vengeance.
+#################### 10
+Rarity: Unique
+Chober Chaber
+Great Mallet
+--------
+Two Handed Mace
+Physical Damage: 92-192 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 40
+Str: 104 (augmented)
+--------
+Sockets: R 
+--------
+Itemlevel: 48
+--------
+20% increased Stun Duration on enemies
+--------
++1 to Level of Melee Gems in this item
++1 to Level of Minion Gems in this item
+118% increased Physical Damage
+25% increased maximum Mana
+Minions have 25% increased maximum Life
+15% increased Skill Effect Duration
+20% reduced Strength Requirement
+--------
+The faithful may continue to serve, even after death.
+#################### 11
+Rarity: Unique
+Wheel of the Stormsail
+Rotted Round Shield
+--------
+Chance to Block: 29% (augmented)
+Armour: 17 (augmented)
+Evasion Rating: 11
+--------
+Requirements:
+Level: 5
+--------
+Sockets: B-G 
+--------
+Itemlevel: 68
+--------
+60% increased Block Recovery
+--------
++6 to Armour
+34% increased Rarity of Items found
+25% increased Curse Duration
+100% increased Duration of Curses on you
+5% additional Block Chance
+--------
+Doomed to plunder forever.

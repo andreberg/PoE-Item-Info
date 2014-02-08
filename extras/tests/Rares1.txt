@@ -535,3 +535,94 @@ Itemlevel: 54
 +284 to Accuracy Rating
 6% increased Accuracy Rating
 15% increased Light Radius
+#################### 23
+Rarity: Rare
+Pain Star
+Harlequin Mask
+--------
+Evasion Rating: 154 (augmented)
+Energy Shield: 44 (augmented)
+--------
+Requirements:
+Level: 57
+Dex: 64
+Int: 64
+--------
+Sockets: B 
+--------
+Itemlevel: 66
+--------
++269 to Accuracy Rating
++4 to Evasion Rating
+9% increased Evasion and Energy Shield
+1.2 Life Regenerated per second
++26 to maximum Mana
+17% increased Rarity of Items found
+6% increased Block and Stun Recovery
+#################### 24
+Rarity: Rare
+Kraken Crest
+Solaris Circlet
+--------
+Energy Shield: 137 (augmented)
+--------
+Requirements:
+Level: 59
+Int: 122
+--------
+Sockets: B-B 
+--------
+Itemlevel: 68
+--------
++36 to Intelligence
++81 to Accuracy Rating
++43 to maximum Mana
+83% increased Energy Shield
+7% increased Block and Stun Recovery
+5% increased Light Radius
+#################### 25
+Rarity: Rare
+Soul Corona
+Lacquered Helmet
+--------
+Armour: 212 (augmented)
+Evasion Rating: 212 (augmented)
+--------
+Requirements:
+Level: 51
+Str: 57
+Dex: 57
+--------
+Sockets: R G R 
+--------
+Itemlevel: 68
+--------
++260 to Accuracy Rating
+77% increased Armour and Evasion
++41 to maximum Life
+3.8 Life Regenerated per second
+10% increased Light Radius
+#################### 26
+Rarity: Rare
+Soul Sanctuary
+Lacewood Spirit Shield
+--------
+Chance to Block: 28%
+Energy Shield: 126 (augmented)
+--------
+Requirements:
+Level: 56
+Int: 91 (augmented)
+--------
+Sockets: B-B 
+--------
+Itemlevel: 68
+--------
+5% increased Spell Damage
+--------
+21% increased Spell Damage
+31% increased Critical Strike Chance for Spells
+117% increased Energy Shield
++19% to Lightning Resistance
+14% increased Block and Stun Recovery
+32% reduced Attribute Requirements
