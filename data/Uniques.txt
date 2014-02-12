@@ -63,7 +63,7 @@ Broadstroke|@1-4:Adds Physical Damage|30:increased Physical Damage|10-15:reduced
 Ambu's Charge|406-473:Armour|@120-140:Energy Shield|140-180:increased Armour and Energy Shield|10:to all Elemental Resistances|Gain an Endurance Charge when an enemy Scores a Critical Strike on You|2:Life Regenerated per Second while on Low Life|Share Endurance Charges with nearby party members
 Ashrend|@227-252:Evasion Rating|80-100:increased Evasion Rating|40-50:to Fire Resistance|Cannot be Ignited|10-15:increased Physical Damage with Ranged Weapons|5-7:Physical Damage taken from Attacks
 Belly of the Beast|@453-543:Armour|150-200:increased Armour|30-40:increased maximum Life|10-15:to all Elemental Resistances|50:increased Flask Life Recovery rate|Extra Gore
-Bramblejack|Adds 2-4 Physical Damage|12-20:to maximum Life|2:Physical Damage taken from Attacks|40:of Melee Damage taken reflected to Attacker
+Bramblejack|Adds 2-4 Physical Damage|12-20:to maximum Life|-2:Physical Damage taken from Attacks|40:of Melee Damage taken reflected to Attacker
 Briskwrap|@190-250:Evasion Rating|5:increased Attack Speed|120-180:to Evasion Rating|30-40:to Cold Resistance|5:increased Movement Speed|20-25:increased Mana Recovery from Flasks|5:increased Dexterity
 Bronn's Lithe|@1134-1323:Evasion Rating|2:to Level of Movement Gems in this item|10:increased Attack Speed|200-250:increased Evasion Rating|10:increased Movement Speed
 Carcass Jack|607 to 690:Evasion Rating|@178-203:Energy Shield|120-150:increased Evasion and Energy Shield|50-70:to maximum Life|9-12:to all Elemental Resistances|20:increased Radius of Area Skills|12:increased Area Damage|Extra gore

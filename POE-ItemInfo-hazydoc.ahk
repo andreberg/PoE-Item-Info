@@ -1,6 +1,6 @@
 ; Path of Exile Item Info Tooltip
 ;
-; Version: 1.4 (hazydoc / IGN:Sadou)
+; Version: 1.5 (hazydoc / IGN:Sadou)
 ;
 ; This script is based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -113,6 +113,10 @@ StringCaseSense, On ; Match strings with case.
 
 ; OPTIONS
 
+OnlyActiveIfPOEIsFront = 0      ; Set to 1 to make it so the script does nothing if Path of Exile window isn't the frontmost.
+                                ; If 0, the script also works if PoE isn't frontmost. This is handy for have the script parse
+                                ; textual item representations appearing somewhere else, like in the forums or text files. 
+
 ShowItemLevel = 1               ; Show item level and the item type's base level (enabled by default change to 0 to disable)
 ShowDamageCalculations = 1      ; Show damage projections (for weapons only)
 
@@ -203,6 +207,8 @@ If (A_AhkVersion <= "1.0.45")
     msgbox, You need AutoHotkey v1.0.45 or later to run this script. `n`nPlease go to http://ahkscript.org/download and download a recent version.
     exit
 }
+
+MsgUnhandled := "Unhandled case. Please report the item that you are inspecting to the forums thread."
 
 ; Create font for later use
 FixedFont := CreateFont()
@@ -384,6 +390,18 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
     ; Check name plate section 
     Loop, Parse, ItemDataNamePlate, `n, `r
     {
+        
+        ; a few cases that cause incorrect id later
+        ; and thus should come first
+        ; Note: still need to work on proper id for 
+        ; all armour types.
+        IfInString, A_LoopField, Ringmail
+        {
+            BaseType = Armour
+            SubType = BodyArmour
+            return
+        }
+
         ; Belts, Amulets, Rings, Quivers, Flasks
         IfInString, A_LoopField, Belt
         {
@@ -1311,9 +1329,20 @@ AddRange(Range1, Range2)
     return FinalRange
 }
 
+; used to check return values from LookupAffixBracket()
 IsValidBracket(Bracket)
 {
     If (Bracket == "n/a")
+    {
+        return False
+    }
+    return True
+}
+
+; used to check return values from LookupAffixData()
+IsValidRange(Bracket)
+{
+    IfInString, Bracket, n/a
     {
         return False
     }
@@ -1381,6 +1410,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
     Global ItemGripType
     Global NumAffixLines
     Global ValueRangeFieldWidth  ; for StrPad on guesstimated values
+    Global MsgUnhandled
 
     ; keeps track of how many affix lines we have so they can be assembled later
     ; acts as a loop index variable when iterating each affix data part
@@ -2096,13 +2126,19 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
             {
                 ; Global
                 PrefixPath := "data\IncrArmour_Items.txt"
+                PrefixPathOther := "data\IncrArmour_WeaponsAndArmour.txt"
             }
             Else
             {
                 ; Local
                 PrefixPath := "data\IncrArmour_WeaponsAndArmour.txt"
+                PrefixPathOther := "data\IncrArmour_Items.txt"
             }
             ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IABracketLevel)
+            If (Not IsValidRange(ValueRange))
+            {
+                ValueRange := LookupAffixData(PrefixPathOther, ItemLevel, CurrValue, IABracketLevel)
+            }
             If (HasStunRecovery) 
             {
                 AffixType := "Comp. Prefix"
@@ -2125,7 +2161,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                     {
                         IARest := CurrValue - RangeMid(IABSBracket)
                         IABracket := LookupAffixBracket(PrefixPath, ItemLevel, IARest)
-    ;                    msgbox, IABracket: %IABracket%`, IABSBracket: %IABSBracket%`, IARest: %IARest%
+;                        msgbox, IABracket: %IABracket%`, IABSBracket: %IABSBracket%`, IARest: %IARest%
                         If (Not IsValidBracket(IABracket))
                         {
                             IABracket := LookupAffixBracket(PrefixPath, ItemLevel, CurrValue)
@@ -2173,11 +2209,17 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
             {
                 ; Global
                 PrefixPath := "data\IncrEvasion_Items.txt"
+                PrefixPathOther := "data\IncrEvasion_Armour.txt"
             }
             Else
             {
                 ; Local
                 PrefixPath := "data\IncrEvasion_Armour.txt"
+                PrefixPathOther := "data\IncrEvasion_Items.txt"
+            }
+            If (Not IsValidRange(ValueRange))
+            {
+                ValueRange := LookupAffixData(PrefixPathOther, ItemLevel, CurrValue, IEBracketLevel)
             }
             ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IEBracketLevel)
             If (HasStunRecovery) 
@@ -2683,8 +2725,25 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, MaxManaValue, MMBracketLevel)
                         If (Not IsValidBracket(MaxManaBracket))
                         {
-                            AffixType := "Comp. Prefix+Comp. Prefix"
-                            ValueRange := StrPad(EstInd, ValueRangeFieldWidth + StrLen(EstInd), "left")
+                            MaxManaBracket := LookupAffixBracket("data\MaxMana.txt", ItemLevel, MaxManaValue, MMBracketLevel)
+                            If (IsValidBracket(MaxManaBracket))
+                            {
+                                AffixType := "Prefix"
+                                If (ItemSubType == "Staff")
+                                {
+                                    ValueRange := LookupAffixData("data\SpellDamage_Staff.txt", ItemLevel, CurrValue, SDBracketLevel)
+                                }
+                                Else
+                                {
+                                    ValueRange := LookupAffixData("data\SpellDamage_1H.txt", ItemLevel, CurrValue, SDBracketLevel)
+                                }
+                                ValueRange := StrPad(ValueRange, ValueRangeFieldWidth, "left")
+                            }
+                            Else
+                            {
+                                msgbox, %MsgUnhandled%
+                                ValueRange := StrPad("n/a", ValueRangeFieldWidth, "left")
+                            }
                         }
                         Else
                         {
@@ -2785,7 +2844,17 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         ; it's on a weapon, there is Spell Damage but no MaxManaPartial or NumPrefixes already is 3
                         AffixType := "Comp. Prefix"
                         ValueRange := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, CurrValue)
-                        ValueRange := PadValueRange(ValueRange)
+                        If (Not IsValidBracket(ValueRange))
+                        {
+                            ; incr. spell damage is actually a prefix and not a comp. prefix
+                            ; so max mana must be a normal prefix as well then
+                            AffixType := "Prefix"
+                            ValueRange := LookupAffixData("data\MaxMana.txt", ItemLevel, CurrValue)
+                        }
+                        Else
+                        {
+                            ValueRange := PadValueRange(ValueRange)
+                        }
                     }
                     ; check if we still need to increment for the Spell Damage part
                     If (NumPrefixes < 3)
@@ -3245,15 +3314,27 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                 ValueRangeAR := LookupAffixBracket("data\AccuracyRating_Global.txt", ItemLevel, ActualValue)
                 If (IsValidBracket(ValueRangeAR))
                 {
-                    IfInString, IPDAffixType, Comp. Prefix
+                    If (NumPrefixes >= 3)
                     {
-                        AffixType := "Comp. Prefix"
+                        AffixType := "Suffix"
+                        If (NumSuffixes < 3)
+                        {
+                            NumSuffixes += 1
+                        }
+                        ValueRange := LookupAffixData("data\AccuracyRating_Local.txt", ItemLevel, ActualValue)
                     }
                     Else
                     {
-                        AffixType := "Prefix"
+                        IfInString, IPDAffixType, Comp. Prefix
+                        {
+                            AffixType := "Comp. Prefix"
+                        }
+                        Else
+                        {
+                            AffixType := "Prefix"
+                        }
+                        NumPrefixes += 1
                     }
-                    NumPrefixes += 1
                     Goto, FinalizeAR
                 }
                 Else
@@ -4175,7 +4256,8 @@ RunRareTestSuite(Path, SuiteNumber)
 
         NumPrefixes := 0
         NumSuffixes := 0 
-        TestCaseResult := ParseItemData(TestCase, "", NumPrefixes, NumSuffixes)
+        RarityLevel := 0
+        TestCaseResult := ParseItemData(TestCase, RarityLevel, NumPrefixes, NumSuffixes)
 
         StringReplace, TempResult, TestCaseResult, --------, ``, All  
         StringSplit, TestCaseResultParts, TempResult, ``
@@ -4292,7 +4374,7 @@ RunAllTests()
     ; change this to the number of available test suites
     TestDataBasePath = %A_WorkingDir%\extras\tests
 
-    NumRareTestSuites := 3
+    NumRareTestSuites := 4
     RareResults := "Rare Items"
     Loop, %NumRareTestSuites%
     {
@@ -4340,7 +4422,8 @@ ToolTipTimer:
     return
 
 OnClipBoardChange:
-    If (Not RunTests)
+    Global OnlyActiveIfPOEIsFront
+    If (OnlyActiveIfPOEIsFront)
     {
         ; do nothing if Path of Exile isn't the foremost window
         IfWinActive, Path of Exile ahk_class Direct3DWindowClass

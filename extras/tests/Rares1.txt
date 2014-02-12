@@ -626,3 +626,69 @@ Itemlevel: 68
 +19% to Lightning Resistance
 14% increased Block and Stun Recovery
 32% reduced Attribute Requirements
+#################### 27
+Rarity: Rare
+Corruption Fend
+Girded Tower Shield
+--------
+Chance to Block: 27% (augmented)
+Armour: 456 (augmented)
+--------
+Requirements:
+Level: 51
+Str: 123
+--------
+Sockets: R 
+--------
+Itemlevel: 68
+--------
+9% increased Armour
++56 to maximum Life
++6% to Fire Resistance
+6% increased Block and Stun Recovery
+3% additional Block Chance
+#################### 28
+Rarity: Rare
+Oblivion Curtain
+Ornate Ringmail
+--------
+Armour: 242 (augmented)
+Energy Shield: 109 (augmented)
+--------
+Requirements:
+Level: 47
+Str: 69
+Int: 69
+--------
+Sockets: B 
+--------
+Itemlevel: 48
+--------
+31% increased Armour and Energy Shield
++29 to maximum Energy Shield
++24% to Fire Resistance
++23% to Lightning Resistance
+9% increased Block and Stun Recovery
+#################### 29
+Rarity: Rare
+Doom Volley
+Decimation Bow
+--------
+Bow
+Physical Damage: 78-192 (augmented)
+Elemental Damage: 5-11 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 53
+Dex: 170
+--------
+Sockets: G-G-G 
+--------
+Itemlevel: 54
+--------
+85% increased Physical Damage
+Adds 12-24 Physical Damage
+Adds 5-11 Fire Damage
++83 to Accuracy Rating

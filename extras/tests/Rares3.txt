@@ -587,3 +587,100 @@ Itemlevel: 68
 +16 to maximum Life
 16% increased Block and Stun Recovery
 Reflects 30 Physical Damage to Melee Attackers
+#################### 26
+Rarity: Rare
+Spirit Trail
+Carnal Boots
+--------
+Evasion Rating: 281 (augmented)
+Energy Shield: 59 (augmented)
+--------
+Requirements:
+Level: 55
+Dex: 42 (augmented)
+Int: 42 (augmented)
+--------
+Sockets: G 
+--------
+Itemlevel: 68
+--------
++33 to Evasion Rating
+136% increased Evasion and Energy Shield
+4.6 Life Regenerated per second
+15% increased Block and Stun Recovery
+18% reduced Attribute Requirements
+#################### 27
+Rarity: Rare
+Honour Call
+Lacewood Spirit Shield
+--------
+Chance to Block: 28%
+Energy Shield: 58
+--------
+Requirements:
+Level: 56
+Int: 134
+--------
+Sockets: B-B B 
+--------
+Itemlevel: 68
+--------
+5% increased Spell Damage
+--------
+41% increased Spell Damage
+58% increased Critical Strike Chance for Spells
++35 to maximum Mana
+Reflects 8 Physical Damage to Melee Attackers
+#################### 28
+Rarity: Rare
+Skull Scratch
+Tiger Sword
+--------
+Two Handed Sword
+Quality: +5% (augmented)
+Physical Damage: 67-110 (augmented)
+Elemental Damage: 20-39 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.30
+--------
+Requirements:
+Level: 51
+Str: 80
+Dex: 96
+--------
+Sockets: R-R 
+--------
+Itemlevel: 68
+--------
+18% increased Accuracy Rating
+--------
+16% increased Physical Damage
++37 to Dexterity
+Adds 20-39 Fire Damage
+21% increased Global Critical Strike Multiplier
++29% to Lightning Resistance
+2% of Physical Attack Damage Leeched as Life
++7 to Accuracy Rating
+#################### 29
+Rarity: Rare
+Miracle Stride
+Carnal Boots
+--------
+Evasion Rating: 128 (augmented)
+Energy Shield: 64 (augmented)
+--------
+Requirements:
+Level: 55
+Dex: 52
+Int: 52
+--------
+Sockets: B 
+--------
+Itemlevel: 68
+--------
++9 to Intelligence
+49% increased Evasion and Energy Shield
++50 to maximum Mana
++18 to maximum Energy Shield
++33% to Fire Resistance
+34% increased Block and Stun Recovery
