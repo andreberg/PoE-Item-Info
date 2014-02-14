@@ -1,6 +1,6 @@
 ; Path of Exile Item Info Tooltip
 ;
-; Version: 1.5 (hazydoc / IGN:Sadou)
+; Version: 1.6 (hazydoc / IGN:Sadou)
 ;
 ; This script is based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -2141,6 +2141,15 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
             }
             If (HasStunRecovery) 
             {
+                If (Not IsValidRange(ValueRange))
+                {
+                    ASRBracket := LookupAffixBracket("data\Armour_StunRecovery.txt", ItemLevel, CurrValue, IABracketLevel)
+                    If (IsValidBracket(ERSRBracket))
+                    {
+                        ValueRange := LookupAffixData("data\Armour_StunRecovery.txt", ItemLevel, CurrValue, IABracketLevel)
+                    }
+                }
+
                 AffixType := "Comp. Prefix"
                 BSRecBracketLevel := 0
                 BSRecPartial := LookupAffixBracket("data\StunRecovery_Armour.txt", IABracketLevel, "", BSRecBracketLevel)
@@ -2224,6 +2233,15 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
             ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IEBracketLevel)
             If (HasStunRecovery) 
             {
+                If (Not IsValidRange(ValueRange))
+                {
+                    ERSRBracket := LookupAffixBracket("data\Evasion_StunRecovery.txt", ItemLevel, CurrValue, IEBracketLevel)
+                    If (IsValidBracket(ERSRBracket))
+                    {
+                        ValueRange := LookupAffixData("data\Evasion_StunRecovery.txt", ItemLevel, CurrValue, IEBracketLevel)
+                    }
+                }
+
                 AffixType := "Comp. Prefix"
                 BSRecBracketLevel := 0
                 BSRecPartial := LookupAffixBracket("data\StunRecovery_Evasion.txt", IEBracketLevel, "", BSRecBracketLevel)
@@ -2259,6 +2277,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
 
                     If (WithinBounds(BSRecPartial, BSRecValue))
                     {
+;                        msgbox, BSRecPartial: %BSRecPartial%, BSRecValue: %BSRecValue%
                         ; BS Recovery value within bounds, this means BS Rec is all acounted for
                         BSRecPartial =
                     }
@@ -2292,6 +2311,15 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
             ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IESBracketLevel)
             If (HasStunRecovery) 
             {
+                If (Not IsValidRange(ValueRange))
+                {
+                    ESSRBracket := LookupAffixBracket("data\EnergyShield_StunRecovery.txt", ItemLevel, CurrValue, IESBracketLevel)
+                    If (IsValidBracket(ESSRBracket))
+                    {
+                        ValueRange := LookupAffixData("data\EnergyShield_StunRecovery.txt", ItemLevel, CurrValue, IESBracketLevel)
+                    }
+                }
+
                 AffixType := "Comp. Prefix"
                 BSRecBracketLevel := 0
                 BSRecPartial := LookupAffixBracket("data\StunRecovery_EnergyShield.txt", IESBracketLevel, "", BSRecBracketLevel)
@@ -2901,18 +2929,20 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                 ARValue := ExtractValueFromAffixLine(ItemDataChunk, "to Accuracy Rating")
                 If (HasIncrLightRadius)
                 {
+                    LRValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Light Radius")
                     ; first check if the AR value that comes with the Comp. Prefix AR / Light Radius 
                     ; already covers the complete AR value. If so, from that follows that the Incr. 
                     ; Phys Damage value can only be a Damage Scaling prefix.
                     LRBracketLevel := 0
-                    LRBracket := LookupAffixBracket("data\LightRadius_AccuracyRating.txt", ItemLevel, "", LRBracketLevel)
+                    LRBracket := LookupAffixBracket("data\LightRadius_AccuracyRating.txt", ItemLevel, LRValue, LRBracketLevel)
+;                    msgbox, LRBracketLevel: %LRBracketLevel%
                     ARLRBracket := LookupAffixBracket("data\AccuracyRating_LightRadius.txt", LRBracketLevel)
                     If (IsValidBracket(ARLRBracket))
                     {
                         If (WithinBounds(ARLRBracket, ARValue))
                         {
                             Goto, SimpleIPDPrefix
-                       }
+                        }
                     }
                 }
                 ; look up IPD bracket, and use its bracket level to cross reference the corresponding
@@ -3041,7 +3071,6 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                             {
                                 AffixType := "Comp. Prefix+Suffix"
                                 BSRest := CurrValue - RangeMid(BSRecPartial)
-;                                msgbox, % BSRest
                                 BSRecAffixBracket := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, BSRest)
                                 If (Not IsValidBracket(BSRecAffixBracket))
                                 {
@@ -3049,13 +3078,65 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                                     BSRecAffixBracket := LookupAffixBracket("data\StunRecovery_Prefix.txt", ItemLevel, CurrValue)
                                     If (Not IsValidBracket(BSRecAffixBracket))
                                     {
-                                        AffixType := "Suffix"
-                                        ValueRange := LookupAffixData("data\StunRecovery_Suffix.txt", ItemLevel, CurrValue)
-                                        If (NumSuffixes < 3)
+                                        If (CompStatAffixType == "Comp. Prefix+Prefix" and NumSuffixes < 3)
                                         {
+                                            AffixType := "Comp. Prefix+Suffix"
+                                            BSRecSuffixBracket := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, BSRest)
                                             NumSuffixes += 1
+                                            If (Not IsValidBracket(BSRecSuffixBracket))
+                                            {
+                                                ; TODO: properly deal with this quick fix!
+                                                ;
+                                                ; if this point is reached this means that the parts that give to 
+                                                ; increased armor/evasion/es/hybrid + stun recovery need to fully be
+                                                ; re-evaluated.
+                                                ;
+                                                ; take an ilvl 62 item with these 2 lines:
+                                                ;
+                                                ;   118% increased Armour and Evasion
+                                                ;   24% increased Block and Stun Recovery
+                                                ;
+                                                ; Since it's ilvl 62, we assume the hybrid + stun recovery bracket to be the
+                                                ; highest possible (lvl 60 bracket), which is 42-50. So that's max 50 of the 
+                                                ; 118 dealth with.
+                                                ; Consequently, that puts the stun recovery partial at 14-15 for the lvl 60 bracket.
+                                                ; This now leaves, 68 of hybrid defence to account for, which we can do by assuming
+                                                ; the remainder to come from a hybrid defence prefix. So that's incr. Armour and Evasion
+                                                ; identified as CP+P
+                                                ; However, here come's the problem, our lvl 60 bracket had 14-15 stun recovery which
+                                                ; assuming max, leaves 9 remainder (24-15) to account for. Should be easy, right?
+                                                ; Just assume the rest comes from a stun recovery suffix and look it up. Except the
+                                                ; lowest possible entry for a stun recovery suffix is 11! Leaving us with the issues that
+                                                ; we know that CP+P is right for the hybrid + stun recovery line and CP+S is right for the
+                                                ; stun recovery line. 
+                                                ; Most likely, what is wrong is the assumption earlier to take the highest possible
+                                                ; hybrid + stun recovery bracket. Problem is that wasn't apparent when hybrid defences
+                                                ; was processed.
+                                                ; At this point, a quick fix what I am doing is I just look up the complete stun recovery
+                                                ; value as if it were a suffix completely but still mark it as CP+S.
+                                                ; To deal with this correctly I would need to reprocess the hybrid + stun recovery line here
+                                                ; with a different ratio of the CP part to the P part to get a lower BSRecPartial.
+                                                ;
+                                                BSRecSuffixBracket := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, CurrValue)
+                                                ValueRange := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, CurrValue)
+                                                ValueRange := PadValueRange(ValueRange)
+                                            }
+                                            Else
+                                            {
+                                                ValueRange := AddRange(BSRecSuffixBracket, BSRecPartial)
+                                                ValueRange := PadValueRange(ValueRange)
+                                            }
+                                        } 
+                                        Else
+                                        {
+                                            AffixType := "Suffix"
+                                            ValueRange := LookupAffixData("data\StunRecovery_Suffix.txt", ItemLevel, CurrValue)
+                                            If (NumSuffixes < 3)
+                                            {
+                                                NumSuffixes += 1
+                                            }
+                                            ChangeAffixDetailLine(PartialAffixString, "Comp. Prefix" , "Prefix")
                                         }
-                                        ChangeAffixDetailLine(PartialAffixString, "Comp. Prefix" , "Prefix")
                                     }
                                     Else
                                     {
@@ -3172,6 +3253,11 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                         }
                     }
                 }
+                Else
+                {
+;                    msgbox, BSRecAffixBracket: %BSRecAffixBracket%
+                    ValueRange := LookupAffixData(BSRecAffixPath, ItemLevel, CurrValue)
+                }
             }
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange), A_Index)
             Continue
@@ -3221,7 +3307,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                     ; append this affix' contribution to our partial AR range
                     ARPartial := AddRange(ARPartial, ARLRBracket)
                 }
-
+;                msgbox, ARLRBracket: %ARLRBracket%, ARPartial: %ARPartial%
                 ; test if candidate range already covers current  AR value
                 If (WithinBounds(ARLRBracket, CurrValue))
                 {
@@ -3232,8 +3318,24 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                     AffixType := "Comp. Suffix+Suffix"
                     If (HasIncrPhysDmg)
                     {
+                        If (ARPartial)
+                        {
+                            CombinedRange := AddRange(ARLRBracket, ARPartial)
+                            If (WithinBounds(CombinedRange, CurrValue))
+                            {
+;                                msgbox, CombinedRange: %CombinedRange%
+                                AffixType := "Comp. Prefix+Comp. Suffix"
+                                If (NumPrefixes < 3)
+                                {
+                                    NumPrefixes += 1
+                                }
+                                ValueRange := CombinedRange
+                                ValueRange := PadValueRange(ValueRange)
+                                Goto, FinalizeAR
+                            }
+                        }
 ;                        msgbox, IPDAffixType: %IPDAffixType%
-                        IfInString, IPDAffixType, Comp. Prefix
+                        If (InStr(IPDAffixType, "Comp. Prefix"))
                         {
                             AffixType := "Comp. Prefix+Comp. Suffix+Suffix"
                             If (NumPrefixes <= 3)

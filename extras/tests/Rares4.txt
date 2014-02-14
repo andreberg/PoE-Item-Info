@@ -1,0 +1,95 @@
+#################### 1
+Rarity: Rare
+Eagle Bane
+Crystal Sceptre
+--------
+One Handed Mace
+Physical Damage: 38-58 (augmented)
+Critical Strike Chance: 6.8%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 41
+Str: 59
+Int: 85
+--------
+Sockets: B 
+--------
+Itemlevel: 58
+--------
+20% increased Elemental Damage
+--------
+41% increased Spell Damage
+28% increased Physical Damage
+5% reduced Enemy Stun Threshold
++51 to maximum Mana
++26 to Accuracy Rating
+#################### 2
+Rarity: Rare
+Blight March
+Hydrascale Boots
+--------
+Armour: 201 (augmented)
+Evasion Rating: 201 (augmented)
+--------
+Requirements:
+Level: 59
+Str: 56
+Dex: 56
+--------
+Sockets: G-R R 
+--------
+Itemlevel: 62
+--------
+118% increased Armour and Evasion
+2 Life Regenerated per second
+30% increased Movement Speed
+24% increased Block and Stun Recovery
+#################### 3
+Rarity: Rare
+Rage Shell
+Destiny Leather
+--------
+Evasion Rating: 578 (augmented)
+--------
+Requirements:
+Level: 59
+Dex: 160
+--------
+Sockets: G G-G 
+--------
+Itemlevel: 68
+--------
++117 to Evasion Rating
+6% increased Evasion Rating
++72 to maximum Life
+3.7 Life Regenerated per second
+6% increased Block and Stun Recovery
+#################### 4
+Rarity: Rare
+Brood Song
+Wraith Sword
+--------
+Two Handed Sword
+Physical Damage: 68-140 (augmented)
+Elemental Damage: 33-57 (augmented)
+Critical Strike Chance: 5%
+Attacks per Second: 1.20
+--------
+Requirements:
+Level: 54
+Str: 93
+Dex: 93
+--------
+Sockets: R-R 
+--------
+Itemlevel: 54
+--------
+30% increased Accuracy Rating
+--------
+23% increased Physical Damage
+Adds 33-57 Fire Damage
++15% to Cold Resistance
++4 Mana Gained on Kill
++24 to Accuracy Rating
+5% increased Light Radius

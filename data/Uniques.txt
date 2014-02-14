@@ -38,7 +38,7 @@ Andvarius|@6-15:increased Rarity of Items found|10:to Dexterity|50-70:increased 
 Berek's Grip|@12-16:to Cold and Lightning Resistances|10-15:increased Cold Damage|1-1,1-50:Adds Lightning Damage|30-40:to maximum Life|5:of Damage against Shocked enemies Leeched as Mana|5:of Damage against Frozen enemies Leeched as Life
 Berek's Pass|@12-16:to Fire and Cold Resistances|10-15:increased Fire Damage|1-30,10-30:Adds Cold Damage|30-40:to maximum Energy Shield|30:increased Damage while Ignited|5000:to Armour while Frozen
 Berek's Respite|@12-16:to Fire and Lightning Resistances|1-10,1-30:Adds Fire Damage|10-15:increased Lightning Damage|30-40:to maximum Mana|Shock a nearby enemy for 2 seconds on killing a Shocked Enemy|Ignite a nearby enemy on killing an Ignited enemy
-Blackheart|@Adds 1-4 Physical Damage|5:increased Physical Damage|Adds 1-3 Chaos Damage|20-30:to maximum Life|2-4:Life Regenerated per second|10:Chance to Cause Monsters to Flee
+Blackheart|@:Adds 1-4 Physical Damage|5:increased Physical Damage|Adds 1-3 Chaos Damage|20-30:to maximum Life|2-4:Life Regenerated per second|10:Chance to Cause Monsters to Flee
 Death Rush|@9-13:to Chaos Resistance|300-350:to Accuracy Rating|60-80:to Armour|15-20:to Chaos Resistance|3-4:of Physical Attack Damage Leeched back as Life|You gain Onslaught for 2.0 seconds when you Kill an Enemy
 Doedre's Damning|@20-25:to maximum Mana|5-10:to Intelligence|5:Mana Gained when you Kill an enemy|5:to all Elemental Resistances|Enemies can have 1 additional Curse
 Dream Fragments|@20-30:to Cold Resistance|20:increased maximum Mana|50:increased Mana Regeneration Rate|Cannot be Frozen
