@@ -122,7 +122,7 @@ Deshret's Vise|@141-162:Armour|10:increased Physical Damage|100:to Strength|5-15
 Doedre's Tenure|40-50:increased Spell Damage|10:to Intelligence|16:to maximum Energy Shield|20:reduced Cast Speed
 Facebreaker|60:increased Global Critical Strike Multiplier|10:reduced Enemy Stun Threshold|600-800:more Unarmed Physical Damage|Extra Gore
 Voidbringer|@175-207:Energy Shield|125-150:increased Critical Strike Chance for Spells|280-350:increased Energy Shield|80:increased Mana Cost of Skills|15-20:Energy Shield gained when you Kill an enemy|1:to Level of Elemental Gems in this item
-Hrimsorrow|20-30:to Strength|50:increased Evasion Rating|10-20:to Cold Resistance|25:of Physical Damage Converted to Cold Damage|Reflects 10 Cold Damage to Melee Attackers
+Hrimsorrow|20-30:to Strength|50:increased Evasion Rating|10-20:to Cold Resistance|25:of Physical Damage Converted to Cold Damage|10:Reflects Cold Damage to Melee Attackers
 Lochtonial Caress|@16-26:Armour|10-15:increased Attack Speed|10-20:to Armour|10-15:reduced maximum Mana|10-15:increased Cast Speed|Conduit
 Maligaro's Virtuosity|@99-112:Evasion Rating|20-30:to Dexterity|5:increased Attack Speed|50:increased Global Critical Strike Chance|28-36:increased Global Critical Strike Multiplier|60-80:increased Evasion Rating
 Ondar's Clasp|30:increased Attack Speed when on Full Life|1-13:Adds Lightning Damage|50-80:to Accuracy Rating|20:increased Movement Speed when on Low Life
