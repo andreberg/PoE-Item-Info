@@ -1,6 +1,7 @@
-; Data from http://exilestats.com/ex
-; Adjust these to reflect current rates
-; The base currency item is Orb of Chaos
+; Data from http://exilestats.com/ex, http://poexchange.info, ingame trade chat
+; Preloaded with standard league rates.
+; Adjust these to reflect current rates in your league.
+; The base currency item is Orb of Chaos.
 ; The format is <exact name to match>|<number of source orbs>:<number of chaos orbs>
 ; Comments with semicolon. Blank lines will be ignored.
 Scroll of Wisdom|250:1
@@ -26,3 +27,4 @@ Gemcutter's Prism|1:3
 Divine Orb|1:8
 Exalted Orb|1:24
 Eternal Orb|1:80
+Mirror of Kalandra|1:3360

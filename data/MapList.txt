@@ -1,0 +1,148 @@
+mapList := Object()
+uniqueMapList := Object()
+
+matchList := ["Crypt Map","Dried Lake Map","Dunes Map","Dungeon Map","Grotto Map","Orchard Map","Overgrown Ruin Map","Tropical Island Map","Arcade Map","Arsenal Map","Cemetery Map","Mountain Ledge Map","Sewer Map","Thicket Map","Wharf Map","Ghetto Map","Mud Geyser Map","Museum Map","Reef Map","Spider Lair Map","Springs Map","Vaal Pyramid Map","Catacomb Map","Overgrown Shrine Map","Promenade Map","Shore Map","Spider Forest Map","Tunnel Map","Bog Map","Coves Map","Graveyard Map","Pier Map","Underground Sea Map","Villa Map","Arachnid Nest Map","Colonnade Map","Dry Woods Map","Strand Map","Temple Map","Jungle Valley Map","Labyrinth Map","Mine Map","Torture Chamber Map","Waste Pool Map","Canyon Map","Cells Map","Dark Forest Map","Dry Peninsula","Gorge Map","Maze Map","Residence Map","Underground River Map","Bazaar Map","Necropolis Map","Plateau Map","Academy Map","Crematorium Map","Precinct Map","Shipyard Map","Shrine Map","Courtyard Map","Palace Map"]
+
+;----------------------Normal Map List--------------------
+
+mapList["Unknown Map"] := "`nYou've found a new map type, please report it!"
+
+mapList["Crypt Map"] := "`nThis map is based on The Crypt zones in Act 2.`n`nMap type: Indoors`n`nBoss: Pagan Bishop of Agony (based on Archbishop Geofri the Abashed,`nthe Boss from The Crypt dungeon)`n- Resists Lightning`n- Immune To Curses`n- Casts Vulnerability`n- Casts Temporal Chains`n`nVendor: 3 Crypt maps yields 1 Cemetery map"
+
+mapList["Dried Lake Map"] := "`nThis map is based on the Fetid Pool zone in Act 1.`nIt does not have the same environmental effects as that zone.`nIt is a large, open area with one large pool of water around the center.`n`nMap type: Outdoors`n`nBoss: Drought Maddened Rhoa (based on Oozeback Bloom)`nIt charges at enemies, stunning them if hit.`nHe also has a debuff that deals chaos damage to enemies over time.`n`nVendor: 3 Dried Lake maps yields 1 Thicket map"
+
+mapList["Dunes Map"] := "`nThis map is based on The Coast zone in Act 1.`n`nMap type: Outdoors`n`nBoss: The Blacksmith (based on Hillock)`n- Uses Leap Slam and Heavy Strike when on half life.`n- Spawns Zombies from the ground where his leap slam lands.`nThe zombies leave a poison cloud on death,`ndealing Chaos Damage over time.`n`nVendor: 3 Dunes maps yields 1 Wharf map"
+
+mapList["Dungeon Map"] := "`nThis map is based on The Prison zones in Act 1.`nThis map is all one floor until reaching an 'opening' door,`nwhich leads to a separated area containing the boss.`n`nMap type: Indoors`n`nBoss: Penitentiary Incarcerator (based on Brutus).`nHe hits pretty hard, even if you have high armor.`nPay attention to his movement, when he starts his`nground smash attack, do your best to dodge it.`nHe can also pull you with his chain.`n`nVendor: 3 Dungeon maps yields 1 Arsenal map"
+
+mapList["Grotto Map"] := "`nThis map is based on The Caverns zones in Act 2.`n`nMap type: Indoors`n`nBoss: Fire and Fury (based on Ambrosia, Daughter of Merveil).`nShe deals fire damage using Fireball and Firestorm. She also has`nan aura that increases the fire damage of her allies.`n`nVendor: 3 Grotto maps yields 1 Mountain Ledge map"
+
+mapList["Orchard Map"] := "`nThis map is based on The Imperial Gardens zone in Act 3.`n`nMap type: Outdoors`n`nBoss: Tunneltrap, unique Devourer, is located in a`nseparate door room at one end of the map. He hits like`na truck and considered to be the hardest 66 lvl map boss.`n- Far Shot`n- Shoots fire projectiles`n- Burrow`n`nVendor: 3 Orchard maps yields 1 Sewer map"
+
+mapList["Overgrown Ruin Map"] := "`nThis map is based on the Chamber of Sins zones in Act 2.`nThe map is divided into several floors connected by multiple stairways.`n`nMap type: Indoors`n`nBoss: Loathe, based on Fidelitis, the Mourning from the Chamber of Sins Level 3.`nHe deals Lightning Damage using Lightning Strike.`n- Resist Lightning`n`nVendor: 3 Overgrown Ruin maps yields 1 Sewer map"
+
+mapList["Tropical Island Map"] := "`nThis map is based on The Southern Forest zone in Act 2.`nIt consists of two long, narrow islands linked by a ""Cave"" transition.`n`nMap type: Outdoors`n`nBoss: Blood Progenitor (a unique Chieftain)`n- Summons Apes from Nearby Trees`n- Frenzies nearby Allies`n- Allies Deal Extra Physical Damage`n`nVendor: 3 Tropical Island Maps yield 1 Arcade Map"
+
+mapList["Arcade Map"] := "`nThis map is based on the Marketplace zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: Two Ribbons: Herald of Thunder (Casts Shock Nova)`nand Herald of Ashes (Casts Firestorm)`n`nVendor: `n- Produced by 3 Tropical Island Maps`n- 3 Arcade maps yield 1 Ghetto map"
+
+mapList["Arsenal Map"] := "`nThis map is based on The Warehouse District zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: a golem Volcanus (Based on Hatebeat, a unique Cinder Elemental)`n- Resists Fire`n- Casts Firestorm`n- Rolls over Enemies`n`nVendor:`n- Produced by 3 Dungeon maps`n- 3 Arsenal maps yield 1 Springs map"
+
+mapList["Cemetery Map"] := "`nThis map is based on The Fellshrine Ruins zone in Act 2.`n`nMap type: Outdoors`n`nBoss: Thunderskull (a unique Skeleton Archmage)`n- Resists Fire Damage`n- Resists Lightning Damage`n- Uses Lightning Warp`n`nVendor:`n- Produced by 3 Crypt maps`n- 3 Cemetery maps yield 1 Reef map"
+
+mapList["Mountain Ledge Map"] := "`nThis map is based on The Ledge zone in Act 1.`n`nMap type: Outdoors`n`nBoss: Champion of Frost (based on Chatters from Lower Prison in Act 1)`nHe uses Glacial Hammer.`n- Resists Lighting`n- Allies deal additional cold damage`n`nVendor:`n- Produced by 3 Grotto Maps`n- 3 Mountain Ledge Maps yield 1 Museum Map"
+
+mapList["Sewer Map"] := "`nThis map is based on the Sewer zones in Act 3.`n`nMap type: Indoors`n`nBoss: Belcer, the Pirate Lord (based on Fairgraves Eternal)`n- Resists Elemental Damage`n- Can Gain Endurance Charges on Hit`n- Can Gain Frenzy Charges on Hit`n- Can Gain Power Charges on Hit`n`nVendor:`n- Produced by 3 Overgrown Ruin maps`n- 3 Sewer maps yield 1 Mud Geyser map"
+
+mapList["Thicket Map"] := "`nThis map is based on the Dread Thicket zone in Act 2.`nThere is one door at one end that leads to the boss room.`n`nMap type: Indoors`n`nBoss: Steelpoint the Avenger (based on Ironpoint the Forsaken,`na unique Skeleton located in The Climb zone in Act 1)`n- Resists Elemental Damage`n- Resists Chaos`n- Attacks Quickly`n- Hits Accurately`n- Fires a Rain of Arrows`n- Fires Split Arrows`n`nVendor:`n- Produced by 3 Dried Lake maps`n- 3 Thicket maps yield 1 Spider Lair map"
+
+mapList["Wharf Map"] := "`nThis map is based on The Docks zone in Act 3.`n`nMap type: Outdoors`n`nBoss: Bramblemist (unique boss based on the Bramble Cobra`nmonsters from The Wetlands zone in Act 2).`n- Resist Fire`n- Resist Chaos`n- Fires Additional Projectiles (8-10)`n- Deals Chaos Damage`n`nVendor:`nProduced by 3 Dunes maps`n3 Wharf maps yield 1 Vaal Pyramid map"
+
+mapList["Ghetto Map"] := "`nThis map is based on the The Slums zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: The Reaver, based on Perpetus from The City of Sarn area`n- Bear Trap`n- Ethereal Knives`n- Whirling Blades`n`nVendor:`n- Produced by 3 Arcade maps`n- 3 Ghetto maps yield 1 Catacombs map"
+
+mapList["Mud Geyser Map"] := "`nThis map is based on the Fetid Pool zone in Act 1.`n`nMap type: Outdoors`n`nBoss: Skullbeak (a Unique Rhoa Carcass similar to Oozeback Bloom).`nIt charges at enemies, stunning them if hit.`nHe also has a debuff that deals chaos damage to enemies over time.`n- Charge at Enemies`n- Hits accurately`n- Enemies lose health over time`n`nVendor:`n- Produced by 3 Sewer maps`n- 3 Mud Geyser maps yields 1 Shore map"
+
+mapList["Museum Map"] := "`nThis map is based on the The Library zone in Act 3.`n`nMap type: Indoors`n`nBoss: based on the triple unique mobs from the 2nd phase`nin the Dominus fight from The Upper Sceptre of God.`nThey reside behind a separate hidden shelf door room.`nThe Fallen Queen - (Alal the Terrifying)`nThe Hollow Lady - (Kali the Crazed)`nThe Broken Prince - (Orcus the Reaver)`nThey are hard. You have been warned.`n`nVendor:`n- Produced by 3 Mountain Ledge maps`n- 3 Museum maps yield 1 Spider Forest map"
+
+mapList["Reef Map"] := "`nThis map is based on the Tidal Island zone in Act 1.`n`nMap type: Outdoors`n`nBoss: Asphyxia, a Boiling Ambusher (based on Stranglecharm`nfrom The Ship Graveyard Cave)`n- Resists Elemental Damage`n- Gains a Power Charge for each quarter of Maximum Life Removed`n- Casts Ice Nova`n- Casts Arctic Breath`n- Deals Cold Damage`n- Summons Water Elementals`n- Enemies are Slowed`n`nVendor:`n- Produced by 3 Cemetery Maps`n- 3 Reef Maps yield 1 Promenade Map"
+
+mapList["Spider Lair Map"] := "`nThis map is based on the The Weaver's Chambers zone in Act 2.`n`nMap type: Indoors`n`nBoss: Hybrid Widow (unique spider based on Black Death)`n- Uses Flicker Strike`n- Uses Viper Strike`n`nVendor:`n- Produced by 3 Thicket maps`n- 3 Spider Lair maps yield 1 Spider Forest map"
+
+mapList["Springs Map"] := "`nThis map is based on The Riverways in Act 2. There is a central`nmountain where the portal is located, surrounded by an`napproximately circular map.`n`nMap type: Outdoors`n`nBoss: based on Alira the bandit lord from The Western Forest`nfrom Act 2. The boss is located in a camp similar to the one`nin The Western Forest.`n- Uses Detonate Dead`n`nVendor:`n- Produced by 3 Arsenal maps`n- 3 Springs maps yield 1 Overgrown Shrine map"
+
+mapList["Vaal Pyramid Map"] := "`nThis map is based on the Ancient Pyramid zone in Act 2.`n`nMap type: Indoors`n`nBoss: Atziri's Chosen (a unique Vaal Fallen,`nnot to be confused with Vaal Oversoul. Atziri's Chosen`nis just a slow soldier with a sword)`n- Resist Fire`n- Undead`n- Inflicts Elemental Status Effects`n- Allies Deal Extra Physical Damage`n`nVendor:`n- Produced by 3 Wharf maps`n- 3 Vaal Pyramid maps yield 1 Tunnel map"
+
+mapList["Catacomb Map"] := "`nThis map is based on The Catacombs zone in Act 3.`n`nMap type: Indoors`n`nBoss: Xixic (a unique High Necromancer).`n- Resists Cold Damage`n- Raise Undead`n- Raise Magic Monsters`n- Uses Summon Skeletons`n`nVendor:`n- Produced by 3 Ghetto Maps`n- 3 Catacomb Maps yield one Pier Map"
+
+mapList["Overgrown Shrine Map"] := "`nThis map is based on the Chamber of Sins zones in Act 2.`n`nMap Type: Indoors`n`nBoss: Hybrid Widow, unique spider, based on Black`nDeath and The Weaver`n- Uses Flicker Strike`n- Uses Viper Strike`n`nVendor:`n- Produced by 3 Springs Maps`n- 3 Overgrown Shrine Maps yield 1 Bog Map"
+
+mapList["Promenade Map"] := "`nThis map is based on the The Ebony Barracks zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: This map contains 2 Unique bosses.`n`nBlackguard Avenger (based on Captain Arteri from`nThe Western Forest in Act 2)`n- Resists Elemental Damage`n- Uses Cleave`n- Uses Double Strike`n`nBlackguard Tempest (lightning mage from The Battlefront in Act 3)`n- Resists Lightning`n- Casts Spark`n- Casts Lightning Thorns (very painful)`n`nVendor:`n- Produced by 3 Reef Maps`n- 3 Promenade Maps yield 1 Villa Map"
+
+mapList["Shore Map"] := "`nThis map is based on The Climb/The Prisoner's Gate zones in Act 1.`n`nMap Type: Outdoors`n`nBoss: Glace (based on Hailrake from the Tidal Island in Act 1):`n- Resists Fire`n- Resists Chaos`n- Extra Cold Damage`n- Casts Ice Spear`n`nVendor:`n- Produced by 3 Mud Geyser Maps`n- 3 Shore Maps yield 1 Coves Map"
+
+mapList["Spider Forest Map"] := "`nThis map is based on the The Blackwood zone in Act 2.`n`nMap Type: Outdoors`n`nBoss: The Blacksmith (based on Hillock)`n- Uses Leap Slam and Heavy Strike when on half life.`n- Spawns Zombies from the ground where his leap slam lands.`nThe zombies leave a poison cloud on death, dealing Chaos`nDamage over time.`n`nVendor:`n- Produced by 3 Spider Lair Maps`n- 3 Spider Forest Maps yield 1 Graveyard Map"
+
+mapList["Tunnel Map"] := "`nThis map is based on the Flooded Depths zone in Act 1.`n`nMap Type: Indoors`n`nBoss: Lady of the Brood (a Siren's Daughter from`nAct 1 Upper Submerged Passage). The boss chamber`nis a square area, filled with golden items on the ground,`nmuch like Merveils chamber.`n`nVendor:`n- Produced by 3 Vaal Pyramid Maps`n- 3 Tunnel Maps yield 1 Underground Sea Map"
+
+mapList["Bog Map"] := "`nThis map is based on the Fetid Pool zone in Act 1.`n`nMap type: Outdoor`n`nBoss: Slitherskin (a Unique Cobra, who does`nchaos damage).`n`nVendor:`n- Produced by 3 Overgrown Shrine Maps`n- 3 Bog Maps yield 1 Strand Map"
+
+mapList["Coves Map"] := "`nThis map is based on The Coves zone in Act 1.`n`nMap type: Outdoors`n`nBoss: Master of the Blade, based on Kraityn`nfrom the Broken Bridge.`n`nVendor:`n- Produced by 3 Shore Maps`n- 3 Coves Maps yield 1 Colonnade Map"
+
+mapList["Graveyard Map"] := "`nThis map is based on the Fellshrine Ruins zone in Act 2.`n`nMap Type: Outdoors`n`nBoss: Merveil the Reflection, based on Merveil.`nMerveil uses cold spells to attack at range, so the best`nstrategy is to get the most cold resistances possible.`nShe uses Cold Snap and Ice Spear. In close range`nshe hits you with her swords. After death she transforms`ninto the second form and starts to summon adds.`n`nVendor:`n- Produced by 3 Spider Forest Maps`n- 3 Graveyard Maps yield 1 Dry Woods Map"
+
+mapList["Pier Map"] := "`nThis map is based on the The Docks zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: Flame of Truth, based on The Burning Menace,`nwho is a unique fire dog (NOT the one from The Docks)`nlocated in near the end of Prisoner's Gate. He deals fire`ndamage and ignites the ground when he dies.`n`nVendor:`n- Produced by 3 Catacombs Maps`n- 3 Pier Maps yield 1 Arachnid Nest Map"
+
+mapList["Underground Sea Map"] := "`nThis map is based on The Den in Act 2.`n`nMap Type: Indoors`n`nBoss is based on Kuduku, the False God`nfrom The Ledge in Act 1. It is a unique totem,`nit is immobile, and deals heavy Lightning Damage`nusing Spark and Shock Nova. Lightning resistance`nis recommended. Watch for shock stacks.`n`nVendor:`n- Pruduced by 3 Tunnel Maps`n- 3 Underground Sea maps yield 1 Temple map"
+
+mapList["Villa Map"] := "`nThis map is based on The Sceptre of God in Act 3.`nBoss room is separate and can be entered through`na door at one end.`n`nMap Type: Indoors`n`nBoss: Excellis Aurafix (throws fire traps, lightning`ntraps and bear traps) is based on Caliga from The`nSceptre of God in Act 3.`n`nVendor:`n- Produced by 3 Promenade Maps`n- 3 Villa Maps yield 1 Dry Woods Map"
+
+mapList["Arachnid Nest Map"] := "`nThis map is based on the The Weaver's Chambers in Act 2.`n`nMap type: Indoors`n`nBoss: Lord of the Bow, a unique Sniper (Resists Chaos,`nAttacks Quickly).`n`nVendor:`n- Produced by 3 Pier Maps`n- 3 Arachnid Nest Maps yield 1 Torture Chamber Map"
+
+mapList["Colonnade Map"] := "`nThis map is based on the Battlefront zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: Carnage, based on Kole. He has a high-damage`nGround Smash attack and he can pull the player towards`nhim with his chain.`n`nVendor:`n- Produced by 3 Coves Maps`n- 3 Colonnade Maps yield 1 Labyrinth Map"
+
+mapList["Dry Woods Map"] := "`nThis map is based on The Old Fields zone in Act 2.`n`nMap Type: Outdoors`n`nBoss: Spirit of Nadia and Spirit of Aidan based on`nAidan the Frenzied and Nadia the Soothing (small`nmonkeys from Dread Thicket in Act 2). Two of the`neasiest map bosses in the game.`n`nVendor:`n- Produced by 3 Graveyard Maps or 3 Villa Maps`n- 3 Dry Woods Maps yield 1 Jungle Valley Map"
+
+mapList["Strand Map"] := "`nThis map is based on the Twilight Strand zone in Act 1.`n`nMap Type: Outdoors`n`nBoss: Massier, loosely based on Calaf, Headstaver in`nthe Crossroads. He can knock the player back with his`nHeavy Strike.`n`nVendor:`n- Produced by 3 Bog Maps`n- 3 Strand Maps yield 1 Mine Map"
+
+mapList["Temple Map"] := "`nThis map is based on the Solaris Temple Level 3 zone in Act 3.`n`nMap Type: Indoors`n`nBoss: The Wicked One, is based on Piety in her human form`n(from Crematorium Level 2 in Act 3). Prepare for the extremely`nhigh lightning damage.`n`nVendor:`n- Produced by 3 Underground Sea Maps`n- 3 Temple Maps yield 1 Waste Pool Map"
+
+mapList["Jungle Valley Map"] := "`nThis map is based on the The Riverways zone in Act 2.`n`nMap Type: Outdoors`n`nBoss: Spinner of False Hope, based on the unique spider The Weaver.`n- Deals Chaos Damage`n- Does a very wide poison spray that deals heavy chaos damage`n- Spawns hundreds of spiders in the room indefinitely as long as she lives`n- Extremely difficult boss`n`nVendor:`n- Produced by 3 Dry Woods Maps`n- 3 Jungle Valley Maps yield 1 Dry Peninsula Map"
+
+mapList["Labyrinth Map"] := "`nThis map is based on the The Hedge Maze zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: Sallazzang, unique monster based on Paradisae Venenum`nfrom The Upper Sceptre of God in Act 3.`n- Devours Corpses (very high life regen)`n- Suppressing Fire`n- Ethereal Knives, similar to the one that The Weaver uses.`n- Spawns Devourers as long as he lives`n`nVendor:`n- Produced by 3 Colonnade Maps`n- 3 Labyrinth Maps yield 1 Dark Forest Map"
+
+mapList["Mine Map"] := "`nThis map is based on the Cavern of Wrath and`nCavern of Anger zones in Act 1.`n`nMap Type: Indoors`n`nBoss: Loathe, based on Fidelitis, the Mourning`nfrom the Chamber of Sins Level 3. He deals Lightning`nDamage using Lightning Strike.`n`nVendor:`n- Produced by 3 Strand Maps`n- 3 Mine Maps yield one Dark Forest Map"
+
+mapList["Torture Chamber Map"] := "`nThis map is based on the Prison zones in Act 1.`n`nMap Type: Indoors`n`nBoss: Shock and Horror`n- Wrath aura`n- Casts 5 Lightning Warp totems`n- Lightning beam (run behind any pillar to cancel)`n- Spawns minions`n- This boss is extremely difficult. Skip or RIP`n`nVendor:`n- Produced by 3 Arachnid Nest Maps`n- 3 Torture Chamber Maps yield 1 Canyon Map"
+
+mapList["Waste Pool Map"] := "`nThis map is based on the sewer zones in Act 3.`n`nMap Type: Indoors`n`nBoss: Asphyxia, a Boiling Ambusher (based on`nStranglecharm from The Ship Graveyard Cave).`n- Resists Elemental Damage`n- Gains a Power Charge for each quarter of Maximum Life Removed`n- Casts Ice Nova`n- Casts Arctic Breath`n- Deals Cold Damage`n- Summons Water Elementals`n- Enemies are Slowed`n`nVendor:`n- Produced by 3 Temple Maps`n- 3 Waste Pool Maps yield 1 Cells Map"
+
+mapList["Canyon Map"] := "`nThis map is based on the The Climb zone in Act 1.`n`nMap Type: Outdoors`n`nBoss: Lord of the Bow, a unique Sniper.`n- Resists Elemental Damage`n- Resists Chaos`n- Attacks Quickly`n- Fires Additional Projectiles`n- Punctures`n- Fires Poison Arrows`n`nVendor:`n- Produced by 3 Torture Chamber Maps`n- 3 Canyon Maps yield 1 Gorge Map"
+
+mapList["Cells Map"] := "`nThis map is based on the Crematorium map.`n`nMap Type: Indoors`n`nBoss: Harbinger, based on Voidbearer monsters`n(fire breathing dogs) from The Docks zone in Act 3.`n`nVendor:`n- Produced by 3 Waste Pool Maps`n- 3 Cells Maps yield 1 Underground River Map"
+
+mapList["Dark Forest Map"] := "`nThis map is based on the Western Forest in Act 2.`n`nMap Type: Outdoors`n`nBoss: Oak the Mighty is based on Oak. He is located`ninside an encampment similar to that of Oak in Act 2.`n`nVendor:`n- Produced by 3 Mine Maps or 3 Labyrinth Maps`n- 3 Dark Forest Maps yield one Residence Map"
+
+mapList["Dry Peninsula"] := "`nThis map is based on The Southern Forest zone in Act 2.`n`nMap type: Outdoors`n`nBoss: Titan of the Grove (a unique Rock Golem)`n- Additional Life`n- Allies Cannot Die`n`nVendor:`n- Produced by 3 Jungle Valley Maps`n- 3 Dry Peninsula Maps yield 1 Maze Map"
+
+mapList["Gorge Map"] := "`nThis map is based on the The Climb zone in Act 1.`n`nMap Type: Outdoors`n`nBoss: Master of the Blade, based on Kraityn`n(Broken Bridge in Act 2).`n- Uses Flicker Strike`n`nVendor:`n- Produced by 3 Canyon Maps`n- 3 Gorge Maps yield 1 Bazaar Map"
+
+mapList["Maze Map"] := "`nThis map is based on the Ancient Pyramid zone in Act 2.`n`nMap Type: Indoors`n`nBoss: Shadow of the Vaal, based on Vaal Oversoul, the`nfinal boss of Act 2.`n`nVendor:`n- Produced by 3 Dry Peninsula Maps`n- 3 Maze Maps yield 1 Necropolis Map"
+
+mapList["Residence Map"] := "`nThis map is based on the The Sceptre of God zone in Act 3.`nHas 3 levels plus the boss room.`n`nMap Type: Indoors`n`nBoss: The High Templar, based on Dominus, the final boss`nof the game.`n- Creates portals with minions`n- Suicide curse/mark`n`nVendor:`n- Produced by 3 Dark Forest Maps`n- 3 Residence Maps yield one Plateau Map"
+
+mapList["Underground River Map"] := "`nThis map is based on the Cavern of Wrath and Cavern of`nAnger zones in Act 1.`n`nMap Type: Indoors`n`nBoss: Beast of the Pits (based on The Great White Beast,`nthe huge unique white bear from Act 2).`n`nVendor:`n- Produced by 3 Cells Maps`n- 3 Underground River Maps yield 1 Plateau Map"
+
+mapList["Bazaar Map"] := "`nThis map is based on the Marketplace zone in Act 3.`n`nMap type: Outdoor`n`nBoss: Dialla's Wrath & Dialla's Anger (based on`nBanner of Passion and Banner of Action). These are`nsmall unique ribbons from Solaris Temple.`n`nVendor:`n- Produced by 3 Gorge Maps`n- 3 Bazaar Maps yield 1 Academy Map"
+
+mapList["Necropolis Map"] := "`nThis map is based on the Church Dungeon in Act 2.`n`nMap Type: Indoors`n`nBoss: Merveil, the Reflection is based on Merveil from Act 1.`nMerveil uses cold spells to attack at range, so the best`nstrategy is to get the most cold resistances possible.`nShe uses Cold Snap and Ice Spear. In close range`nshe hits you with her swords. After death she transforms`ninto the second form and starts to summon adds.`n`nVendor:`n- Produced by 3 Maze Maps`n- 3 Necropolis Maps yield 1 Precinct Map"
+
+mapList["Plateau Map"] := "`nThis map is based on The Ledge zone in Act 1.`n`nMap Type: Outdoors`n`nBoss: Drought-Maddened Rhoa, based on Oozeback Bloom.`nIt charges at enemies, stunning them if hit.`nHe also has a debuff that deals chaos damage to enemies over time.`n- Charge at Enemies`n- Hits accurately`n- Enemies lose health over time`n`nVendor:`n- Produced by 3 Underground River Maps or 3 Residence Maps`n- 3 Plateau Maps yield 1 Crematorium Map"
+
+mapList["Academy Map"] := "`nThis map is based on the The Library zone in Act 3.`nThe boss has a seperate room, hidden behind a bookshelf.`n`nMap type: Indoors`n`nBoss: The Arbiter of Knowledge, based on Trinian,`nIntellectus Prime in The Archives of Act 3. He throws books`nat players and casts tornados.`n- Far Shot`n- Enfeeble curse`n`nVendor:`n- Produced by 3 Bazaar Maps`n- 3 Academy Maps yield 1 Shipyard Map"
+
+mapList["Crematorium Map"] := "`nThese features may not be universally true, but they`nhave been observed at least once.`nA tileset presumably from act 3, layout and style is very`nsimilar to the Prison but ashen. Very few wide open`nspaces and many doorways and small hall areas. The`nmap is divided into sub-areas connected by stairs.`nThese stairs are one way, so if you are overwhelmed`nat their exit you will have no easy retreat. The staircases`nultimately form a circle, so once the map is cleared you`ncan freely traverse it to pick up left-behind loot.`n`nMap Type: Indoors`n`nBoss: Megaera - Based on Fire Fury from Act 1, a`nunique Cannibal located on The Coast. She uses Firestorm`nto deal fire damage.`n`nVendor:`n- Produced by 3 Plateau Maps`n- 3 Crematorium Maps yield 1 Shrine Map"
+
+mapList["Precinct Map"] := "`nThis map is based on the The Slums zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: Lady Stormflay - Based on Spinecrack, the`nunique Whipping Miscreation mob that uses Lightning`nStrike and curses vulnerability on hit.`n`nVendor:`nProduced by 3 Necropolis Maps`n3 Precinct maps yield 1 Shipyard map"
+
+mapList["Shipyard Map"] := "`nThis map is based on The Docks zone in Act 3.`n`nMap Type: Outdoors`n`nBoss: Warmonger, based on General Gravicius`nfrom Ebony Barracks zone in Act 3.`n- Resists Cold`n- Resists Chaos`n- Vulnerable to Fire`n- Vulnerable to Lightning`n- Extra Fire Damage`n- Casts Firestorm`n- Casts Molten Shell`n- Allies have Energy Shield`n`nVendor:`n- Produced by 3 Academy Maps or 3 Precinct Maps`n- 3 Shipyard Map yield 1 Palace Map"
+
+mapList["Shrine Map"] := "`nThis map is based on Lunaris Temple Level 3 in Act 3.`n`nMap Type: Indoors`n`nBoss: Piety the Empyrian, based on Piety from`nLunaris Temple in Act 3.`nIn the first phase Piety is outside of her chamber only in`nhuman mode casting lightning spells. When she is down`nto 75% hp, she teleports back into her chamber. After`nthat the encounter is exactly the same as in The Lunaris`nTemple Level 3 with blue and red portals.`n`nVendor:`n- Produced by 3 Crematorium Maps`n- 3 Shrine Maps yield 1 Courtyard Map"
+
+mapList["Courtyard Map"] := "`nThis map is based on The Imperial Gardens in Act 3.`n`nMap Type: Outdoors`n`nBoss: Triple boss based on the three unique Blackguards`nfrom The Upper Sceptre of God (before the fight with Dominus);`n- Oriath's Vigil (Imperator Stantinus Bitterblade). He uses`nCyclone and deals Cold Damage, leaving behind a trail of ice`nthat slows players who walk into it.`n- Oriath's Vengeance (Draconarius Wilhelm Flamebrand),`nHe uses Leap Slam that adds burning ground and a Fire form`nof Lightning Strike.`n- Oriath's Virtue (Compulsor Octavia Sparkfist). She deals`nlightning damage using Spark totems and Lightning Warp.`n`nVendor:`n- Produced by 3 Shrine Maps"
+
+mapList["Palace Map"] := "`nThis map is based on The Upper Sceptre of God in Act 3.`n`nMap Type: Indoors`n`nBoss: God's Chosen (or The Hallowed Husk in his`nAscendant form). He is based on Dominus.`n`nVendor:`n- Produced by 3 Shipyard Maps"
+
+;----------------------Unique Map List--------------------
+
+uniqueMapList["Unknown Map"] := "`nYou've found a new unique map, please report it!"
+
+uniqueMapList["Crypt Map"] := "`nThis map contains several floors with multiple waves`nof monster spawning per floor. The map is guaranteed`nto drop at least one unique item, regardless of item level.`nWhile the monster level stays the same, magic and rare`nmonsters increase with every wave. Additionally, at the`nend of every wave appears a rare Necromancer.`n`nMap type: Indoors`n`nBoss: Infector of Dreams (unique Necromancer)`n- Resists Lightning`n- Additional Life`n- Casts Elemental Weakness Curse`n- Raises Undead`n- Allies deal increased Elemental Damage"
+
+uniqueMapList["Mountain Ledge Map"] := "`nThis map is based on The Ledge zone in Act 1`n`nMap type: Outdoors`n`nBoss: Merveil, the Siren`nMerveil uses cold spells to attack at range, so the best`nstrategy is to get the most cold resistances possible.`nShe uses Cold Snap and Ice Spear. In close range`nshe hits you with her swords. After death she transforms`ninto the second form and starts to summon adds."
+
+uniqueMapList["Vaal Pyramid Map"] := "`nThis map consists entirely of rooms filled with chests.`nThere are no monsters (note: Rogue Exiles can still spawn).`n`nMap Type: Indoors`n`nBoss: None"
+
+uniqueMapList["Overgrown Shrine Map"] := "`nOn this map all enemies are being resurrected after a short time.`nIt's a good idea to take corpse consuming skills with you`nsuch as Raise Zombie or Flesh Offering.`n`nMap type: Indoors`n`nBoss: Thorn and Rose. Two unique Necromancers`nwho can resurrect any monster to life (including each other)`nKill one, consume its corpse, then kill the other one,`nor kill them simultaneously.`nAfter both bosses are dead regular enemies cease to revive,`nso you can clear the map."
+
+uniqueMapList["Temple Map"] := "`nMap type: Indoors`n`nBoss: Mistress Hyseria, a unique Tentacle Miscreation`nShe is extremely easy compared to regular enemies on this map. )."
+
+uniqueMapList["Maze Map"] := "`nThe map is shaped like an X, with each leg resembling`na type of damage. At the end of each leg there is a`nboss room with a boss totem. When the boss is killed,`nthe player goes back to the middle of the X and can`nthen travel to another leg. When the fourth boss is killed,`nthe final boss called Olmec, the All Stone appears. He is`na totem as well, dealing all forms of damage. The four`nprevious totems also reappear and fight by his side. To`nfully complete the map, a total of 9 bosses have to be`ndefeated.`n`nThe bosses are very hard, especially for meele builds."
