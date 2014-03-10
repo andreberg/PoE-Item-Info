@@ -1,11 +1,29 @@
-Empower
-Enhance
-Enlighten
-Portal
-Reduced Duration
-Slower Projectiles
-Multistrike
+Added Chaos Damage
+Blood Magic
 Cast When Damage Taken
 Cast On Death
 Cast On Critical Strike
+Chain
+Concentrated Effect
+Empower
+Elemental Hit
+Elemental Proliferation
+Elemental Weakness
+Enhance
+Enlighten
+Faster Attacks
+Faster Casting
+Greater Multiple Projectiles
+Item Quantity
+Item Rarity
+Lesser Multiple Projectiles
+Life Gain on Hit
+Life Leech
+Multistrike
 Melee Splash
+Portal
+Reduced Duration
+Reduced Mana
+Slower Projectiles
+Spell Totem
+Temporal Chains
