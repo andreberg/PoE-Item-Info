@@ -42,7 +42,7 @@ Prismweave|@12-24:increased Physical Damage|10:increased Elemental Damage with W
 ; -------- Rings ---------
 
 Andvarius|@6-15:increased Rarity of Items found|10:to Dexterity|50-70:increased Rarity of Items found|-20:to all Elemental Resistances
-Pyre|20-30:Cold Resistance|25-35:Fire Resistance|25-40: increased Burning Damage |100% of Cold Damage Converted to Fire Damage|10:increased Light Radius |Ignited enemies you hit are destroyed on Kill
+Pyre|@20-30:Cold Resistance|25-35:Fire Resistance|25-40: increased Burning Damage |100% of Cold Damage Converted to Fire Damage|10:increased Light Radius |Ignited enemies you hit are destroyed on Kill
 Berek's Grip|@12-16:to Cold and Lightning Resistances|10-15:increased Cold Damage|1-1,1-50:Adds Lightning Damage|30-40:to maximum Life|5:of Damage against Shocked enemies Leeched as Mana|5:of Damage against Frozen enemies Leeched as Life
 Berek's Pass|@12-16:to Fire and Cold Resistances|10-15:increased Fire Damage|1-30,10-30:Adds Cold Damage|30-40:to maximum Energy Shield|30:increased Damage while Ignited|5000:to Armour while Frozen
 Berek's Respite|@12-16:to Fire and Lightning Resistances|1-10,1-30:Adds Fire Damage|10-15:increased Lightning Damage|30-40:to maximum Mana|Shock a nearby enemy for 2 seconds on killing a Shocked Enemy|Ignite a nearby enemy on killing an Ignited enemy
@@ -238,7 +238,7 @@ Atziri's Disfavour|220-270 to 235-290:Adds Physical Damage|12-16:increased Attac
 The Blood Reaper|100-120:increased Physical Damage|5:of Physical Damage Leeched back as Life|100:to maximum Life|10:Life Regenerated per second|50:increased Mana Cost of Skills|Causes Bleeding on Hit
 Kaom's Primacy|160-220:increased Physical Damage|16-32,21-38:Adds Fire Damage|150-250:to Accuracy Rating|20:Life gained when you Kill an enemy|Culling Strike
 Limbsplit|1:to Level of Strength Gems in this item|80-100:increased Physical Damage|5-10:Adds Physical Damage|15-30:to Strength|Culling Strike
-Reaper's Pursuit|@94-142,106-160:Physical Damage|100-125:increased Physical Damage|10:Life Gained when you Kill an enemy|30-40:increased Rarity of Items found|15:increased Movement Speed when on Full Life|Culling Strike|Hits can't be Evaded
+Reaper's Pursuit|100-125:increased Physical Damage|10:Life Gained when you Kill an enemy|30-40:increased Rarity of Items found|15:increased Movement Speed when on Full Life|Culling Strike|Hits can't be Evaded
 The Harvest|120-140:increased Physical Damage|4:increased Global Critical Strike Chance per Level|Gain Flask Charges when you deal a Critical Strike|6:of Damage leeched as Life on Critical Strike|Drops only on Beyond league/maps
 Wideswing|Gems in this item are Supported by level 20 Increased Area of Effect|120-160:increased Physical Damage|10:to Strength|50-80:to Accuracy Rating|10:Mana Gained on Kill|2:to Weapon range
 Wings of Entropy|25:of Block Chance applied to Spells|8:additional Chance to Block while Dual Wielding|80-120:increased Physical Damage|55-100,65-120:Adds Fire Damage in Main Hand|55-100,65-120:Adds Chaos Damage in Off Hand|Counts as Dual Wielding
@@ -254,7 +254,7 @@ Quill Rain|10-20:to Dexterity|100:increased Attack Speed|25-50:to Accuracy Ratin
 Silverbranch|1:to Level of Bow Gems in this item|50-80:increased Physical Damage|10:increased Attack Speed|30:to Accuracy Rating|10:Mana Gained on Kill
 Storm Cloud|No Physical Damage|1-75:Adds Lightning Damage|36-50:increased Attack Speed
 Voltaxic Rift|1-275,1-325:Adds Lightning Damage|10-15:increased Attack Speed|100:of Lightning Damage Converted to Chaos Damage|10:Chance to Shock|Your Chaos Damage can Shock
-Windripper|32–48 to 40–60:Adds Cold Damage|1-80:1-100:Adds Lightning Damage|10-15:increased Attack Speed|80-100:increased Critical Strike Chance|25:increased Quantity of Items Dropped by Slain Frozen enemies|50:increased Rarity of Items Dropped by Slain Shocked enemies
+Windripper|32–48 to 40–60:Adds Cold Damage|1-80,1-100:Adds Lightning Damage|10-15:increased Attack Speed|80-100:increased Critical Strike Chance|25:increased Quantity of Items Dropped by Slain Frozen enemies|50:increased Rarity of Items Dropped by Slain Shocked enemies
 Doomfletch|10-14:increased Attack Speed|30-40:increased Critical Strike Chance|60:increased Mana Regeneration Rate|Gain 110 of Bow Physical Damage as Extra Damage of an Element
 
 ; -------- Claws ---------
@@ -282,7 +282,7 @@ Doon Cuebiyari|@10:increased Elemental Damage|50-70:to Strength|15-18:increased 
 Doryani's Catalyst|@10% increased Elemental Damage|65–100,85–160:Adds Physical Damage|6-10:increased Cast Speed|11-15:Increased Attack Speed|30-40:Increased Global Critical Strike Chance|80-100:increased Elemental Damage|Gems in this item are Supported by level 20 Elemental Proliferation|1% of Elemental Damage Leeched as Life
 Mon'tregul's Grasp|@15:increased Elemental Damage|50:reduced number of Zombies allowed|2000:to Zombie maximum Life|25-30:increased Zombie Resistances|25:increased Zombie Size|Zombies deal 80-100% increased Physical Damage|Enemies killed by Zombies explode dealing Fire Damage
 Nycta's Lantern|@20:increased Elemental Damage|Gems in this item are Supported by level 10 Added Fire Damage|Gems in this item are Supported by level 10 Cold to Fire|Gems in this item are Supported by level 10 Fire Penetration|20-30:increased Spell Damage|6-10:Life gained for each enemy hit by your Attacks|25:increased Light Radius
-The Dark Seer|@15% increased Elemental Damage|30-50 % increased Damage|7% Global chance to Blind enemies on hit|+1 Mana gained on Kill per Level|+1 Energy Shield gained on Kill per Level|Cannot be Blinded|Drops only on Beyond league/maps
+The Dark Seer|@15:increased Elemental Damage|30-50:increased Damage|7:Global chance to Blind enemies on hit|+1:Mana gained on Kill per Level|+1:Energy Shield gained on Kill per Level|Cannot be Blinded|Drops only on Beyond league/maps
 The Supreme Truth|@20:increased Elemental Damage|1:to Level of Gems in this item|80-100:increased Physical Damage|10-20:increased Attack Speed|5:increased Experience gain|20:increased Elemental Damage|60:increased Intelligence Requirement
 Mjölner|@40:increased Stun Duration on enemies|80-120:increased Physical Damage|Skills Chain +1 times|30-40:increased Lightning Damage with Weapons|200:Strength Requirement|300:Intelligence Requirement|50:chance to Cast Socketed Lightning Spells on Hit
 Brutus' Lead Sprinkler|@10: increased Elemental Damage|20:increased Physical Damage|Adds 15–25 Fire Damage against Ignited Enemies|8-26 to 13-31:Adds Physical Damage|30:increased Fire Damage|15-20:increased Attack Speed|30-40:increased Critical Strike Chance|Drops only on Torment League
@@ -317,7 +317,7 @@ Queen's Decree|@18:increased Accuracy Rating|10-15:Minions have increased maximu
 Rigvald's Charge|@18:increased Accuracy Rating|120-150:increased Physical Damage|20:increased Attack Speed|150-200:to Accuracy Rating|10:increased Movement Speed
 Shiversting|@18:increased Accuracy Rating|80-100:increased Physical Damage|35-70:Adds Cold Damage|3:of Physical Attack Damage Leeched back as Mana|Cannot be Frozen
 Terminus Est|@18:increased Accuracy Rating|120-180:increased Physical Damage|20:increased Attack Speed|10:to Mana Gained when you Kill an enemy|10:increased Movement Speed|Gain a Frenzy Charge on Critical Strike
-Doomsower|@18%:increased Accuracy Rating|Socketed Melee Gems have 15% increased Area of Effect Radius|Socketed Red Gems get 10% Physical Damage as Extra Fire Damage|50-70:increased Physical Damage|50-85 to 75-110:Adds Physical Damage|6-12:increased Attack Speed
+Doomsower|@18:increased Accuracy Rating|Socketed Melee Gems have 15% increased Area of Effect Radius|Socketed Red Gems get 10% Physical Damage as Extra Fire Damage|50-70:increased Physical Damage|50-85 to 75-110:Adds Physical Damage|6-12:increased Attack Speed
 ; -------- Staff ---------
 
 Dying Breath|@18:Chance to Block|18:increased Cast Speed|18:increased maximum Mana|18:increased Radius of Auras|18:increased Radius of Curses|18:increased Aura Effect|Nearby enemies have 18% increased Effect of Curses on them|Nearby allies gain 18% increased Damage
