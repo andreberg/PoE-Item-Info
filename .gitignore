@@ -1,1 +1,3 @@
 backup
+release/
+*.bak

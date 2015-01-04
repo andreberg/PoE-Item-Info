@@ -295,3 +295,36 @@ Itemlevel: 68
 5% additional Block Chance
 --------
 Doomed to plunder forever.
+#################### 12
+Rarity: Unique
+The Searing Touch
+Long Staff
+--------
+Staff
+Physical Damage: 20-33
+Critical Strike Chance: 6.50%
+Attacks per Second: 1.25
+--------
+Requirements:
+Level: 13
+Str: 27
+Int: 27
+--------
+Sockets: B-B-B-R 
+--------
+Itemlevel: 29
+--------
+1% of Fire Damage Leeched as Life
+--------
++2 to Level of Socketed Fire Gems
+46% increased Spell Damage
+37% increased Fire Damage
+10% increased Cast Speed
+70% increased Burning Damage
+--------
+Burn to cinders, scar and maim,
+Rule a world, bathed in flame.
+--------
+Corrupted
+--------
+Has Azure Weapon Effect

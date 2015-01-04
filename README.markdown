@@ -10,20 +10,34 @@ itemlevel and weapon DPS reveal:
 - show possible min-max ranges for all affixes on rare items
 - reveal the combination of difficult compound affixes (you might be surprised what you find)
 - show affix ranges for uniques
+- show map info
+- show max sockets info
 - has the ability to convert currency items to chaos orbs (you can adjust the rates by editing
     `data\CurrencyRates.txt`)
-- can show which gems are valuable and/or drop-only (all user adjustable)
+- can show which gems are valuable and/or drop-only
+- can show which uniques are valuable
 - adds a system tray icon and proper system tray description tooltip
 
 All of these features are user-adjustable by using a "database" of text files which come 
 with the script and are easy to edit by non developers. See header comments in those files
 for format infos and data sources.
 
+Please note that the PoE Item Level and DPS Revealer script and PoE Item Info have been merged
+into this version.
+
+PoE Forums Thread
+-----------------
+
+http://www.pathofexile.com/forum/view-thread/790438
+
 Requirements
 ------------
 
-AutoHotkey v1.0.45 or newer. You can get AutoHotkey from http://ahkscript.org/download.  
-You can use either the ANSI or the Unicode version if you need to choose.
+AutoHotkey v1.1.00 or newer. You can get AutoHotkey from http://ahkscript.org.  
+
+WARNING: do not get AutHotkey from http://www.authotkey.com even if it comes up first 
+in Google. The .com domain was apparently taken over by a for-profit company, so make
+sure you download from http://ahkscript.org.
 
 Known Issues
 ------------
@@ -42,11 +56,23 @@ I expect these edge cases to be properly dealt with over time as the script matu
 
 See start of script for some more background info on these issues.
 
+Contributors
+------------
+
+Kislorod  
+Necrolis  
+`_D_S_`  
+restoutlife  
+
+NB: I apologize if I have forgotten to add your name to this list. Please let me (hazydoc) know 
+via the PoE forums to correct this oversight.
+
 Attribution
 -----------
 
+Created by Nipper4369 and original authors.  
 Created by hazydoc / IGN: Sadou
 
-Based on POE_iLVL_DPS-Revealer script (v1.2d) 
+Supersedes the POE_iLVL_DPS-Revealer script.
 
 See http://www.pathofexile.com/forum/view-thread/594346 for original author info.
