@@ -1,6 +1,6 @@
 ; Path of Exile Item Info Tooltip
 ;
-; Version: 1.7.8 (hazydoc / IGN:Sadou)
+; Version: 1.7.9 (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -239,7 +239,7 @@ Sleep, 100
 CreateSettingsUI()
 
 ; Menu tooltip
-Menu, tray, Tip, Path of Exile Item Info 1.7.8
+Menu, tray, Tip, Path of Exile Item Info 1.7.9
 
 Menu, tray, NoStandard
 Menu, tray, Add, PoE Item Info Settings, ShowSettingsUI
@@ -743,7 +743,6 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="")
         ValueHi := Value             ; for single values (which most of them are) ValueLo == ValueHi
         ParseRange(Value, ValueHi, ValueLo)
     }
-;    msgbox, Filename: %Filename%`, Value: %Value%`, ValueLo: %ValueLo%`, ValueHi: %ValueHi%
     LookupIsDoubleRange := False ; for affixes like "Adds +# ... Damage" which have a lower AND an upper bound range
     BracketRange := "n/a"
     Loop, Read, %A_WorkingDir%\%Filename%
@@ -848,7 +847,6 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
             Break
         }
     }
-    ;msgbox, MaxTier: %MaxTier%
     Loop, Read, %A_WorkingDir%\%Filename%
     {  
         AffixDataIndex += 1
@@ -944,11 +942,9 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
             ; record bracket range if it is withing bounds of the text file entry
             If (((ValueLo >= LBMin) and (ValueLo <= LBMax)) and ((ValueHi >= UBMin) and (ValueHi <= UBMax)))
             {
-                ;msgbox, Value: %Value%`, LBPart: %LBPart%`, UBPart: %UBPart%
                 BracketRange = %LBPart%%MiddlePart%%UBPart%
                 AffixLevel = %MaxLevel%
                 Tier := ((MaxTier - AffixDataIndex) + 1)
-                ;msgbox, BracketRange: %BracketRange%
             }
             ; record max possible range regardless of within bounds
             If (MaxSpanStartingFromFirst)
@@ -980,7 +976,6 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
                 }
                 AffixLevel = %MaxLevel%
                 Tier := ((MaxTier - AffixDataIndex) + 1)
-                ;msgbox, AffixDataIndex: %AffixDataIndex%, FirstRangeValues: %FirstRangeValues%, 
             }
             ; record max possible range regardless of within bounds
             If (MaxSpanStartingFromFirst)
@@ -992,11 +987,9 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
                 MaxRange = %LoVal%-%HiVal%
             }
         }
-;        msgbox, Filename: %Filename%`n ValueLo: %ValueLo%`, ValueHi: %ValueHi%`n LoVal: %LoVal%`, HiVal: %HiVal%
     }
     BracketLevel := AffixLevel
     FinalRange := AssembleValueRangeFields(BracketRange, BracketLevel, MaxRange, MaxLevel)
-;    msgbox, FinalRange: %FinalRange%
     return FinalRange
 }
 
@@ -1051,6 +1044,19 @@ ParseRarity(ItemData_NamePlate)
     return RarityParts%RarityParts%2
 }
 
+GetItemDataChunk(ItemData, MatchWord)
+{
+    StringReplace, TempResult, ItemData, --------`r`n, ``, All  
+    StringSplit, ItemDataChunks, TempResult, ``
+    Loop, %ItemDataChunks0%
+    {
+        IfInString, ItemDataChunks%A_Index%, %MatchWord%
+        {
+            return ItemDataChunks%A_Index%
+        }
+    }
+}
+
 ParseQuality(ItemDataNamePlate)
 {
     ItemQuality := 0
@@ -1082,6 +1088,7 @@ ParseAugmentations(ItemDataChunk, ByRef AffixCSVList)
         CurAugment := A_LoopField
         IfInString, A_LoopField, Requirements:
         {
+            ; too far - Requirements: is already the next chunk
             Break
         }
         IfInString, A_LoopField, (augmented)
@@ -1163,21 +1170,16 @@ ParseRange(RangeChunk, ByRef Hi, ByRef Lo)
 
 ParseItemLevel(ItemData, PartialString="Itemlevel:")
 {
-    Result =
-    Loop, Parse, ItemData, `n, `r
+    ItemDataChunk := GetItemDataChunk(ItemData, PartialString)
+    Loop, Parse, ItemDataChunk, `n, `r
     {
-        If StrLen(A_LoopField) = 0
-        {
-            Break
-        }
         IfInString, A_LoopField, %PartialString%
         {
             StringSplit, ItemLevelParts, A_LoopField, %A_Space%
-            Result := ItemLevelParts2
-            Break
+            Result := StrTrimWhitespace(ItemLevelParts2)
+            return Result
         }
     }
-    return Result
 }
 
 StrMult(Char, Times)
@@ -1203,6 +1205,11 @@ StrTrimSpaceRight(String)
 StrTrimSpace(String)
 {
     return RegExReplace(String, " *(.+?) *", "$1")
+}
+
+StrTrimWhitespace(String)
+{
+    return RegExReplace(String, "[ \r\n\t]*(.+?)[ \r\n\t]*", "$1")
 }
 
 ; Pads a string with a multiple of PadChar to become a wanted total length.
@@ -1278,7 +1285,7 @@ AssembleAffixDetails()
         ProcessedLine =
         ; blank out affix line parts so that when affix line splits 
         ; into less parts than before, there won't be left overs
-        Loop, 3
+        Loop, 6
         {
             AffixLineParts%A_Index% =
         }
@@ -1316,13 +1323,13 @@ AssembleAffixDetails()
             ValueRangeString := ValueRange
         }
         ProcessedLine := ProcessedLine . ValueRangeString . Delim
-        If (ShowAffixBracketTier == 1 AND Not (ItemDataRarity == "Unique"))
+        If (ShowAffixBracketTier == 1 AND Not (ItemDataRarity == "Unique") AND Not StrLen(AffixTier) = 0)
         {
             If (InStr(ValueRange, "*") AND ShowAffixBracketTier)
             {
                 TierString := "   "
             }
-            Else
+            Else 
             {
                 TierString := StrPad("T" . AffixTier, 3, "left")
             }
@@ -1755,6 +1762,7 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
     HasStunRecovery := 0
     HasSpellDamage := 0
     HasMaxMana := 0
+    HasMultipleCrafted := 0
 
     ; max mana already accounted for in case of composite prefix+prefix "Spell Damage / Max Mana" + "Max Mana"
     MaxManaPartial =
@@ -1855,6 +1863,11 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
         IfInString, A_LoopField, to maximum Mana
         {
             HasMaxMana := A_Index
+            Continue
+        }
+        IfInString, A_Loopfield, Can have multiple Crafted Mods
+        {
+            HasMultipleCrafted := A_Index
             Continue
         }
     }
@@ -3795,6 +3808,29 @@ ParseAffixes(ItemDataChunk, ItemLevel, ItemQuality, ByRef NumPrefixes, ByRef Num
                 Continue
         }
     }
+    
+    ; CRAFTED (Preliminary Support)
+    
+    Loop, Parse, ItemDataChunk, `n, `r
+    {    
+        If StrLen(A_LoopField) = 0
+        {
+            Break ; not interested in blank lines
+        }
+        IfInString, ItemDataChunk, Unidentified
+        {
+            Break ; not interested in unidentified items
+        }
+                
+        IfInString, A_LoopField, Can have multiple Crafted Mods
+        {
+            AppendAffixInfo(A_Loopfield, A_Index)
+        }
+        IfInString, A_LoopField, to Weapon range
+        {
+            AppendAffixInfo(A_Loopfield, A_Index)
+        }
+    }
 }
 
 ; change a detail line that was already processed and added to the 
@@ -3848,11 +3884,13 @@ ResetAffixDetailVars()
     NumPrefixes := 0
     NumSuffixes := 0
     TotalAffixes := 0
+    AffixTier=
+    AffixType=
     Loop, %NumAffixLines%
     {
         AffixLines%A_Index% = 
     }
-    Loop, 3
+    Loop, 6
     {
         AffixLineParts%A_Index% =
     }
@@ -3895,47 +3933,77 @@ PostProcessData(ParsedData)
     Global ShowAffixTotals
     If (CompactAffixTypes > 0)
     {
-        StringReplace, TempResult, ParsedData, --------, ``, All  
-        StringSplit, ParsedDataParts, TempResult, ``
+        StringReplace, TempResult, ParsedData, --------`n, ``, All  
+        StringSplit, ParsedDataChunks, TempResult, ``
         
-        NameAndDPSPart := ParsedDataParts1
-        SecondPart := ParsedDataParts2 ; total affix statistics for rare items or implicit mods for unique items
-        ThirdPart := ParsedDataParts3 ; affix composition for rare and unique items
-        FourthPart := ParsedDataParts4 ; Valuable line for unique items
+        Result =
+        Loop, %ParsedDataChunks0%
+        {
+            CurrChunk := ParsedDataChunks%A_Index%
+            If IsEmptyString(CurrChunk)
+                Continue
+            If (InStr(CurrChunk, "Comp.") and Not InStr(CurrChunk, "Affixes"))
+            {
+                CurrChunk := RegExReplace(CurrChunk, "Comp\. ", "C")
+            }
+            If (InStr(CurrChunk, "Suffix") and Not InStr(CurrChunk, "Affixes"))
+            {
+                CurrChunk := RegExReplace(CurrChunk, "Suffix", "S")
+            }
+            If (InStr(CurrChunk, "Prefix") and Not InStr(CurrChunk, "Affixes"))
+            {
+                CurrChunk := RegExReplace(CurrChunk, "Prefix", "P")
+            }
+            If (A_Index < ParsedDataChunks0)
+            {
+                Result := Result . CurrChunk . "--------`r`n"
+            }
+            Else
+            {
+                Result := Result . CurrChunk
+            }
+        }
+        
+        ;~ StringReplace, TempResult, ParsedData, --------`r`n, ``, All  
+        ;~ StringSplit, ParsedDataParts, TempResult, ``        
+        ;~ NameAndDPSPart := ParsedDataParts1
+        ;~ SecondPart := ParsedDataParts2 ; total affix statistics for rare items or implicit mods for unique items
+        ;~ ThirdPart := ParsedDataParts3 ; affix composition for rare and unique items
+        ;~ FourthPart := ParsedDataParts4 ; Valuable line for unique items
 
-        AffixTotalsPart =
-        AffixDetailsPart =
-        ValuableLinePart =
-        If (ShowAffixTotals = False)
-        {
-            AffixDetailsPart := SecondPart
-            ValuableLinePart := ThirdPart
-        }
-        Else
-        {
-            AffixTotalsPart := SecondPart
-            AffixDetailsPart := ThirdPart
-        }
-        AffixDetailsPart := RegExReplace(AffixDetailsPart, "Comp\. ", "C")
-        AffixDetailsPart := RegExReplace(AffixDetailsPart, "Suffix",  "S")
-        AffixDetailsPart := RegExReplace(AffixDetailsPart, "Prefix",  "P")
+        ;~ AffixTotalsPart =
+        ;~ AffixDetailsPart =
+        ;~ ValuableLinePart =
+        ;~ If (ShowAffixTotals = False)
+        ;~ {
+            ;~ AffixDetailsPart := SecondPart
+            ;~ ValuableLinePart := ThirdPart
+        ;~ }
+        ;~ Else
+        ;~ {
+            ;~ AffixTotalsPart := SecondPart
+            ;~ AffixDetailsPart := ThirdPart
+        ;~ }
+        ;~ AffixDetailsPart := RegExReplace(AffixDetailsPart, "Comp\. ", "C")
+        ;~ AffixDetailsPart := RegExReplace(AffixDetailsPart, "Suffix",  "S")
+        ;~ AffixDetailsPart := RegExReplace(AffixDetailsPart, "Prefix",  "P")
 
-        ParsedData := NameAndDPSPart 
-        If (Not IsEmptyString(AffixTotalsPart)) 
-        {
-            ParsedData := ParsedData . "--------" . AffixTotalsPart 
-        }
-        If (Not IsEmptyString(AffixDetailsPart))
-        {
-            ParsedData := ParsedData . "--------" . AffixDetailsPart
-        }
-        If (Not IsEmptyString(ValuableLinePart))
-        {
-            ParsedData := ParsedData . "--------" . ValuableLinePart
-        }
+        ;~ ParsedData := NameAndDPSPart 
+        ;~ If (Not IsEmptyString(AffixTotalsPart)) 
+        ;~ {
+            ;~ ParsedData := ParsedData . "--------" . AffixTotalsPart 
+        ;~ }
+        ;~ If (Not IsEmptyString(AffixDetailsPart))
+        ;~ {
+            ;~ ParsedData := ParsedData . "--------" . AffixDetailsPart
+        ;~ }
+        ;~ If (Not IsEmptyString(ValuableLinePart))
+        ;~ {
+            ;~ ParsedData := ParsedData . "--------" . ValuableLinePart
+        ;~ }
     }
 
-    return ParsedData
+    return Result
 }
 
 ParseClipBoardChanges()
@@ -4126,10 +4194,6 @@ GemIsDropOnly(ItemName)
 ParseLinks(ItemData)
 {
     HighestLink := 0
-    IfNotInString, ItemData, .-
-    {
-        return HighestLink
-    }
     Loop, Parse, ItemData, `n, `r
     {
         IfInString, A_LoopField, Sockets
@@ -4215,6 +4279,31 @@ ConvertCurrency(ItemName, ItemStats)
         }
     }
     return ValueInChaos
+}
+
+FindUnique(ItemName)
+{
+    Loop, Read, %A_WorkingDir%\data\Uniques.txt
+    {
+        IfInString, A_LoopReadLine, `;
+        {
+            ; comment
+            Continue
+        }
+        If (StrLen(A_LoopReadLine) <= 2)
+        {
+            ; blank line
+            ; 2 characters at most: \r\n. Don't bother 
+            ; checking if they are actually control chars 
+            ; or normal letters.
+            Continue
+        }
+        IfInString, A_LoopReadLine, %ItemName%
+        {
+            return True
+        }
+    }
+    return False
 }
 
 ; Parse unique affixes from text file database.
@@ -4428,8 +4517,8 @@ ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuf
 
     ItemDataNamePlate := ItemDataParts1
     ItemDataStats := ItemDataParts2
-    ItemDataRequirements := ItemDataParts3
-
+    
+    ;ItemDataRequirements := GetItemDataChunk(ItemData, "Requirements:")
     ; ParseRequirements(ItemDataRequirements, RequiredLevel, RequiredAttributes, RequiredAttributeValues)
 
     ParseItemName(ItemDataNamePlate, ItemName, ItemTypeName)
@@ -4438,9 +4527,13 @@ ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuf
     ; last item (if non unique) or the item before last
     ItemDataPartsIndexLast := ItemDataParts0
     ItemDataPartsLast := ItemDataParts%ItemDataPartsIndexLast%
-    IfInString, ItemDataPartsLast, Unidentified
+    
+    IfInString, ItemData, Unidentified
     {
-        IsUnidentified := True
+        If (ItemName != "Scroll of Wisdom")
+        {
+            IsUnidentified := True
+        }
     }
 
     ItemQuality := ParseQuality(ItemDataStats)
@@ -4502,6 +4595,7 @@ ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuf
     IsQuiver := (ItemSubType == "Quiver")
     IsWeapon := (ItemBaseType == "Weapon")
     IsMap := (ItemBaseType == "Map")
+    IsMirrored := ((InStr(ItemData, "Mirrored")) and Not IsCurrency)
     HasEffect := (InStr(ItemDataPartsLast, "Has"))
 
     If (Not ItemName) 
@@ -4526,8 +4620,12 @@ ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuf
         ; and corrupted items
         NegativeAffixOffset := NegativeAffixOffset + 1
     }
+    If (IsMirrored) 
+    {
+        ; and mirrored items
+        NegativeAffixOffset := NegativeAffixOffset + 1
+    }
     ItemDataPartsIndexAffixes := ItemDataPartsIndexLast - NegativeAffixOffset
-    
     If (ItemDataPartsIndexAffixes <= 0)
     {
         ; ItemDataParts doesn't have the parts/text we need. Bail. 
@@ -4728,26 +4826,34 @@ ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuf
     }
     Else If (ItemDataRarity == "Unique")
     {
-        ParseUnique(ItemName)
-        AffixDetails := AssembleAffixDetails()
-        TT = %TT%`n--------%AffixDetails%
-    }
-    
-    If (IsUnidentified)
-    {
-        If (ItemDataRarity == "Unique")
+        If (FindUnique(ItemName) == False and Not IsUnidentified)
         {
             TT = %TT%`n--------`nUnique item currently not supported
         }
-        Else If (ItemName != "Scroll of Wisdom")
+        Else
         {
-            TT = %TT%`n--------`nUnidentified
+            ParseUnique(ItemName)
+            If (ShowAffixDetails = True and Not IsMap)
+            {
+                AffixDetails := AssembleAffixDetails()
+                TT = %TT%`n--------%AffixDetails%    
+            }
         }
+    }
+    
+    If (IsUnidentified and (ItemName != "Scroll of Wisdom") and Not IsMap)
+    {
+        TT = %TT%`n--------`nUnidentified
     }
 
     If ((IsUnique and (ShowUniqueEvaluation == 1) AND UniqueIsValuable(ItemName)) OR (MarkHighLinksAsValuable = 1 AND (IsUnique OR IsRare) AND ItemDataLinks >= 5))
     {
         TT = %TT%`n--------`nValuable
+    }
+
+    If (IsMirrored)
+    {
+        TT = %TT%`n--------`nMirrored
     }
 
     return TT
@@ -4917,7 +5023,7 @@ RunAllTests()
     ; change this to the number of available test suites
     TestDataBasePath = %A_WorkingDir%\extras\tests
 
-    NumRareTestSuites := 4
+    NumRareTestSuites := 5
     RareResults := "Rare Items"
     Loop, %NumRareTestSuites%
     {
