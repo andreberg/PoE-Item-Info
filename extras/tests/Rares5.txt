@@ -1,0 +1,72 @@
+#################### 1
+Rarity: Rare
+Pandemonium Watch
+Battle Buckler
+--------
+Quality: +20% (augmented)
+Chance to Block: 26%
+Evasion Rating: 1268 (augmented)
+--------
+Requirements:
+Level: 56 (unmet)
+Dex: 121
+--------
+Sockets: R-G-G 
+--------
+Itemlevel: 70
+--------
++357 to Evasion Rating
+38% increased Evasion Rating
++38% to Fire Resistance
++30% to Cold Resistance
++21% to Lightning Resistance
+13% increased Stun Recovery
+64% increased Armour and Evasion
+#################### 2
+Rarity: Rare
+Storm Edge
+Ornate Sword
+--------
+Two Handed Sword
+Quality: +20% (augmented)
+Physical Damage: 132-218 (augmented)
+Critical Strike Chance: 5.00%
+Attacks per Second: 1.46 (augmented)
+--------
+Requirements:
+Level: 28
+Str: 45
+Dex: 54
+--------
+Sockets: G-R-R-R-R B 
+--------
+Itemlevel: 36
+--------
+18% increased Accuracy Rating
+--------
+143% increased Physical Damage
++50 to Accuracy Rating
+Can have multiple Crafted Mods
+Adds 18-30 Physical Damage
+12% increased Attack Speed
++1 to Weapon range
+#################### 3
+Rarity: Rare
+Behemoth Coil
+Diamond Ring
+--------
+Requirements:
+Level: 57 (unmet)
+--------
+Itemlevel: 79
+--------
+30% increased Global Critical Strike Chance
+--------
+Adds 9-15 Physical Damage
++79 to maximum Life
++45% to Fire Resistance
++45% to Cold Resistance
++45% to Lightning Resistance
+2% of Physical Attack Damage Leeched as Mana
+--------
+Mirrored
