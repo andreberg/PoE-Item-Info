@@ -70,3 +70,21 @@ Adds 9-15 Physical Damage
 2% of Physical Attack Damage Leeched as Mana
 --------
 Mirrored
+#################### 4
+Rarity: Rare
+Rage Idol
+Onyx Amulet
+--------
+Requirements:
+Level: 57 (unmet)
+--------
+Itemlevel: 74
+--------
++13 to all Attributes
+--------
+Adds 9-22 Physical Damage
+Adds 5-60 Lightning Damage
++45% to Cold Resistance
++38% to Lightning Resistance
+4% of Physical Attack Damage Leeched as Life
+30% increased Global Critical Strike Chance

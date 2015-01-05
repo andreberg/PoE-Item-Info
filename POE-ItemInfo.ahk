@@ -79,6 +79,7 @@
 ; Todo:
 ;
 ;   - handle ranges for implicit mods
+;   - find a way to deal with crafted mods (currently that's a tough one)
 ;
 ; Notes:
 ;
@@ -139,7 +140,7 @@ ShowAffixMaxPossible = 1        ; Show max possible bracket for an affix based o
 ShowAffixBracketTier = 1        ; Show a T# indicator of the tier the affix bracket is in. 
                                 ; T1 being the highest possible, T2 second-to-highest and so on
 
-TierRelativeToItemLevel = 0     ; When determining the affix bracket tier, take item level into consideration.
+TierRelativeToItemLevel = 1     ; When determining the affix bracket tier, take item level into consideration.
                                 ; However, this also means that the lower the item level the less the diversity
                                 ; of possible affix tiers since there aren't as many possibilities. This will 
                                 ; give the illusion that a low level item might be really, really good when it 
@@ -839,13 +840,13 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
     ; Pre-pass to determine max tier
     Loop, Read, %A_WorkingDir%\%Filename%
     {  
-        MaxTier += 1
         StringSplit, AffixDataParts, A_LoopReadLine, |,
         RangeLevel := AffixDataParts1
         If (TierRelativeToItemLevel AND (RangeLevel > ItemLevel))
         {
             Break
         }
+        MaxTier += 1
     }
     Loop, Read, %A_WorkingDir%\%Filename%
     {  
@@ -857,7 +858,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
         {
             FirstRangeValues := RangeValues
         }
-        If (RangeLevel > ItemLevel)
+        If (TierRelativeToItemLevel AND (RangeLevel > ItemLevel))
         {
             Break
         }
