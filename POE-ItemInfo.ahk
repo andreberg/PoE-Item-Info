@@ -3964,43 +3964,6 @@ PostProcessData(ParsedData)
             }
         }
         
-        ;~ StringReplace, TempResult, ParsedData, --------`r`n, ``, All  
-        ;~ StringSplit, ParsedDataParts, TempResult, ``        
-        ;~ NameAndDPSPart := ParsedDataParts1
-        ;~ SecondPart := ParsedDataParts2 ; total affix statistics for rare items or implicit mods for unique items
-        ;~ ThirdPart := ParsedDataParts3 ; affix composition for rare and unique items
-        ;~ FourthPart := ParsedDataParts4 ; Valuable line for unique items
-
-        ;~ AffixTotalsPart =
-        ;~ AffixDetailsPart =
-        ;~ ValuableLinePart =
-        ;~ If (ShowAffixTotals = False)
-        ;~ {
-            ;~ AffixDetailsPart := SecondPart
-            ;~ ValuableLinePart := ThirdPart
-        ;~ }
-        ;~ Else
-        ;~ {
-            ;~ AffixTotalsPart := SecondPart
-            ;~ AffixDetailsPart := ThirdPart
-        ;~ }
-        ;~ AffixDetailsPart := RegExReplace(AffixDetailsPart, "Comp\. ", "C")
-        ;~ AffixDetailsPart := RegExReplace(AffixDetailsPart, "Suffix",  "S")
-        ;~ AffixDetailsPart := RegExReplace(AffixDetailsPart, "Prefix",  "P")
-
-        ;~ ParsedData := NameAndDPSPart 
-        ;~ If (Not IsEmptyString(AffixTotalsPart)) 
-        ;~ {
-            ;~ ParsedData := ParsedData . "--------" . AffixTotalsPart 
-        ;~ }
-        ;~ If (Not IsEmptyString(AffixDetailsPart))
-        ;~ {
-            ;~ ParsedData := ParsedData . "--------" . AffixDetailsPart
-        ;~ }
-        ;~ If (Not IsEmptyString(ValuableLinePart))
-        ;~ {
-            ;~ ParsedData := ParsedData . "--------" . ValuableLinePart
-        ;~ }
     }
 
     return Result
