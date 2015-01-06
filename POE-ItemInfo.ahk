@@ -1,6 +1,6 @@
 ; Path of Exile Item Info Tooltip
 ;
-; Version: 1.7.9 (hazydoc / IGN:Sadou)
+; Version: 1.8.0 (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -240,7 +240,7 @@ Sleep, 100
 CreateSettingsUI()
 
 ; Menu tooltip
-Menu, tray, Tip, Path of Exile Item Info 1.7.9
+Menu, tray, Tip, Path of Exile Item Info 1.8.0
 
 Menu, tray, NoStandard
 Menu, tray, Add, PoE Item Info Settings, ShowSettingsUI
@@ -267,7 +267,7 @@ IfNotExist, %A_ScriptDir%\data
 MsgUnhandled := "Unhandled case. Please report the item that you are inspecting by pasting the textual item representation that is on your clipboard right now into a reply to the script's forum thread at http://www.pathofexile.com/forum/view-thread/790438.`n`nThanks so much for helping out!"
 
 ; Creates a font for later use
-CreateFont(FontSize)
+CreateFixedFont(FontSize)
 {
     Options :=
     If (!(FontSize = "")) 
@@ -281,8 +281,23 @@ CreateFont(FontSize)
     return ErrorLevel
 }
 
+CreateUIFont(FontSize)
+{
+    Options :=
+    If (!(FontSize = "")) 
+    {
+        Options = s%FontSize%
+    }
+    Gui Font, %Options%, Arial
+    Gui Font, %Options%, Segoe UI
+    Gui Add, Text, HwndHidden, 
+    SendMessage, 0x31,,,, ahk_id %Hidden%
+    return ErrorLevel
+}
+
 ; Create font for later use
-FixedFont := CreateFont(FontSize)
+FixedFont := CreateFixedFont(FontSize)
+UIFont := CreateUIFont(9)
  
 ; Sets the font for a created ahk tooltip
 SetFont(Font)
@@ -298,7 +313,7 @@ UpdateFont()
 {
     Global FixedFont
     Global FontSize
-    FixedFont := CreateFont(FontSize)
+    FixedFont := CreateFixedFont(FontSize)
     SetFont(FixedFont)
 }
  
@@ -4277,6 +4292,16 @@ ParseUnique(ItemName)
 {
     Global
     Local Delim
+    Local UniqueFound
+    Local AppendImplicitSep
+    Local CurLinePart
+    Local AffixLine
+    Local ValueRange
+    Local VRParts
+    Local LowerBound
+    Local UpperBound
+    Local LowerBoundParts, UpperBoundParts
+    Local LBMin, LBMax, UBMin, UBMax
     Delim := "|"
     ResetAffixDetailVars()
     UniqueFound := False
@@ -4300,9 +4325,7 @@ ParseUnique(ItemName)
             StringSplit, LineParts, A_LoopReadLine, |
             NumLineParts := LineParts0
             NumAffixLines := NumLineParts-1 ; exclude item name at first pos
-            Local UniqueFound
             UniqueFound := True
-            Local AppendImplicitSep
             AppendImplicitSep := False
             Idx := 1
             If (ShowAffixDetails = False)
@@ -4313,13 +4336,10 @@ ParseUnique(ItemName)
             {
                 If (A_Index > 1)
                 {
-                    Local CurLinePart
-                    Local AffixLine
-                    Local ValueRange
+                    ProcessedLine =
                     CurLinePart := LineParts%A_Index%
                     IfInString, CurLinePart, :
                     {
-                        Local ProcessedLine
                         StringSplit, CurLineParts, CurLinePart, :
                         AffixLine := CurLineParts2
                         ValueRange := CurLineParts1
@@ -4341,13 +4361,23 @@ ParseUnique(ItemName)
                         IfInString, ValueRange, `,
                         {
                             ; double range
-                            StringSplit, ValueRangeParts, ValueRange, `,
-                            Local ValueRangeParts
-                            Local LowerBound
-                            Local UpperBound
-                            LowerBound := ValueRangeParts1
-                            UpperBound := ValueRangeParts2
-                            ValueRange := StrPad(LowerBound, ValueRangeFieldWidth, "left") . AffixDetailDelimiter . StrPad(UpperBound, ValueRangeFieldWidth, "left")
+                            StringSplit, VRParts, ValueRange, `,
+                            LowerBound := VRParts1
+                            UpperBound := VRParts2
+                            StringSplit, LowerBoundParts, LowerBound, -
+                            StringSplit, UpperBoundParts, UpperBound, -
+                            LBMin := LowerBoundParts1
+                            LBMax := LowerBoundParts2
+                            UBMin := UpperBoundParts1
+                            UBMax := UpperBoundParts2
+                            If (CompactDoubleRanges) 
+                            {
+                                ValueRange := StrPad(LBMin . "-" . UBMax, ValueRangeFieldWidth, "left")
+                            }
+                            Else
+                            {
+                                ValueRange := StrPad(LowerBound, ValueRangeFieldWidth, "left") . AffixDetailDelimiter . StrPad(UpperBound, ValueRangeFieldWidth, "left")
+                            }
                         }
                         ProcessedLine := AffixLine . Delim . StrPad(ValueRange, ValueRangeFieldWidth, "left")
                         If (AppendImplicitSep)
@@ -4794,14 +4824,11 @@ ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuf
         {
             TT = %TT%`n--------`nUnique item currently not supported
         }
-        Else
+        Else If (ShowAffixDetails = True and Not IsUnidentified)
         {
             ParseUnique(ItemName)
-            If (ShowAffixDetails = True and Not IsMap)
-            {
-                AffixDetails := AssembleAffixDetails()
-                TT = %TT%`n--------%AffixDetails%    
-            }
+            AffixDetails := AssembleAffixDetails()
+            TT = %TT%`n--------%AffixDetails%
         }
     }
     
@@ -4821,6 +4848,9 @@ ParseItemData(ItemData, ByRef RarityLevel="", ByRef NumPrefixes="", ByRef NumSuf
     }
 
     return TT
+    
+    ParseItemDataEnd:
+        return TT
 }
 
 ; Show tooltip, with fixed width font
@@ -5028,72 +5058,91 @@ CreateSettingsUI()
     Global
     Gui,Add, GroupBox, x7 y15 w260 h90 , General
     
-    Gui, Add, Checkbox, x17 y35 w210 h30 vOnlyActiveIfPOEIsFront Checked%OnlyActiveIfPOEIsFront%, Only show tooltip if PoE is frontmost
-    Gui, Add, Checkbox, x17 y65 w210 h30 vPutResultsOnClipboard Checked%PutResultsOnClipboard%, Put tooltip results on clipboard
-
+    Gui, Add, Checkbox, x17 y35 w210 h30 hwndOnlyActiveIfPOEIsFrontH vOnlyActiveIfPOEIsFront Checked%OnlyActiveIfPOEIsFront%, Only show tooltip if PoE is frontmost
+    AddToolTip(OnlyActiveIfPOEIsFrontH, "If checked the script does nothing if the`nPath of Exile window isn't the frontmost")
+    Gui, Add, Checkbox, x17 y65 w210 h30 hwndPutResultsOnClipboardH vPutResultsOnClipboard Checked%PutResultsOnClipboard%, Put tooltip results on clipboard
+    AddToolTip(PutResultsOnClipboardH, "Put tooltip result text onto the system clipboard`n(overwriting the item info text PoE put there to begin with)")
+    
     Gui, Add, GroupBox, x7 y115 w260 h90 , Display - All Gear
     
-    Gui, Add, Checkbox, x17 y135 w210 h30 vShowItemLevel Checked%ShowItemLevel%, Show item level
-    Gui, Add, Checkbox, x17 y165 w210 h30 vShowMaxSockets Checked%ShowMaxSockets%, Show max sockets based on item lvl
+    Gui, Add, Checkbox, x17 y135 w210 h30 hwndShowItemLevelH vShowItemLevel Checked%ShowItemLevel%, Show item level
+    Gui, Add, Checkbox, x17 y165 w210 h30 hwndShowMaxSocketsH vShowMaxSockets Checked%ShowMaxSockets%, Show max sockets based on item lvl
+    AddToolTip(ShowMaxSocketsH, "Show maximum amount of sockets the item can have`nbased on its item level")
 
     Gui, Add, GroupBox, x7 y215 w260 h60 , Display - Weapons
 
-    Gui, Add, Checkbox, x17 y235 w210 h30 vShowDamageCalculations Checked%ShowDamageCalculations%, Show damage calculations
+    Gui, Add, Checkbox, x17 y235 w210 h30 hwndShowDamageCalculationsH vShowDamageCalculations Checked%ShowDamageCalculations%, Show damage calculations
 
     Gui, Add, GroupBox, x7 y285 w260 h60 , Display - Other
 
-    Gui, Add, Checkbox, x17 y305 w210 h30 vShowCurrencyValueInChaos Checked%ShowCurrencyValueInChaos%, Show currency value in chaos
+    Gui, Add, Checkbox, x17 y305 w210 h30 hwndShowCurrencyValueInChaosH vShowCurrencyValueInChaos Checked%ShowCurrencyValueInChaos%, Show currency value in chaos
 
     Gui, Add, GroupBox, x7 y355 w260 h150 , Valuable Evaluations
 
-    Gui, Add, Checkbox, x17 y375 w210 h30 vShowUniqueEvaluation Checked%ShowUniqueEvaluation%, Show unique evaluation
-    Gui, Add, Checkbox, x17 y405 w210 h30 vShowGemEvaluation gSettingsUI_ChkShowGemEvaluation Checked%ShowGemEvaluation%, Show gem evaluation
-        Gui, Add, Text, x37 y437 w150 h20 vLblGemQualityThreshold, Gem quality valuable threshold:
-        Gui, Add, Edit, x197 y435 w40 h20 vGemQualityValueThreshold, %GemQualityValueThreshold%
-    Gui, Add, Checkbox, x17 y465 w210 h30 vMarkHighLinksAsValuable Checked%MarkHighLinksAsValuable%, Mark high number of links as valuable
+    Gui, Add, Checkbox, x17 y375 w210 h30 hwndShowUniqueEvaluationH vShowUniqueEvaluation Checked%ShowUniqueEvaluation%, Show unique evaluation
+    AddToolTip(ShowUniqueEvaluationH, "Mark unique as valuable based on its item name`n(can be edited in data\ValuableUniques.txt)")
+    Gui, Add, Checkbox, x17 y405 w210 h30 hwndShowGemEvaluationH vShowGemEvaluation gSettingsUI_ChkShowGemEvaluation Checked%ShowGemEvaluation%, Show gem evaluation
+    AddToolTip(ShowGemEvaluationH, "Mark gem as valuable if quality is higher`nthan the following threshold`n(can be edited in data\ValuableGems.txt)")
+        Gui, Add, Text, x37 y437 w150 h20 hwndLblGemQualityThresholdH vLblGemQualityThreshold, Gem quality valuable threshold:
+        Gui, Add, Edit, x197 y435 w40 h20 hwndGemQualityValueThresholdH vGemQualityValueThreshold, %GemQualityValueThreshold%
+    Gui, Add, Checkbox, x17 y465 w210 h30 hwndMarkHighLinksAsValuableH vMarkHighLinksAsValuable Checked%MarkHighLinksAsValuable%, Mark high number of links as valuable
     
     Gui, Add, GroupBox, x277 y15 w260 h300 , Display - Affixes
 
-    Gui, Add, Checkbox, x287 y35 w210 h30 vShowAffixTotals Checked%ShowAffixTotals%, Show affix totals
-    Gui, Add, Checkbox, x287 y65 w210 h30 vShowAffixDetails gSettingsUI_ChkShowAffixDetails Checked%ShowAffixDetails%, Show affix details
-        Gui, Add, Checkbox, x307 y95 w190 h30 vMirrorAffixLines Checked%MirrorAffixLines%, Mirror affix lines
-    
-    Gui, Add, Checkbox, x287 y125 w210 h30 vShowAffixLevel Checked%ShowAffixLevel%, Show affix level
-    Gui, Add, Checkbox, x287 y155 w210 h30 vShowAffixBracket Checked%ShowAffixBracket%, Show affix bracket
-    Gui, Add, Checkbox, x287 y185 w210 h30 vShowAffixMaxPossible gSettingsUI_ChkShowAffixMaxPossible Checked%ShowAffixMaxPossible%, Show affix max possible
-        Gui, Add, Checkbox, x307 y215 w190 h30 vMaxSpanStartingFromFirst Checked%MaxSpanStartingFromFirst%, Max span starting from first
-    Gui, Add, Checkbox, x287 y245 w210 h30 vShowAffixBracketTier gSettingsUI_ChkShowAffixBracketTier Checked%ShowAffixBracketTier%, Show affix bracket tier
-        Gui, Add, Checkbox, x307 y275 w190 h30 vTierRelativeToItemLevel Checked%TierRelativeToItemLevel%, Tier relative to item lvl
+    Gui, Add, Checkbox, x287 y35 w210 h30 hwndShowAffixTotalsH vShowAffixTotals Checked%ShowAffixTotals%, Show affix totals
+    AddToolTip(ShowAffixTotalsH, "Show a statistic how many prefixes and suffixes`nthe item has")
+    Gui, Add, Checkbox, x287 y65 w210 h30 hwndShowAffixDetailsH vShowAffixDetails gSettingsUI_ChkShowAffixDetails Checked%ShowAffixDetails%, Show affix details
+    AddToolTip(ShowAffixDetailsH, "Show detailed affix breakdown. Note that crafted mods are not`nsupported and some ranges are guesstimated (marked with a *)")
+        Gui, Add, Checkbox, x307 y95 w190 h30 hwndMirrorAffixLinesH vMirrorAffixLines Checked%MirrorAffixLines%, Mirror affix lines
+        AddToolTip(MirrorAffixLinesH, "Display truncated affix names within the breakdown")
+    Gui, Add, Checkbox, x287 y125 w210 h30 hwndShowAffixLevelH vShowAffixLevel Checked%ShowAffixLevel%, Show affix level
+        AddToolTip(ShowAffixLevelH, "Show item level of the displayed affix value bracket")
+    Gui, Add, Checkbox, x287 y155 w210 h30 hwndShowAffixBracketH vShowAffixBracket Checked%ShowAffixBracket%, Show affix bracket
+        AddToolTip(ShowAffixBracketH, "Show affix value bracket as is on the item")
+    Gui, Add, Checkbox, x287 y185 w210 h30 hwndShowAffixMaxPossibleH vShowAffixMaxPossible gSettingsUI_ChkShowAffixMaxPossible Checked%ShowAffixMaxPossible%, Show affix max possible
+        AddToolTip(ShowAffixMaxPossibleH, "Show max possible affix value bracket")
+        Gui, Add, Checkbox, x307 y215 w190 h30 hwndMaxSpanStartingFromFirstH vMaxSpanStartingFromFirst Checked%MaxSpanStartingFromFirst%, Max span starting from first
+        AddToolTip(MaxSpanStartingFromFirstH, "Construct a pseudo range by combining the lowest possible`naffix value bracket with the max possible based on item level")
+    Gui, Add, Checkbox, x287 y245 w210 h30 hwndShowAffixBracketTierH vShowAffixBracketTier gSettingsUI_ChkShowAffixBracketTier Checked%ShowAffixBracketTier%, Show affix bracket tier
+        AddToolTip(ShowAffixBracketTierH, "Display affix bracket tier in reverse ordering, T1 being the best possible roll.")
+        Gui, Add, Checkbox, x307 y275 w190 h30 hwndTierRelativeToItemLevelH vTierRelativeToItemLevel Checked%TierRelativeToItemLevel%, Tier relative to item lvl
+        AddToolTip(TierRelativeToItemLevelH, "When showing affix bracket tier, make T1 being best possible`ntaking item level into account.")
         
     Gui, Add, GroupBox, x277 y325 w260 h210 , Display - Results
     
-    Gui, Add, Checkbox, x287 y345 w210 h30 vCompactDoubleRanges Checked%CompactDoubleRanges%, Compact double ranges
-    Gui, Add, Checkbox, x287 y375 w210 h30 vCompactAffixTypes Checked%CompactAffixTypes%, Compact affix types
+    Gui, Add, Checkbox, x287 y345 w210 h30 hwndCompactDoubleRangesH vCompactDoubleRanges Checked%CompactDoubleRanges%, Compact double ranges
+    AddToolTip(CompactDoubleRangesH, "Show double ranges as one range,`ne.g. x-y (to) z-w becomes x-w")
+    Gui, Add, Checkbox, x287 y375 w210 h30 hwndCompactAffixTypesH vCompactAffixTypes Checked%CompactAffixTypes%, Compact affix types
+    AddToolTip(CompactAffixTypesH, "Replace affix type with a short-hand version,`ne.g. P=Prefix, S=Suffix, CP=Composite")
 
-    Gui, Add, Text, x287 y417 w110 h20 vLblMirrorLineFieldWidth, Mirror line field width:
-    Gui, Add, Edit, x407 y415 w40 h20 vMirrorLineFieldWidth, %MirrorLineFieldWidth%
-    Gui, Add, Text, x287 y447 w120 h20 vLblValueRangeFieldWidth, Value range field width:
-    Gui, Add, Edit, x407 y445 w40 h20 vValueRangeFieldWidth, %ValueRangeFieldWidth%
-    Gui, Add, Text, x287 y477 w120 h20 vLblAffixDetailDelimiter, Affix detail delimiter:
-    Gui, Add, Edit, x407 y475 w40 h20 vAffixDetailDelimiter, %AffixDetailDelimiter%
-    Gui, Add, Text, x287 y507 w120 h20 vLblAffixDetailEllipsis, Affix detail ellipsis:
-    Gui, Add, Edit, x407 y505 w40 h20 vAffixDetailEllipsis, %AffixDetailEllipsis%
+    Gui, Add, Text, x287 y417 w110 h20 hwndLblMirrorLineFieldWidthH vLblMirrorLineFieldWidth, Mirror line field width:
+    Gui, Add, Edit, x407 y415 w40 h20 hwndMirrorLineFieldWidthH vMirrorLineFieldWidth, %MirrorLineFieldWidth%
+    Gui, Add, Text, x287 y447 w120 h20 hwndLblValueRangeFieldWidthH vLblValueRangeFieldWidth, Value range field width:
+    Gui, Add, Edit, x407 y445 w40 h20 hwndValueRangeFieldWidthH vValueRangeFieldWidth, %ValueRangeFieldWidth%
+    Gui, Add, Text, x287 y477 w120 h20 hwndLblAffixDetailDelimiterH vLblAffixDetailDelimiter, Affix detail delimiter:
+    Gui, Add, Edit, x407 y475 w40 h20 hwndAffixDetailDelimiterH vAffixDetailDelimiter, %AffixDetailDelimiter%
+    Gui, Add, Text, x287 y507 w120 h20 hwndLblAffixDetailEllipsisH vLblAffixDetailEllipsis, Affix detail ellipsis:
+    Gui, Add, Edit, x407 y505 w40 h20 hwndAffixDetailEllipsisH vAffixDetailEllipsis, %AffixDetailEllipsis%
     
     Gui, Add, GroupBox, x7 y510 w260 h140 , Tooltip
     
-    Gui, Add, CheckBox, x17 y530 w210 h30 vUseTooltipTimeout gSettingsUI_ChkUseTooltipTimeout Checked%UseTooltipTimeout%, Use tooltip timeout
-        Gui, Add, Text, x27 y562 w150 h20 vLblToolTipTimeoutTicks +Right, Timeout ticks (1 tick = 100ms):
-        Gui, Add, Edit, x187 y560 w50 h20 vToolTipTimeoutTicks, %ToolTipTimeoutTicks%
-    Gui, Add, Text, x17 y592 w160 h20 vLblMouseMoveThreshold +Left, Mousemove threshold (px):
-    Gui, Add, Edit, x187 y590 w50 h20 vMouseMoveThreshold, %MouseMoveThreshold%
-    Gui, Add, Text, x17 y622 w160 h20 vLblFontSize, Font Size:
-    Gui, Add, Edit, x187 y620 w50 h20 vFontSize, %FontSize%
+    Gui, Add, CheckBox, x17 y530 w210 h30 hwndUseTooltipTimeoutH vUseTooltipTimeout gSettingsUI_ChkUseTooltipTimeout Checked%UseTooltipTimeout%, Use tooltip timeout
+    AddToolTip(UseTooltipTimeoutH, "Hide tooltip automatically after x amount of ticks have passed")
+        Gui, Add, Text, x27 y562 w150 h20 hwndLblToolTipTimeoutTicksH vLblToolTipTimeoutTicks, Timeout ticks (1 tick = 100ms):
+        Gui, Add, Edit, x187 y560 w50 h20 hwndToolTipTimeoutTicksH vToolTipTimeoutTicks, %ToolTipTimeoutTicks%
+    
+    Gui, Add, Text, x17 y592 w160 h20 hwndLblMouseMoveThresholdH vLblMouseMoveThreshold, Mousemove threshold (px):
+    AddToolTip(LblMouseMoveThresholdH, "Hide tooltip automatically after the mouse has moved x amount of pixels")
+    Gui, Add, Edit, x187 y590 w50 h20 hwndMouseMoveThresholdH vMouseMoveThreshold, %MouseMoveThreshold%
 
-    Gui, Add, Text, x277 y545 w250 h60 , See the beginning of the PoE-Item-Info.ahk script for comments on what these settings do exactly.
+    Gui, Add, Text, x17 y622 w160 h20 hwndLblFontSizeH vLblFontSize, Font Size:
+    Gui, Add, Edit, x187 y620 w50 h20 hwndFontSizeH vFontSize, %FontSize%
+
+    Gui, Add, Text, x277 y545 w250 h60, Mouse over settings or see the beginning of the PoE-Item-Info.ahk script for comments on what these settings do exactly.
 
     Gui, Add, Button, x287 y625 w80 h23 gSettingsUI_BtnDefaults, &Defaults
     Gui, Add, Button, Default x372 y625 w75 h23 gSettingsUI_BtnOK, &OK
-    Gui, Add, Button, x452 y625 w80 h23 gSettingsUI_BtnCancel, &Cancel        
+    Gui, Add, Button, x452 y625 w80 h23 gSettingsUI_BtnCancel, &Cancel
 }
 
 UpdateSettingsUI()
@@ -5178,6 +5227,11 @@ UpdateSettingsUI()
 
 ShowSettingsUI()
 {
+    ; remove POE-Item-Info tooltip if still visible
+    SetTimer, ToolTipTimer, Off
+    ToolTip
+    Global UIFont
+    SetFont(UIFont)
     Gui, Show, w545 h665, PoE Item Info Settings
 }
 
@@ -5307,6 +5361,76 @@ CreateDefaultConfig()
     WriteConfig(A_ScriptDir . "\data\defaults.ini")
 }
 
+AddToolTip(con, text, Modify=0){
+    Static TThwnd, GuiHwnd
+    TInfo =
+    UInt := "UInt"
+    Ptr := (A_PtrSize ? "Ptr" : UInt)
+    PtrSize := (A_PtrSize ? A_PtrSize : 4)
+    Str := "Str"
+    ; defines from Windows MFC commctrl.h
+    WM_USER := 0x400
+    TTM_ADDTOOL := (A_IsUnicode ? WM_USER+50 : WM_USER+4)           ; used to add a tool, and assign it to a control
+    TTM_UPDATETIPTEXT := (A_IsUnicode ? WM_USER+57 : WM_USER+12)    ; used to adjust the text of a tip
+    TTM_SETMAXTIPWIDTH := WM_USER+24                                ; allows the use of multiline tooltips
+    TTF_IDISHWND := 1
+    TTF_CENTERTIP := 2
+    TTF_RTLREADING := 4
+    TTF_SUBCLASS := 16
+    TTF_TRACK := 0x0020
+    TTF_ABSOLUTE := 0x0080
+    TTF_TRANSPARENT := 0x0100
+    TTF_PARSELINKS := 0x1000
+    If (!TThwnd) {
+        Gui, +LastFound
+        GuiHwnd := WinExist()
+        TThwnd := DllCall("CreateWindowEx"
+                    ,UInt,0
+                    ,Str,"tooltips_class32"
+                    ,UInt,0
+                    ,UInt,2147483648
+                    ,UInt,-2147483648
+                    ,UInt,-2147483648
+                    ,UInt,-2147483648
+                    ,UInt,-2147483648
+                    ,UInt,GuiHwnd
+                    ,UInt,0
+                    ,UInt,0
+                    ,UInt,0)
+    }
+    ; TOOLINFO structure
+    cbSize := 6*4+6*PtrSize
+    uFlags := TTF_IDISHWND|TTF_SUBCLASS|TTF_PARSELINKS
+    VarSetCapacity(TInfo, cbSize, 0)
+    NumPut(cbSize, TInfo)
+    NumPut(uFlags, TInfo, 4)
+    NumPut(GuiHwnd, TInfo, 8)
+    NumPut(con, TInfo, 8+PtrSize)
+    NumPut(&text, TInfo, 6*4+3*PtrSize)
+    NumPut(0,TInfo, 6*4+6*PtrSize)
+    DetectHiddenWindows, On
+    If (!Modify) {
+        DllCall("SendMessage"
+            ,Ptr,TThwnd
+            ,UInt,TTM_ADDTOOL
+            ,Ptr,0
+            ,Ptr,&TInfo
+            ,Ptr) 
+        DllCall("SendMessage"
+            ,Ptr,TThwnd
+            ,UInt,TTM_SETMAXTIPWIDTH
+            ,Ptr,0
+            ,Ptr,A_ScreenWidth) 
+    }
+    DllCall("SendMessage"
+        ,Ptr,TThwnd
+        ,UInt,TTM_UPDATETIPTEXT
+        ,Ptr,0
+        ,Ptr,&TInfo
+        ,Ptr)
+
+}
+
 ; ########### TIMERS ############
 
 ; Tick every 100 ms
@@ -5319,6 +5443,7 @@ ToolTipTimer:
     {
         SetTimer, ToolTipTimer, Off
         ToolTip
+        SetFont(UIFont)
     }
     return
 
