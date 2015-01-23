@@ -1,0 +1,3 @@
+[submodule "extras/poe-scrapy"]
+	path = extras/poe-scrapy
+	url = https://github.com/andreberg/PoE-Scrapy
