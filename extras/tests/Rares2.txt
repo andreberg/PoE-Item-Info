@@ -68,7 +68,7 @@ Itemlevel: 58
 +21 to Evasion Rating
 87% increased Armour and Evasion
 +19% to Cold Resistance
-7% increased Block and Stun Recovery
+7% increased Stun Recovery
 #################### 4
 Rarity: Rare
 Gloom Hand
@@ -91,7 +91,7 @@ Itemlevel: 62
 9% increased Evasion and Energy Shield
 5.1 Life Regenerated per second
 +44 to maximum Mana
-7% increased Block and Stun Recovery
+7% increased Stun Recovery
 #################### 5
 Rarity: Rare
 Fate Stride
@@ -113,7 +113,7 @@ Itemlevel: 67
 +29 to maximum Life
 +13% to Fire Resistance
 +19% to Chaos Resistance
-8% increased Block and Stun Recovery
+8% increased Stun Recovery
 #################### 6
 Rarity: Rare
 Storm Mast
@@ -211,7 +211,7 @@ Itemlevel: 58
 2.9 Life Regenerated per second
 36% increased Energy Shield
 +10% to Cold Resistance
-13% increased Block and Stun Recovery
+13% increased Stun Recovery
 Reflects 11 Physical Damage to Melee Attackers
 #################### 10
 Rarity: Rare
@@ -234,7 +234,7 @@ Itemlevel: 57
 +153 to Evasion Rating
 +48 to maximum Energy Shield
 +32% to Fire Resistance
-18% increased Block and Stun Recovery
+18% increased Stun Recovery
 #################### 11
 Rarity: Rare
 Viper Stinger
@@ -328,7 +328,7 @@ Itemlevel: 62
 106% increased Armour and Energy Shield
 17% increased Rarity of Items found
 +4 Mana Gained on Kill
-6% increased Block and Stun Recovery
+6% increased Stun Recovery
 #################### 15
 Rarity: Rare
 Horror Bulwark
@@ -431,7 +431,7 @@ Reflects 140 Physical Damage to Melee Attackers
 +12 to Dexterity
 50% increased Evasion and Energy Shield
 +16% to Cold Resistance
-33% increased Block and Stun Recovery
+33% increased Stun Recovery
 #################### 19
 Rarity: Rare
 Viper Goad
@@ -532,7 +532,7 @@ Reflects 43 Physical Damage to Melee Attackers
 45% increased Evasion and Energy Shield
 +59 to maximum Life
 +16% to all Elemental Resistances
-31% increased Block and Stun Recovery
+31% increased Stun Recovery
 #################### 23
 Rarity: Rare
 Vortex Guardian
@@ -551,7 +551,7 @@ Itemlevel: 54
 +32 to Dexterity
 106% increased Evasion Rating
 +34% to Fire Resistance
-12% increased Block and Stun Recovery
+12% increased Stun Recovery
 #################### 24
 Rarity: Rare
 Eagle Mark
@@ -576,7 +576,7 @@ Reflects 82 Physical Damage to Melee Attackers
 20% increased Evasion and Energy Shield
 +13 to maximum Life
 +31% to Cold Resistance
-29% increased Block and Stun Recovery
+29% increased Stun Recovery
 #################### 25
 Rarity: Rare
 Dire Emblem
@@ -623,7 +623,7 @@ Itemlevel: 58
 --------
 107% increased Armour and Evasion
 1.2 Life Regenerated per second
-30% increased Block and Stun Recovery
+30% increased Stun Recovery
 #################### 27
 Rarity: Rare
 Honour Sever

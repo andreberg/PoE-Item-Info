@@ -19,7 +19,7 @@ Itemlevel: 54
 85% increased Armour and Evasion
 +80 to maximum Life
 +30% to Lightning Resistance
-8% increased Block and Stun Recovery
+8% increased Stun Recovery
 #################### 2
 Rarity: Rare
 Behemoth Salvation
@@ -43,7 +43,7 @@ Itemlevel: 54
 +71 to maximum Life
 +3 to maximum Energy Shield
 +12% to Cold Resistance
-13% increased Block and Stun Recovery
+13% increased Stun Recovery
 15% increased Light Radius
 #################### 3
 Rarity: Rare
@@ -174,7 +174,7 @@ Itemlevel: 54
 34% increased Energy Shield
 +11% to all Elemental Resistances
 +13% to Lightning Resistance
-28% increased Block and Stun Recovery
+28% increased Stun Recovery
 #################### 8
 Rarity: Rare
 Horror Shelter
@@ -330,7 +330,7 @@ Itemlevel: 54
 +6 to Evasion Rating
 25% increased Armour and Evasion
 +61 to maximum Life
-11% increased Block and Stun Recovery
+11% increased Stun Recovery
 5% increased Light Radius
 #################### 15
 Rarity: Rare
@@ -558,7 +558,7 @@ Itemlevel: 66
 1.2 Life Regenerated per second
 +26 to maximum Mana
 17% increased Rarity of Items found
-6% increased Block and Stun Recovery
+6% increased Stun Recovery
 #################### 24
 Rarity: Rare
 Kraken Crest
@@ -578,7 +578,7 @@ Itemlevel: 68
 +81 to Accuracy Rating
 +43 to maximum Mana
 83% increased Energy Shield
-7% increased Block and Stun Recovery
+7% increased Stun Recovery
 5% increased Light Radius
 #################### 25
 Rarity: Rare
@@ -624,7 +624,7 @@ Itemlevel: 68
 31% increased Critical Strike Chance for Spells
 117% increased Energy Shield
 +19% to Lightning Resistance
-14% increased Block and Stun Recovery
+14% increased Stun Recovery
 32% reduced Attribute Requirements
 #################### 27
 Rarity: Rare
@@ -645,7 +645,7 @@ Itemlevel: 68
 9% increased Armour
 +56 to maximum Life
 +6% to Fire Resistance
-6% increased Block and Stun Recovery
+6% increased Stun Recovery
 3% additional Block Chance
 #################### 28
 Rarity: Rare
@@ -668,7 +668,7 @@ Itemlevel: 48
 +29 to maximum Energy Shield
 +24% to Fire Resistance
 +23% to Lightning Resistance
-9% increased Block and Stun Recovery
+9% increased Stun Recovery
 #################### 29
 Rarity: Rare
 Doom Volley

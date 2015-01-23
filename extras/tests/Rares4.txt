@@ -44,7 +44,7 @@ Itemlevel: 62
 118% increased Armour and Evasion
 2 Life Regenerated per second
 30% increased Movement Speed
-24% increased Block and Stun Recovery
+24% increased Stun Recovery
 #################### 3
 Rarity: Rare
 Rage Shell
@@ -64,7 +64,7 @@ Itemlevel: 68
 6% increased Evasion Rating
 +72 to maximum Life
 3.7 Life Regenerated per second
-6% increased Block and Stun Recovery
+6% increased Stun Recovery
 #################### 4
 Rarity: Rare
 Brood Song
@@ -141,7 +141,7 @@ Itemlevel: 68
 +7 to Evasion Rating
 32% increased Armour and Evasion
 +68 to maximum Life
-21% increased Block and Stun Recovery
+21% increased Stun Recovery
 #################### 7
 Rarity: Rare
 Dire Rock
@@ -165,7 +165,7 @@ Itemlevel: 67
 82% increased Armour and Evasion
 +56 to maximum Life
 +16% to Fire Resistance
-33% increased Block and Stun Recovery
+33% increased Stun Recovery
 2% additional Block Chance
 #################### 8
 Rarity: Rare
@@ -251,7 +251,7 @@ Itemlevel: 70
 +32 to maximum Life
 +11% to Cold Resistance
 +13% to Chaos Resistance
-26% increased Block and Stun Recovery
+26% increased Stun Recovery
 #################### 12
 Rarity: Rare
 Ghoul Call
@@ -321,7 +321,7 @@ Itemlevel: 70
 117% increased Evasion Rating
 +7% to Cold Resistance
 +29% to Chaos Resistance
-9% increased Block and Stun Recovery
+9% increased Stun Recovery
 #################### 15
 Rarity: Rare
 Morbid Shelter
@@ -344,7 +344,7 @@ Itemlevel: 69
 +8 to maximum Energy Shield
 +33% to Cold Resistance
 +7% to Lightning Resistance
-39% increased Block and Stun Recovery
+39% increased Stun Recovery
 #################### 16
 Rarity: Rare
 Doom Thirst
@@ -498,7 +498,7 @@ Itemlevel: 47
 30% increased Armour and Energy Shield
 +14 to maximum Energy Shield
 +27% to Lightning Resistance
-10% increased Block and Stun Recovery
+10% increased Stun Recovery
 Reflects 2 Physical Damage to Melee Attackers
 15% increased Light Radius
 #################### 22
@@ -520,7 +520,7 @@ Itemlevel: 49
 68% increased Evasion Rating
 4 Life Regenerated per second
 10% increased Rarity of Items found
-20% increased Block and Stun Recovery
+20% increased Stun Recovery
 #################### 23
 Rarity: Rare
 Hate Girdle
@@ -557,7 +557,7 @@ Itemlevel: 67
 +76 to maximum Life
 +21% to Fire Resistance
 +33% to Cold Resistance
-35% increased Block and Stun Recovery
+35% increased Stun Recovery
 #################### 25
 Rarity: Rare
 Plague Song

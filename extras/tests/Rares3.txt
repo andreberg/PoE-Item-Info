@@ -120,7 +120,7 @@ Itemlevel: 58
 +21 to Evasion Rating
 50% increased Armour and Evasion
 +19% to Cold Resistance
-14% increased Block and Stun Recovery
+14% increased Stun Recovery
 #################### 6
 Rarity: Rare
 Sol Wreck
@@ -164,7 +164,7 @@ Itemlevel: 66
 99% increased Evasion Rating
 +57 to maximum Life
 18% increased Rarity of Items found
-6% increased Block and Stun Recovery
+6% increased Stun Recovery
 5% increased Light Radius
 #################### 8
 Rarity: Rare
@@ -312,7 +312,7 @@ Itemlevel: 62
 +17 to Strength
 60% increased Armour
 +38% to Fire Resistance
-11% increased Block and Stun Recovery
+11% increased Stun Recovery
 #################### 14
 Rarity: Rare
 Eagle Glance
@@ -333,7 +333,7 @@ Itemlevel: 62
 +130 to Accuracy Rating
 17% increased Evasion and Energy Shield
 2.2 Life Regenerated per second
-30% increased Block and Stun Recovery
+30% increased Stun Recovery
 #################### 15
 Rarity: Rare
 Corruption Coat
@@ -544,7 +544,7 @@ Sockets: B
 Itemlevel: 68
 --------
 22% increased Armour and Energy Shield
-28% increased Block and Stun Recovery
+28% increased Stun Recovery
 Reflects 1 Physical Damage to Melee Attackers
 #################### 24
 Rarity: Rare
@@ -564,7 +564,7 @@ Itemlevel: 68
 +33 to Strength
 +68 to Armour
 +23% to Fire Resistance
-16% increased Block and Stun Recovery
+16% increased Stun Recovery
 Reflects 15 Physical Damage to Melee Attackers
 #################### 25
 Rarity: Rare
@@ -585,7 +585,7 @@ Itemlevel: 68
 +30 to Dexterity
 18% increased Evasion Rating
 +16 to maximum Life
-16% increased Block and Stun Recovery
+16% increased Stun Recovery
 Reflects 30 Physical Damage to Melee Attackers
 #################### 26
 Rarity: Rare
@@ -607,7 +607,7 @@ Itemlevel: 68
 +33 to Evasion Rating
 136% increased Evasion and Energy Shield
 4.6 Life Regenerated per second
-15% increased Block and Stun Recovery
+15% increased Stun Recovery
 18% reduced Attribute Requirements
 #################### 27
 Rarity: Rare
@@ -683,4 +683,4 @@ Itemlevel: 68
 +50 to maximum Mana
 +18 to maximum Energy Shield
 +33% to Fire Resistance
-34% increased Block and Stun Recovery
+34% increased Stun Recovery

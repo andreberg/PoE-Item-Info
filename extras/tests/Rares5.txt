@@ -88,3 +88,52 @@ Adds 5-60 Lightning Damage
 +38% to Lightning Resistance
 4% of Physical Attack Damage Leeched as Life
 30% increased Global Critical Strike Chance
+#################### 5
+Rarity: Rare
+Victory Stinger
+Jewelled Foil
+--------
+One Handed Sword
+Quality: +20% (augmented)
+Physical Damage: 178-318 (augmented)
+Critical Strike Chance: 6.70% (augmented)
+Attacks per Second: 2.15 (augmented)
+--------
+Requirements:
+Level: 68
+Dex: 212 (unmet)
+--------
+Sockets: G-G-G 
+--------
+Itemlevel: 79
+--------
+20% increased Global Critical Strike Multiplier
+--------
+229% increased Physical Damage
+Adds 25-43 Physical Damage
+26% increased Attack Speed
+34% increased Critical Strike Chance
+36% increased Global Critical Strike Multiplier
++82 to Accuracy Rating
+--------
+Mirrored
+#################### 6
+Rarity: Rare
+Oblivion Ward
+Strapped Leather
+--------
+Evasion Rating: 90 (augmented)
+--------
+Requirements:
+Level: 9
+Dex: 32
+--------
+Sockets: B 
+--------
+Itemlevel: 13
+--------
++12 to Dexterity
++5 to Evasion Rating
+20% increased Evasion Rating
++6% to Cold Resistance
+20% increased Stun Recovery
