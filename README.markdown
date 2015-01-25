@@ -59,15 +59,7 @@ See start of script for some more background info on these issues.
 Contributors
 ------------
 
-Kislorod  
-Necrolis  
-`_D_S_`  
-restoutlife  
-riQQ  
-TheFrequency  
-
-NB: I apologize if I have forgotten to add your name to this list. Please let me (hazydoc) know
-via the PoE forums to correct this oversight.
+See AUTHORS.txt for contributor info.
 
 Attribution
 -----------
