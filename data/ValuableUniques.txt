@@ -1,3 +1,5 @@
+; One exact item name per line.
+; Line comments with semicolon. Blank lines will be ignored.
 Abyssus
 Aegis Aurora
 Alpha's Howl

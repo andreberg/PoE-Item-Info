@@ -1,6 +1,6 @@
 ﻿; Path of Exile Item Info Tooltip
 ;
-; Version: 1.8.1 (hazydoc / IGN:Sadou)
+; Version: 1.8.2 (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -121,6 +121,14 @@ RunTests := False
 #NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
 #Persistent ; Stay open in background
 SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
+#Include %A_ScriptDir%\data\Version.txt
+#Include %A_ScriptDir%\data\Messages.txt
+
+If (A_AhkVersion <= AHKVersionRequired)
+{
+    MsgBox, 16, Wrong AutoHotkey Version, % Msg.WrongAHKVersion
+    ExitApp
+}
 
 ; Instead of polluting the default namespace with Globals, create our own Globals "namespace".
 class Globals {
@@ -137,8 +145,9 @@ class Globals {
         return result
     }
 }
-Globals.Set("AHKVersionRequired", "1.1.05")
-Globals.Set("ScriptVersion", "1.8.1")
+Globals.Set("AHKVersionRequired", AHKVersionRequired)
+Globals.Set("ReleaseVersion", ReleaseVersion)
+Globals.Set("DataDir", A_ScriptDir . "\data")
 
 class UserOptions {
 
@@ -368,13 +377,6 @@ class Fonts {
     }
 }
 
-class Messages {
-    Unhandled := "Unhandled case. Please report the item that you are inspecting by pasting the textual item representation that is on your clipboard right now into a reply to the script's forum thread at http://www.pathofexile.com/forum/view-thread/790438.`n`nThanks so much for helping out!`n`n(NB: don't bother posting items with crafted mods or exalted affixes - until GGG adds special syntax to recognize them these cases are unsupported)."
-    WrongAHKVersion := "AutoHotkey v" . Globals.AHKVersionRequired . " or later is needed to run this script. `n`nYou are using AutoHotkey v" . A_AhkVersion . " (installed at: " . A_AhkPath . ")`n`nPlease go to http://ahkscript.org to download the most recent version."
-    DataDirNotFound := "Error 37`n`n'data' directory not found at '" . A_ScriptDir . "'.`n`nPlease make sure the data directory is present at the same location where you are executing the script from."
-}
-Msg := new Messages()
-
 class ItemData_ {
 
     Links := ""
@@ -499,17 +501,24 @@ ReadConfig()
 Sleep, 100
 CreateSettingsUI()
 
+Menu, TextFiles, Add, Valuable Uniques, EditValuableUniques
+Menu, TextFiles, Add, Valuable Gems, EditValuableGems
+Menu, TextFiles, Add, Dropy Only Gems, EditDropOnlyGems
+Menu, TextFiles, Add, Currency Rates, EditCurrencyRates
+
 ; Menu tooltip
-RelVer := Globals.Get("ScriptVersion")
+RelVer := Globals.Get("ReleaseVersion")
 Menu, Tray, Tip, Path of Exile Item Info %RelVer%
 
 Menu, Tray, NoStandard
 Menu, Tray, Add, About..., MenuTray_About
 Menu, Tray, Add, PoE Item Info Settings, ShowSettingsUI
 Menu, Tray, Add ; Separator
+Menu, Tray, Add, Edit, :TextFiles
+Menu, Tray, Add ; Separator
 Menu, Tray, Standard
-
 Menu, Tray, Default, PoE Item Info Settings
+
 
 ; Windows system tray icon
 ; possible values: poe.ico, poe-bw.ico, poe-web.ico, info.ico
@@ -548,6 +557,32 @@ GetAhkExeFilename(Default_="AutoHotkey.exe")
     }
     return AhkExeFilename
 }
+
+OpenCreateDataTextFile(Filename)
+{
+    Filepath := A_ScriptDir . "\data\" . Filename
+    IfExist, % Filepath
+    {
+        Run, % Filepath
+    }
+    Else
+    {
+        
+        File := FileOpen(Filepath, "w")
+        if !IsObject(File)
+        {
+            MsgBox, 16, Can't create %A_ScriptDir%\data\ValuableUniques.txt
+            return
+        }
+        File.Close()
+        Run, % Filepath
+    }
+    return
+
+    Run, %A_ScriptDir%\data\%Filename%
+    return
+}
+
 
 ParseElementalDamage(String, DmgType, ByRef DmgLo, ByRef DmgHi)
 {
@@ -3407,7 +3442,7 @@ ParseAffixes(ItemDataAffixes, Item)
                             }
                             Else
                             {
-                                MsgBox, % Msg.Unhandled
+                                ShowUnhandledCaseDialog()
                                 ValueRange := StrPad("n/a", Opts.ValueRangeFieldWidth, "left")
                             }
                         }
@@ -4366,7 +4401,9 @@ PostProcessData(ParsedData)
         {
             CurrChunk := ParsedDataChunks%A_Index%
             If IsEmptyString(CurrChunk)
+            {
                 Continue
+            }
             If (InStr(CurrChunk, "Comp.") and Not InStr(CurrChunk, "Affixes"))
             {
                 CurrChunk := RegExReplace(CurrChunk, "Comp\. ", "C")
@@ -4394,11 +4431,13 @@ PostProcessData(ParsedData)
 
 ParseClipBoardChanges()
 {
-    Global Opts
+    Global Opts, Globals
 
     CBContents := GetClipboardContents()
     CBContents := PreProcessContents(CBContents)
 
+    Globals.Set("ItemText", CBContents)
+    
     ParsedData := ParseItemData(CBContents)
     ParsedData := PostProcessData(ParsedData)
 
@@ -4544,7 +4583,12 @@ GemIsValuable(ItemName)
 {
     Loop, Read, %A_ScriptDir%\data\ValuableGems.txt
     {
-        IfInString, ItemName, %A_LoopReadLine%
+        Line := StripLineCommentRight(A_LoopReadLine)
+        If (SkipLine(Line))
+        {
+            Continue
+        }
+        IfInString, ItemName, %Line%
         {
             return True
         }
@@ -4556,7 +4600,12 @@ UniqueIsValuable(ItemName)
 {
     Loop, Read, %A_ScriptDir%\data\ValuableUniques.txt
     {
-        IfInString, ItemName, %A_LoopReadLine%
+        Line := StripLineCommentRight(A_LoopReadLine)
+        If (SkipLine(Line))
+        {
+            Continue
+        }
+        IfInString, ItemName, %Line%
         {
             return True
         }
@@ -4568,7 +4617,12 @@ GemIsDropOnly(ItemName)
 {
     Loop, Read, %A_ScriptDir%\data\DropOnlyGems.txt
     {
-        IfInString, ItemName, %A_LoopReadLine%
+        Line := StripLineCommentRight(A_LoopReadLine)
+        If (SkipLine(Line))
+        {
+            Continue
+        }
+        IfInString, ItemName, %Line%
         {
             return True
         }
@@ -4645,19 +4699,14 @@ ConvertCurrency(ItemName, ItemStats)
     ValueInChaos := 0
     Loop, Read, %A_ScriptDir%\data\CurrencyRates.txt
     {
-        IfInString, A_LoopReadLine, `;
+        Line := StripLineCommentRight(A_LoopReadLine)
+        If (SkipLine(Line))
         {
-            ; Comment
             Continue
         }
-        If (StrLen(A_LoopReadLine) <= 2)
+        IfInString, Line, %ItemName%
         {
-            ; Blank line (at most \r\n)
-            Continue
-        }
-        IfInString, A_LoopReadLine, %ItemName%
-        {
-            StringSplit, LineParts, A_LoopReadLine, |
+            StringSplit, LineParts, Line, |
             ChaosRatio := LineParts2
             StringSplit, ChaosRatioParts,ChaosRatio, :
             ChaosMult := ChaosRatioParts2 / ChaosRatioParts1
@@ -4673,17 +4722,8 @@ FindUnique(ItemName)
     Loop, Read, %A_ScriptDir%\data\Uniques.txt
     {
         Line := StripLineCommentRight(A_LoopReadLine)
-        IfInString, Line, `;
+        If (SkipLine(Line))
         {
-            ; Comment
-            Continue
-        }
-        If (StrLen(Line) <= 2)
-        {
-            ; Blank line
-            ; 2 characters at most: \r\n. Don't bother 
-            ; checking if they are actually control chars 
-            ; or normal letters.
             Continue
         }
         IfInString, Line, %ItemName%
@@ -4697,10 +4737,35 @@ FindUnique(ItemName)
 ; Strip comments at line end, e.g. "Bla bla bla ; comment" -> "Bla bla bla"
 StripLineCommentRight(Line)
 {
-    Line := RegExReplace(Line, "(.+) *(;.+)", "$1")
-    return Line
+    IfNotInString, Line, `;
+    {
+        return Line
+    }
+    ProcessedLine := RegExReplace(Line, "(.+?)([ \t]*;.+)", "$1")
+    If IsEmptyString(ProcessedLine)
+    {
+        return Line
+    }
+    return ProcessedLine
 }
-    
+
+; Return True if line begins with comment character (;)
+; or if it is blank (that is, it only has 2 characters
+; at most (newline and carriage return)
+SkipLine(Line)
+{
+    IfInString, Line, `;
+    {
+        ; Comment
+        return True
+    }
+    If (StrLen(Line) <= 2)
+    {
+        ; Blank line (at most \r\n)
+        return True
+    }
+    return False
+}
 
 ; Parse unique affixes from text file database.
 ; Has wanted side effect of populating AffixLines "array" vars.
@@ -5587,6 +5652,29 @@ AddToolTip(con, text, Modify=0){
 
 }
 
+; ######### UNHANDLED CASE DIALOG ############
+
+ShowUnhandledCaseDialog()
+{
+    Global Msg, Globals
+    Static UnhDlg_EditItemText
+    
+    Gui, 3:New,, Unhandled Case
+    Gui, 3:Color, FFFFFF
+    Gui, 3:Add, Picture, x25 y25 w36 h36, %A_ScriptDir%\data\info.png
+    Gui, 3:Add, Text, x65 y31 w500 h100, % Msg.Unhandled
+    Gui, 3:Add, Edit, x65 y96 w400 h120 ReadOnly vUnhDlg_EditItemText, % Globals.Get("ItemText", "Error: could'nt get item text (system clipboard modified?). Please try again or report the item manually.")
+    Gui, 3:Add, Text, x-5 y230 w500 h50 -Background 
+    Gui, 3:Add, Button, x195 y245 w100 h25 gUnhandledDlg_ShowItemText, Show In Notepad
+    Gui, 3:Add, Button, x300 y245 w90 h25 gVisitForumsThread, Forums Thread
+    Gui, 3:Add, Button, x395 y245 w86 h25 gUnhandledDlg_OK Default, OK
+    Gui, 3:Show, Center w490 h280,
+    Gui, Font, s10, Courier New
+    Gui, Font, s9, Consolas  
+    GuiControl, Font, UnhDlg_EditItemText
+    return
+}
+
 ; ######### SETTINGS ############
 
 ; (Internal: RegExr x-forms)
@@ -5985,7 +6073,6 @@ GetContributors(AuthorsPerLine=0)
     return Authors
 }
 
-
 ; ########### TIMERS ############
 
 ; Tick every 100 ms
@@ -6123,17 +6210,17 @@ MenuTray_About:
     IfNotEqual, FirstTimeA, No
 	{
         Authors := GetContributors(0)
-        RelVer := Globals.get("ScriptVersion")
+        RelVer := Globals.get("ReleaseVersion")
 		Gui, 2:+owner1 -Caption +Border
 		Gui, 2:Font, S10 CA03410,verdana
 		Gui, 2:Add, Text, x260 y27 w170 h20 Center, Release %RelVer%
 		Gui, 2:Add, Button, 0x8000 x316 y300 w70 h21, Close
-		Gui, 2:Add, Picture, 0x1000 x17 y16 w230 h180 gFishing, %A_ScriptDir%\data\splash.png
+		Gui, 2:Add, Picture, 0x1000 x17 y16 w230 h180 gAboutDlg_Fishing, %A_ScriptDir%\data\splash.png
 		Gui, 2:Font, Underline C3571AC,verdana
-		Gui, 2:Add, Text, x260 y57 w170 h20 gForumsThread Center, PoE forums thread
-		Gui, 2:Add, Text, x260 y87 w170 h20 gAhkHome Center, AutoHotkey homepage
-		Gui, 2:Add, Text, x260 y117 w170 h20 gGitHub Center, PoE-Item-Info GitHub
-		Gui, 2:Font, Underline C154D85 S7,verdana
+		Gui, 2:Add, Text, x260 y57 w170 h20 gVisitForumsThread Center, PoE forums thread
+		Gui, 2:Add, Text, x260 y87 w170 h20 gAboutDlg_AhkHome Center, AutoHotkey homepage
+		Gui, 2:Add, Text, x260 y117 w170 h20 gAboutDlg_GitHub Center, PoE-Item-Info GitHub
+		;~ Gui, 2:Font, Underline C154D85 S7,verdana
 		;~ Gui, 2:Add, Text, 0x8000 x326 y147 w100 h20 gGitHub, PoE-Item-Info GitHub
 		Gui, 2:Font, S7 CDefault normal, Verdana
 		Gui, 2:Add, Text, x16 y207 w410 h80,
@@ -6162,19 +6249,20 @@ MenuTray_About:
 	}
     return
 
-Fishing:
+AboutDlg_Fishing:
+    ; See, GGG Chris, I have your best interests at heart. Hire me! :)
     MsgBox, 32, Did You Know?, Fishing is reel!
     return
     
-AhkHome:
+AboutDlg_AhkHome:
 	Run, http://ahkscript.org
     return
 
-GitHub:
+AboutDlg_GitHub:
     Run, http://github.com/andreberg/PoE-Item-Info
     return 
     
-ForumsThread:
+VisitForumsThread:
     Run, http://www.pathofexile.com/forum/view-thread/790438
     return
 
@@ -6183,4 +6271,34 @@ ForumsThread:
 	WinGet, AbtWndID, ID, About..
 	DllCall( "AnimateWindow", "Int", AbtWndID, "Int", 500, "Int", 0x00090010 )
 	WinActivate, ahk_id %MainWndID%
+    return
+
+EditValuableUniques:
+    OpenCreateDataTextFile("ValuableUniques.txt")
+    return
+
+EditValuableGems:
+    OpenCreateDataTextFile("ValuableGems.txt")
+    return
+    
+EditCurrencyRates:
+    OpenCreateDataTextFile("CurrencyRates.txt")
+    return
+    
+EditDropOnlyGems:
+    OpenCreateDataTextFile("DropOnlyGems.txt")
+    return
+
+3GuiClose:
+    Gui, 3:Cancel
+    return
+
+UnhandledDlg_ShowItemText:
+    Run, Notepad.exe
+    WinActivate
+    Send, ^v
+    return
+    
+UnhandledDlg_OK:
+    Gui, 3:Submit
     return

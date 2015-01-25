@@ -137,3 +137,28 @@ Itemlevel: 13
 20% increased Evasion Rating
 +6% to Cold Resistance
 20% increased Stun Recovery
+#################### 7
+Rarity: Rare
+Horror Bane
+Opal Wand
+--------
+Wand
+Quality: +15% (augmented)
+Physical Damage: 26-48 (augmented)
+Critical Strike Chance: 8.36%
+Attacks per Second: 1.30
+--------
+Requirements:
+Level: 62 (unmet)
+Int: 212 (unmet)
+--------
+Sockets: B-B-B 
+--------
+Itemlevel: 70
+--------
+20% increased Spell Damage
+--------
+67% increased Spell Damage
+17% increased Lightning Damage
+7% increased Cast Speed
++73 to maximum Mana
