@@ -522,7 +522,7 @@ Menu, Tray, Default, PoE Item Info Settings
 
 ; Windows system tray icon
 ; possible values: poe.ico, poe-bw.ico, poe-web.ico, info.ico
-Menu, Tray, Icon, data\poe-bw.ico
+Menu, Tray, Icon, %A_ScriptDir%\data\poe-bw.ico
 
 If (A_AhkVersion <= Globals.AHKVersionRequired)
 {
