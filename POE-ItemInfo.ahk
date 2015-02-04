@@ -1,6 +1,6 @@
 ﻿; Path of Exile Item Info Tooltip
 ;
-; Version: 1.8.2 (hazydoc / IGN:Sadou)
+; Version: 1.8.3 (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -170,7 +170,7 @@ class UserOptions {
     ShowAffixBracketTierTotal := 1  ; Appends the total number of tiers for a given affix in parentheses T/#Total
                                     ; T4/8 would represent the fourth highest tier, in eight total tiers.
 
-    TierRelativeToItemLevel := 1    ; When determining the affix bracket tier, take item level into consideration.
+    TierRelativeToItemLevel := 0    ; When determining the affix bracket tier, take item level into consideration.
                                     ; However, this also means that the lower the item level the less the diversity
                                     ; of possible affix tiers since there aren't as many possibilities. This will 
                                     ; give the illusion that a low level item might be really, really good when it 
@@ -497,6 +497,11 @@ IfNotExist, %A_ScriptDir%\config.ini
     CopyDefaultConfig()
 }
 
+; Windows system tray icon
+; possible values: poe.ico, poe-bw.ico, poe-web.ico, info.ico
+; set before creating the settings UI so it gets used for the settigns dialog as well
+Menu, Tray, Icon, %A_ScriptDir%\data\poe-bw.ico
+
 ReadConfig()
 Sleep, 100
 CreateSettingsUI()
@@ -505,6 +510,7 @@ Menu, TextFiles, Add, Valuable Uniques, EditValuableUniques
 Menu, TextFiles, Add, Valuable Gems, EditValuableGems
 Menu, TextFiles, Add, Dropy Only Gems, EditDropOnlyGems
 Menu, TextFiles, Add, Currency Rates, EditCurrencyRates
+
 
 ; Menu tooltip
 RelVer := Globals.Get("ReleaseVersion")
@@ -519,16 +525,6 @@ Menu, Tray, Add ; Separator
 Menu, Tray, Standard
 Menu, Tray, Default, PoE Item Info Settings
 
-
-; Windows system tray icon
-; possible values: poe.ico, poe-bw.ico, poe-web.ico, info.ico
-Menu, Tray, Icon, %A_ScriptDir%\data\poe-bw.ico
-
-If (A_AhkVersion <= Globals.AHKVersionRequired)
-{
-    MsgBox, 16, Wrong AutoHotkey Version, % Msg.WrongAHKVersion
-    exit
-}
 
 IfNotExist, %A_ScriptDir%\data
 {
@@ -3442,8 +3438,53 @@ ParseAffixes(ItemDataAffixes, Item)
                             }
                             Else
                             {
-                                ShowUnhandledCaseDialog()
-                                ValueRange := StrPad("n/a", Opts.ValueRangeFieldWidth, "left")
+                                ; Must be 1H Spell Damage and Max Mana + 1H Spell Damage (+ Max Mana)
+                                SD1HBracketLevel := 0
+                                SpellDamage1HBracket := LookupAffixBracket("data\SpellDamage_1H.txt", ItemLevel, "", SD1HBracketLevel)
+                                If (IsValidBracket(SpellDamage1HBracket)) 
+                                {
+                                    SpellDamageBracket := LookupRemainingAffixBracket("data\SpellDamage_MaxMana_1H.txt", ItemLevel, CurrValue, SpellDamage1HBracket, SDBracketLevel)
+                                    If (IsValidBracket(SpellDamageBracket))
+                                    {
+                                        MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", SDBracketLevel, "", MMBracketLevel)
+                                        
+                                        ; Check if max mana can be covered fully with the partial max mana bracket from Spell Damage Max Mana 1H
+                                        MaxManaBracketRem := LookupRemainingAffixBracket("data\MaxMana.txt", ItemLevel, MaxManaValue, MaxManaBracket)
+                                        If (Not IsValidBracket(MaxManaBracketRem))
+                                        {
+                                            ; Nope, try again: check highest spell damage max mana first then spell damage
+                                            SD1HBracketLevel := 0
+                                            SpellDamageBracket := LookupAffixBracket("data\SpellDamage_MaxMana_1H.txt", ItemLevel, "", SDBracketLevel)
+                                            SpellDamage1HBracket := LookupRemainingAffixBracket("data\SpellDamage_1H.txt", ItemLevel, CurrValue, SpellDamageBracket, SD1HBracketLevel)
+                                            MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", SDBracketLevel, "", MMBracketLevel)
+                                            ; Check if max mana can be covered fully with the partial max mana bracket from Spell Damage Max Mana 1H
+                                            MaxManaBracketRem := LookupRemainingAffixBracket("data\MaxMana.txt", ItemLevel, MaxManaValue, MaxManaBracket)
+                                            ValueRange := AddRange(SpellDamageBracket, SpellDamage1HBracket)
+                                            ValueRange := MarkAsGuesstimate(ValueRange)
+                                        }
+                                        Else
+                                        {
+                                            ValueRange := AddRange(SpellDamageBracket, SpellDamage1HBracket)
+                                            ValueRange := MarkAsGuesstimate(ValueRange)
+                                        }
+                                    }
+                                    Else
+                                    {
+                                        SD1HBracketLevel := 0
+                                        SpellDamageBracket := LookupAffixBracket("data\SpellDamage_MaxMana_1H.txt", ItemLevel, "", SDBracketLevel)
+                                        SpellDamage1HBracket := LookupRemainingAffixBracket("data\SpellDamage_1H.txt", ItemLevel, CurrValue, SpellDamageBracket, SD1HBracketLevel)
+                                        MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", SDBracketLevel, "", MMBracketLevel)
+                                        ; Check if max mana can be covered fully with the partial max mana bracket from Spell Damage Max Mana 1H
+                                        MaxManaBracketRem := LookupRemainingAffixBracket("data\MaxMana.txt", ItemLevel, MaxManaValue, MaxManaBracket)
+                                        ValueRange := AddRange(SpellDamageBracket, SpellDamage1HBracket)
+                                        ValueRange := MarkAsGuesstimate(ValueRange)
+                                    }
+                                }
+                                Else
+                                {
+                                    ShowUnhandledCaseDialog()
+                                    ValueRange := StrPad("n/a", Opts.ValueRangeFieldWidth, "left")
+                                }
                             }
                         }
                         Else
@@ -6269,7 +6310,7 @@ VisitForumsThread:
 2ButtonClose:
 2GuiClose:
 	WinGet, AbtWndID, ID, About..
-	DllCall( "AnimateWindow", "Int", AbtWndID, "Int", 500, "Int", 0x00090010 )
+	DllCall("AnimateWindow", "Int", AbtWndID, "Int", 500, "Int", 0x00090010)
 	WinActivate, ahk_id %MainWndID%
     return
 
@@ -6302,3 +6343,6 @@ UnhandledDlg_ShowItemText:
 UnhandledDlg_OK:
     Gui, 3:Submit
     return
+
+; ############ ADD YOUR OWN MACROS HERE #############
+

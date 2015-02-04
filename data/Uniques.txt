@@ -27,7 +27,7 @@ Voll's Devotion|@16-24:To Strength and Intelligence|30-40:To maximum Life|20-30:
 ; -------- Armours (32) ---------
 
 Ambu's Charge|140-180:Increased Armour and Energy Shield|10:To all Elemental Resistances|Gain an Endurance Charge when an enemy Scores a Critical Strike on You|2:Of Life Regenerated per Second while on Low Life|Share Endurance Charges with nearby party members ; http://pathofexile.gamepedia.com/Ambu%27s_Charge 
-Ashrend|80-100:Increased Evasion Rating|40-50:To Fire Resistance|Cannot be Ignited|10-15:Increased Physical Damage with Ranged Weapons|5-7:Physical Damage taken from Attacks ; http://pathofexile.gamepedia.com/Ashrend 
+Ashrend|80-100:Increased Evasion Rating|40-50:To Fire Resistance|Cannot be Ignited|10-15:Increased Physical Damage with Ranged Weapons|-(5-7):Physical Damage taken from Attacks ; http://pathofexile.gamepedia.com/Ashrend 
 Atziri's Splendour| -Life or Energy Shield- |90-100:To Maximum Life|90-100:To Maximum Energy Shield| -Protection- |270-300:Increased Energy Shield|380-420:Increased Armour|380-420:Increased Evasion Rating|200-220:Increased Armour and Energy Shield|200-220:Increased Evasion Rating and Armour|200-220:Increased Evasion and Energy Shield|270-340:Increased Armour Evasion and Energy Shield|20-24:To all Elemental Resistances|100:Life Gained on Kill|100:Mana Gained on Kill ; http://pathofexile.gamepedia.com/Atziri%27s_Splendour 
 Belly of the Beast|150-200:Increased Armour|30-40:Increased maximum Life|10-15:To all Elemental Resistances|50:Increased Flask Life Recovery rate|Extra Gore ; http://pathofexile.gamepedia.com/Belly_of_the_Beast 
 Bramblejack|2:Adds Physical Damage|12-20:To maximum Life|2:Physical Damage taken from Attacks|40:Of Melee Physical Damage taken reflected to Attacker ; http://pathofexile.gamepedia.com/Bramblejack 
@@ -48,7 +48,7 @@ Infernal Mantle|@3-10:Increased Spell Damage|1:To Level of Fire Gems in this ite
 Kaom's Heart|Has no Sockets|500:To maximum Life|20-40:Increased Fire Damage ; http://pathofexile.gamepedia.com/Kaom%27s_Heart 
 Lightbane Raiment|120-140:Increased Armour and Energy Shield|10:Of Physical Damage Converted to Chaos Damage|30:Reflects Chaos Damage to Melee Attackers|25:Reduced Light Radius|100:Chance on Block to create Desecrated Ground ; http://pathofexile.gamepedia.com/Lightbane_Raiment 
 Lightning Coil|1-1,20-30:Adds Lightning Damage|90-120:Increased Armour and Evasion|60-80:To maximum Life|60:To Lightning Resistance|30:Of Physical Damage taken as Lightning Damage ; http://pathofexile.gamepedia.com/Lightning_Coil 
-Queen of the Forest|240-380:Increased Evasion Rating|60-70:To maximum Life|6-10:To Fire Resistance|26-40:To Cold Resistance|11-25:To Lightning Resistance|25:Reduced Movement Speed|1:Increased Movement Speed per Evasion Rating|50-40:Physical Damage taken when hit by Animals ; http://pathofexile.gamepedia.com/Queen_of_the_Forest 
+Queen of the Forest|240-380:Increased Evasion Rating|60-70:To maximum Life|6-10:To Fire Resistance|26-40:To Cold Resistance|11-25:To Lightning Resistance|25:Reduced Movement Speed|1:Increased Movement Speed per Evasion Rating|-(50-40):Physical Damage taken when hit by Animals ; http://pathofexile.gamepedia.com/Queen_of_the_Forest 
 The Rat Cage|100-120:Increased Evasion Rating|160-200:To maximum Life|5:To maximum Fire Resistance|15:Increased Movement Speed|20:Increased Fire Damage taken|10:Of Physical Damage taken as Fire Damage ; http://pathofexile.gamepedia.com/The_Rat_Cage 
 Shavronne's Wrappings|@3-10:Increased Spell Damage|140-200:Increased Energy Shield|10:Faster start of Energy Shield Recharge|30-40:To Lightning Resistance|1:Reflects Lightning Damage to Melee Attackers|Chaos Damage does not bypass Energy Shield ; http://pathofexile.gamepedia.com/Shavronne%27s_Wrappings 
 Solaris Lorica|10-20:To Strength|60-80:Increased Armour|25:Increased Light Radius|Chaos Damage does not bypass Energy Shield|10:Chaos Damage taken ; http://pathofexile.gamepedia.com/Solaris_Lorica 
@@ -114,7 +114,7 @@ Vaal Caress|2:To Level of Vaal Gems in this item|120-140:Increased Armour and Ev
 
 ; -------- Rings (30) ---------
 
-Andvarius|@6-15:Increased Rarity of Items found|10:To Dexterity|50-70:Increased Rarity of Items found|20:To all Elemental Resistances ; http://pathofexile.gamepedia.com/Andvarius 
+Andvarius|@6-15:Increased Rarity of Items found|10:To Dexterity|50-70:Increased Rarity of Items found|-20:To all Elemental Resistances ; http://pathofexile.gamepedia.com/Andvarius 
 Berek's Grip|@12-16:To Cold and Lightning Resistances|10-15:Increased Cold Damage|1-1,1-50:Adds Lightning Damage|30-40:To maximum Life|5:Of Damage against Shocked enemies Leeched as Mana|5:Of Damage against Frozen enemies Leeched as Life ; http://pathofexile.gamepedia.com/Berek%27s_Grip 
 Berek's Pass|@12-16:To Fire and Cold Resistances|10-15:Increased Fire Damage|1-30,10-30:Adds Cold Damage|30-40:To maximum Energy Shield|30:Increased Damage while Ignited|5000:To Armour while Frozen ; http://pathofexile.gamepedia.com/Berek%27s_Pass 
 Berek's Respite|@12-16:To Fire and Lightning Resistances|1-10,1-30:Adds Fire Damage|10-15:Increased Lightning Damage|30-40:To maximum Mana|2:Shock a nearby enemy for seconds on killing a Shocked Enemy|Ignite a nearby enemy on killing an Ignited enemy ; http://pathofexile.gamepedia.com/Berek%27s_Respite 

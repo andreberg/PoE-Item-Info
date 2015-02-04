@@ -24,34 +24,6 @@ Itemlevel: 70
 64% increased Armour and Evasion
 #################### 2
 Rarity: Rare
-Storm Edge
-Ornate Sword
---------
-Two Handed Sword
-Quality: +20% (augmented)
-Physical Damage: 132-218 (augmented)
-Critical Strike Chance: 5.00%
-Attacks per Second: 1.46 (augmented)
---------
-Requirements:
-Level: 28
-Str: 45
-Dex: 54
---------
-Sockets: G-R-R-R-R B 
---------
-Itemlevel: 36
---------
-18% increased Accuracy Rating
---------
-143% increased Physical Damage
-+50 to Accuracy Rating
-Can have multiple Crafted Mods
-Adds 18-30 Physical Damage
-12% increased Attack Speed
-+1 to Weapon range
-#################### 3
-Rarity: Rare
 Behemoth Coil
 Diamond Ring
 --------
@@ -70,7 +42,7 @@ Adds 9-15 Physical Damage
 2% of Physical Attack Damage Leeched as Mana
 --------
 Mirrored
-#################### 4
+#################### 3
 Rarity: Rare
 Rage Idol
 Onyx Amulet
@@ -88,7 +60,7 @@ Adds 5-60 Lightning Damage
 +38% to Lightning Resistance
 4% of Physical Attack Damage Leeched as Life
 30% increased Global Critical Strike Chance
-#################### 5
+#################### 4
 Rarity: Rare
 Victory Stinger
 Jewelled Foil
@@ -117,7 +89,7 @@ Adds 25-43 Physical Damage
 +82 to Accuracy Rating
 --------
 Mirrored
-#################### 6
+#################### 5
 Rarity: Rare
 Oblivion Ward
 Strapped Leather
@@ -137,7 +109,7 @@ Itemlevel: 13
 20% increased Evasion Rating
 +6% to Cold Resistance
 20% increased Stun Recovery
-#################### 7
+#################### 6
 Rarity: Rare
 Horror Bane
 Opal Wand
@@ -162,3 +134,411 @@ Itemlevel: 70
 17% increased Lightning Damage
 7% increased Cast Speed
 +73 to maximum Mana
+#################### 7
+Rarity: Rare
+Plague Claw
+Samite Gloves
+--------
+Energy Shield: 99 (augmented)
+--------
+Requirements:
+Level: 48
+Int: 68
+--------
+Sockets: G B
+--------
+Itemlevel: 76
+--------
+6 Life Regenerated per second
+115% increased Energy Shield
++6 to maximum Energy Shield
++11% to Fire Resistance
+9% increased Stun Recovery
+#################### 8
+Rarity: Rare
+Tempest Gnarl
+Sage Wand
+--------
+Wand
+Physical Damage: 16-29
+Critical Strike Chance: 8.60%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 30
+Int: 119
+--------
+Sockets: R-B
+--------
+Itemlevel: 39
+--------
+11% increased Spell Damage
+--------
+58% increased Spell Damage
+12% increased Critical Strike Chance for Spells
++59 to maximum Mana
++84 to Accuracy Rating
+#################### 9
+Rarity: Rare
+Brimstone Call
+Imbued Wand
+--------
+Wand
+Physical Damage: 19-35
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 59
+Int: 188 (unmet)
+--------
+Sockets: B-B-B
+--------
+Itemlevel: 59
+--------
+19% increased Spell Damage
+--------
+72% increased Spell Damage
++62 to maximum Mana
++1 Mana Gained on Kill
+10% increased Cast Speed
+#################### 10
+Rarity: Rare
+Havoc Hunger
+Boot Blade
+--------
+Dagger
+Physical Damage: 14-55
+Critical Strike Chance: 6.80%
+Attacks per Second: 1.40
+--------
+Requirements:
+Level: 55
+Dex: 63
+Int: 90
+--------
+Sockets: G-B B
+--------
+Itemlevel: 77
+--------
+40% increased Global Critical Strike Chance
+--------
+45% increased Spell Damage
++8 to Intelligence
++71 to maximum Mana
+#################### 11
+Rarity: Rare
+Dire Chant
+Karui Sceptre
+--------
+One Handed Mace
+Physical Damage: 33-49
+Critical Strike Chance: 6.50%
+Attacks per Second: 1.45
+--------
+Requirements:
+Level: 56
+Str: 96
+Int: 96
+--------
+Sockets: R B
+--------
+Itemlevel: 71
+--------
+10% increased Elemental Damage
+--------
+85% increased Spell Damage
+25% increased Critical Strike Chance for Spells
++72 to maximum Mana
++10% to Lightning Resistance
++3 Life gained on Kill
+#################### 12
+Rarity: Rare
+Damnation Scratch
+Royal Skean
+--------
+Dagger
+Physical Damage: 14-57
+Critical Strike Chance: 6.80%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 55
+Dex: 71
+Int: 102
+--------
+Sockets: R
+--------
+Itemlevel: 73
+--------
+40% increased Global Critical Strike Chance
+--------
+79% increased Spell Damage
+79% increased Critical Strike Chance for Spells
+12% increased Global Critical Strike Multiplier
++82 to maximum Mana
+59% increased Mana Regeneration Rate
+#################### 13
+Rarity: Rare
+Death Needle
+Imperial Skean
+--------
+Dagger
+Physical Damage: 17-67
+Critical Strike Chance: 6.98%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 66
+Dex: 95
+Int: 131
+--------
+Sockets: G B-G
+--------
+Itemlevel: 72
+--------
+40% increased Global Critical Strike Chance
+--------
+45% increased Spell Damage
++79 to maximum Mana
+16% increased Mana Regeneration Rate
+#################### 14
+Rarity: Rare
+Pain Song
+Vaal Sceptre
+--------
+One Handed Mace
+Quality: +15% (augmented)
+Physical Damage: 36-67 (augmented)
+Critical Strike Chance: 7.61% (augmented)
+Attacks per Second: 1.40
+--------
+Requirements:
+Level: 64
+Str: 113
+Int: 113
+--------
+Sockets: R R
+--------
+Itemlevel: 76
+--------
+10% increased Elemental Damage
+--------
+52% increased Spell Damage
++17 to Intelligence
+13% increased Lightning Damage
+14% increased Critical Strike Chance
++70 to maximum Mana
+#################### 15
+Rarity: Rare
+Phoenix Etcher
+Butcher Knife
+--------
+Dagger
+Physical Damage: 6-54
+Critical Strike Chance: 6.80%
+Attacks per Second: 1.40
+--------
+Requirements:
+Level: 38
+Dex: 55
+Int: 79
+--------
+Sockets: B-B
+--------
+Itemlevel: 39
+--------
+40% increased Global Critical Strike Chance
+--------
+45% increased Spell Damage
++52 to maximum Mana
+26% increased Mana Regeneration Rate
+#################### 16
+Rarity: Rare
+Plague Claw
+Samite Gloves
+--------
+Energy Shield: 99 (augmented)
+--------
+Requirements:
+Level: 48
+Int: 68
+--------
+Sockets: G B
+--------
+Itemlevel: 76
+--------
+6 Life Regenerated per second
+115% increased Energy Shield
++6 to maximum Energy Shield
++11% to Fire Resistance
+9% increased Stun Recovery
+#################### 17
+Rarity: Rare
+Maelström Call
+Prophecy Wand
+--------
+Wand
+Physical Damage: 28-52
+Critical Strike Chance: 8.96%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 68
+Int: 245 (unmet)
+--------
+Sockets: B-B-B
+--------
+Itemlevel: 77
+--------
+20% increased Spell Damage
+--------
+79% increased Spell Damage
+30% increased Cold Damage
++78 to maximum Mana
+#################### 18
+Rarity: Rare
+Brood Bane
+Imbued Wand
+--------
+Wand
+Physical Damage: 19-35
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 59
+Int: 188 (unmet)
+--------
+Sockets: B
+--------
+Itemlevel: 72
+--------
+18% increased Spell Damage
+--------
+77% increased Spell Damage
+23% increased Cold Damage
++79 to maximum Mana
++6% to Cold Resistance
+#################### 19
+Rarity: Rare
+Rage Charm
+Quartz Wand
+--------
+Wand
+Quality: +19% (augmented)
+Physical Damage: 11-19 (augmented)
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.30
+--------
+Requirements:
+Level: 18
+Int: 65
+--------
+Sockets: B
+--------
+Itemlevel: 23
+--------
+13% increased Spell Damage
+--------
+58% increased Spell Damage
+17% increased Global Critical Strike Multiplier
++40 to maximum Mana
+#################### 20
+Rarity: Rare
+Sol Needle
+Demon's Horn
+--------
+Wand
+Physical Damage: 27-49
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 56
+Int: 179
+--------
+Sockets: R-B-B
+--------
+Itemlevel: 63
+--------
+17% increased Spell Damage
+--------
+62% increased Spell Damage
++70 to maximum Mana
+16% increased Projectile Speed
+#################### 21
+Rarity: Rare
+Dragon Bite
+Tornado Wand
+--------
+Wand
+Physical Damage: 16-49
+Critical Strike Chance: 8.36%
+Attacks per Second: 1.30
+--------
+Requirements:
+Level: 65
+Int: 212
+--------
+Sockets: B-B
+--------
+Itemlevel: 77
+--------
+16% increased Spell Damage
+--------
+79% increased Spell Damage
++32 to Intelligence
+29% increased Cold Damage
++81 to maximum Mana
+26% increased Stun Duration on Enemies
+#################### 22
+Rarity: Rare
+Kraken Spell
+Demon's Horn
+--------
+Wand
+Quality: +20% (augmented)
+Physical Damage: 32-59 (augmented)
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.10
+--------
+Requirements:
+Level: 56
+Int: 179
+--------
+Sockets: B
+--------
+Itemlevel: 70
+--------
+18% increased Spell Damage
+--------
+68% increased Spell Damage
+26% increased Fire Damage
+12% increased Lightning Damage
++66 to maximum Mana
+59% increased Mana Regeneration Rate
+#################### 23
+Rarity: Rare
+Armageddon Thirst
+Slaughter Knife
+--------
+Dagger
+Physical Damage: 9-78
+Critical Strike Chance: 6.80%
+Attacks per Second: 1.40
+--------
+Requirements:
+Level: 58
+Dex: 81
+Int: 117
+--------
+Sockets: G
+--------
+Itemlevel: 71
+--------
+40% increased Global Critical Strike Chance
+--------
+73% increased Spell Damage
+20% increased Critical Strike Chance for Spells
++77 to maximum Mana

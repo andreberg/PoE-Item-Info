@@ -24,8 +24,8 @@ Chaos Orb|1:1
 Vaal Orb|1:1
 Orb of Regret|1:2
 Regal Orb|1:1.5
-Gemcutter's Prism|1:3
+Gemcutter's Prism|1:2
 Divine Orb|1:16
-Exalted Orb|1:34
+Exalted Orb|1:44
 Eternal Orb|1:120
 Mirror of Kalandra|1:3500
