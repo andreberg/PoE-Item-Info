@@ -542,3 +542,27 @@ Itemlevel: 71
 73% increased Spell Damage
 20% increased Critical Strike Chance for Spells
 +77 to maximum Mana
+#################### 24
+Rarity: Rare
+Gale Tower
+Scarlet Round Shield
+--------
+Chance to Block: 25%
+Armour: 101 (augmented)
+Evasion Rating: 158 (augmented)
+--------
+Requirements:
+Level: 27
+Str: 37
+Dex: 37
+--------
+Sockets: G G G 
+--------
+Itemlevel: 30
+--------
++43 to Evasion Rating
+34% increased Armour and Evasion
++19 to maximum Life
++17% to Cold Resistance
++17% to Lightning Resistance
+14% increased Stun Recovery

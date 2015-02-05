@@ -1,6 +1,6 @@
 ﻿; Path of Exile Item Info Tooltip
 ;
-; Version: 1.8.3 (hazydoc / IGN:Sadou)
+; Version: 1.8.4 (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -1141,7 +1141,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
     {  
         StringSplit, AffixDataParts, A_LoopReadLine, |,
         RangeLevel := AffixDataParts1
-        If (Opts.TierRelativeToItemLevel and (RangeLevel > ItemLevel))
+        If ((Opts.TierRelativeToItemLevel or Globals.Get("TierRelativeToItemLevelOverride", 0)) and (RangeLevel > ItemLevel))
         {
             Break
         }
@@ -1159,7 +1159,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
         {
             FirstRangeValues := RangeValues
         }
-        If (Opts.TierRelativeToItemLevel and (RangeLevel > ItemLevel))
+        If ((Opts.TierRelativeToItemLevel or Globals.Get("TierRelativeToItemLevelOverride", 0)) and (RangeLevel > ItemLevel))
         {
             Break
         }
@@ -2685,7 +2685,7 @@ ParseAffixes(ItemDataAffixes, Item)
                         {
                             AEBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue)
                         }
-                        If (Not WithinBounds(AEBracket, CurrValue))
+                        If (IsValidBracket(AEBracket) and WithinBounds(AEBracket, CurrValue))
                         {
                             If (NumPrefixes < 2)
                             {
@@ -2698,6 +2698,19 @@ ParseAffixes(ItemDataAffixes, Item)
                             {
                                 ValueRange := LookupAffixData("data\ArmourAndEvasion.txt", ItemLevel, CurrValue, AEBracketLevel2, CurrTier)
                                 AffixType := "Prefix"
+                            }
+                        }
+                        Else
+                        {                
+                            ; Check if it isn't a simple case of Armour and Evasion (Prefix) + Stun Recovery (Suffix)
+                            BSRecBracket := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, BSRecValue, BSRecBracketLevel, CurrTier)
+                            If (IsValidRange(ValueRange) and IsValidBracket(BSRecBracket))
+                            {
+                                ; -2 means for later that processing this hybrid defence stat 
+                                ; determined that Stun Recovery should be a simple suffix
+                                BSRecPartial := ""
+                                AffixType := "Prefix"
+                                ValueRange := LookupAffixData("data\ArmourAndEvasion.txt", ItemLevel, CurrValue, AEBracketLevel, CurrTier)
                             }
                         }
                     }
@@ -3909,6 +3922,13 @@ ParseAffixes(ItemDataAffixes, Item)
                             }
                         }
                     }
+                    Else
+                    {
+                        ; Simple Stun Rec suffix
+                        AffixType := "Suffix"
+                        ValueRange := LookupAffixData("data\StunRecovery_Suffix.txt", ItemLevel, CurrValue, "", CurrTier)
+                        NumSuffixes += 1
+                    }
                 }
                 Else
                 {
@@ -4479,6 +4499,15 @@ ParseClipBoardChanges()
 
     Globals.Set("ItemText", CBContents)
     
+    If (GetKeyState("Shift"))
+    {
+        Globals.Set("TierRelativeToItemLevelOverride", 1)
+    }
+    Else
+    {
+        Globals.Set("TierRelativeToItemLevelOverride", 0)        
+    }
+
     ParsedData := ParseItemData(CBContents)
     ParsedData := PostProcessData(ParsedData)
 
@@ -5798,9 +5827,10 @@ CreateSettingsUI()
         AddToolTip(MaxSpanStartingFromFirstH, "Construct a pseudo range by combining the lowest possible`naffix value bracket with the max possible based on item level")
     GuiAddCheckbox("Show affix bracket tier", "x287 y245 w210 h30", Opts.ShowAffixBracketTier, "ShowAffixBracketTier", "ShowAffixBracketTierH", "SettingsUI_ChkShowAffixBracketTier")
         AddToolTip(ShowAffixBracketTierH, "Display affix bracket tier in reverse ordering, T1 being the best possible roll.")
-        GuiAddCheckbox("Tier relative to item lvl", "x307 y275 w190 h30", Opts.TierRelativeToItemLevel, "TierRelativeToItemLevel", "TierRelativeToItemLevelH")
+        GuiAddCheckbox("Tier relative to item lvl", "x307 y275 w190 h20", Opts.TierRelativeToItemLevel, "TierRelativeToItemLevel", "TierRelativeToItemLevelH")
+        GuiAddText("(hold Shift to toggle temporarily)", "x330 y295 w190 h20", "LblTierRelativeToItemLevelOverrideNote")
         AddToolTip(TierRelativeToItemLevelH, "When showing affix bracket tier, make T1 being best possible`ntaking item level into account.")
-        GuiAddCheckbox("Show affix bracket tier total", "x307 y305 w190 h30", Opts.ShowAffixBracketTierTotal, "ShowAffixBracketTierTotal", "ShowAffixBracketTierTotalH")
+        GuiAddCheckbox("Show affix bracket tier total", "x307 y315 w190 h20", Opts.ShowAffixBracketTierTotal, "ShowAffixBracketTierTotal", "ShowAffixBracketTierTotalH")
         AddToolTip(ShowAffixBracketTierTotalH, "Show number of total affix bracket tiers in format T/N,`n where T = tier on item, N = number of total tiers available")
         
     ; Display - Results 
@@ -6345,4 +6375,3 @@ UnhandledDlg_OK:
     return
 
 ; ############ ADD YOUR OWN MACROS HERE #############
-
