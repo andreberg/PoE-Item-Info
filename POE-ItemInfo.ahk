@@ -1141,7 +1141,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
     {  
         StringSplit, AffixDataParts, A_LoopReadLine, |,
         RangeLevel := AffixDataParts1
-        If ((Opts.TierRelativeToItemLevel or Globals.Get("TierRelativeToItemLevelOverride", 0)) and (RangeLevel > ItemLevel))
+        If (Globals.Get("TierRelativeToItemLevelOverride", Opts.TierRelativeToItemLevel) and (RangeLevel > ItemLevel))
         {
             Break
         }
@@ -1159,7 +1159,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
         {
             FirstRangeValues := RangeValues
         }
-        If ((Opts.TierRelativeToItemLevel or Globals.Get("TierRelativeToItemLevelOverride", 0)) and (RangeLevel > ItemLevel))
+        If (Globals.Get("TierRelativeToItemLevelOverride", Opts.TierRelativeToItemLevel) and (RangeLevel > ItemLevel))
         {
             Break
         }
@@ -4501,11 +4501,11 @@ ParseClipBoardChanges()
     
     If (GetKeyState("Shift"))
     {
-        Globals.Set("TierRelativeToItemLevelOverride", 1)
+        Globals.Set("TierRelativeToItemLevelOverride", !Opts.TierRelativeToItemLevel)
     }
     Else
     {
-        Globals.Set("TierRelativeToItemLevelOverride", 0)        
+        Globals.Set("TierRelativeToItemLevelOverride", Opts.TierRelativeToItemLevel)
     }
 
     ParsedData := ParseItemData(CBContents)
