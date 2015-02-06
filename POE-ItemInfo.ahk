@@ -1,6 +1,6 @@
 ﻿; Path of Exile Item Info Tooltip
 ;
-; Version: 1.8.4 (hazydoc / IGN:Sadou)
+; Version: 1.8.4b (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -4900,7 +4900,7 @@ ParseUnique(ItemName)
                         ; or may not be desirable. On the plus side things will align
                         ; nicely, but on the negative side, it will be a bit unclearer that
                         ; both float values constitute a range and not two isolated values.
-                        ValueRange := RegExReplace(ValueRange, "(\d+\.\d+)-(\d+\.\d+)", "$1,$2") 
+                        ;ValueRange := RegExReplace(ValueRange, "(\d+\.\d+)-(\d+\.\d+)", "$1,$2") ; DISABLED for now
                         IfInString, ValueRange, `,
                         {
                             ; Double range
