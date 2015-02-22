@@ -4865,17 +4865,8 @@ ParseUnique(ItemName)
     Loop, Read, %A_ScriptDir%\data\Uniques.txt
     {
         ALine := StripLineCommentRight(A_LoopReadLine)
-        IfInString, ALine, `;
+        If (SkipLine(ALine))
         {
-            ; Comment
-            Continue
-        }
-        If (StrLen(ALine) <= 2)
-        {
-            ; Blank line
-            ; 2 characters at most: \r\n. Don't bother 
-            ; checking if they are actually control chars 
-            ; or normal letters.
             Continue
         }
         IfInString, ALine, %ItemName%
@@ -4956,6 +4947,18 @@ ParseUnique(ItemName)
         }
     }
     return UniqueFound
+}
+
+ItemIsMirrored(ItemDataText)
+{
+    Loop, Parse, ItemDataText, `n, `r
+    {
+        If (A_LoopField == "Mirrored")
+        {
+            return True
+        }
+    }
+    return False
 }
 
 ; ########### MAIN PARSE FUNCTION ##############
@@ -5107,7 +5110,6 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
         RarityLevel := 0
         Item.Level := ParseItemLevel(ItemDataText, "Level:")
         ItemLevelWord := "Gem Level:"
-        ;~ Item.TypeName := "Gem"
         Item.BaseType := "Jewelry"
     }
     Else
@@ -5146,7 +5148,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     Item.IsQuiver := (Item.SubType == "Quiver")
     Item.IsWeapon := (Item.BaseType == "Weapon")
     Item.IsMap := (Item.BaseType == "Map")
-    Item.IsMirrored := ((InStr(ItemDataText, "Mirrored")) and Not Item.IsCurrency)
+    Item.IsMirrored := (ItemIsMirrored(ItemDataText) and Not Item.IsCurrency)
     Item.HasEffect := (InStr(ItemData.PartsLast, "Has"))
     
     ItemDataIndexAffixes := ItemData.IndexLast - GetNegativeAffixOffset(Item)
