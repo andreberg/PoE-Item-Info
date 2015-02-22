@@ -1,6 +1,6 @@
 ﻿; Path of Exile Item Info Tooltip
 ;
-; Version: 1.8.4b (hazydoc / IGN:Sadou)
+; Version: 1.8.5 (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -122,13 +122,15 @@ RunTests := False
 #Persistent ; Stay open in background
 SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
 #Include %A_ScriptDir%\data\Version.txt
-#Include %A_ScriptDir%\data\Messages.txt
 
+MsgWrongAHKVersion := "AutoHotkey v" . AHKVersionRequired . " or later is needed to run this script. `n`nYou are using AutoHotkey v" . A_AhkVersion . " (installed at: " . A_AhkPath . ")`n`nPlease go to http://ahkscript.org to download the most recent version."
 If (A_AhkVersion <= AHKVersionRequired)
 {
-    MsgBox, 16, Wrong AutoHotkey Version, % Msg.WrongAHKVersion
+    MsgBox, 16, Wrong AutoHotkey Version, % MsgWrongAHKVersion
     ExitApp
 }
+
+#Include %A_ScriptDir%\data\Messages.txt
 
 ; Instead of polluting the default namespace with Globals, create our own Globals "namespace".
 class Globals {
@@ -148,6 +150,7 @@ class Globals {
 Globals.Set("AHKVersionRequired", AHKVersionRequired)
 Globals.Set("ReleaseVersion", ReleaseVersion)
 Globals.Set("DataDir", A_ScriptDir . "\data")
+
 
 class UserOptions {
 
@@ -253,7 +256,16 @@ class UserOptions {
 
     ; Font size for the tooltip, leave empty for default
     FontSize := 11
+
+    ; Displays the tooltip in virtual screen space at fixed coordinates.
+    ; Virtual screen space means the complete desktop frame, including any secondary monitors.
+    DisplayToolTipAtFixedCoords := 0
     
+    ; Coordinates relative to top left corner, increasing by going down and to the right.
+    ; Only used if DisplayToolTipAtFixedCoords is 1.
+    ScreenOffsetX := 0
+    ScreenOffsetY := 0
+
     ScanUI()
     {
         this.OnlyActiveIfPOEIsFront := GuiGet("OnlyActiveIfPOEIsFront") 
@@ -268,7 +280,10 @@ class UserOptions {
         this.ShowAffixBracketTier := GuiGet("ShowAffixBracketTier") 
         this.ShowAffixBracketTierTotal := GuiGet("ShowAffixBracketTierTotal") 
         this.TierRelativeToItemLevel := GuiGet("TierRelativeToItemLevel") 
-        this.ShowCurrencyValueInChaos := GuiGet("ShowCurrencyValueInChaos")  
+        this.ShowCurrencyValueInChaos := GuiGet("ShowCurrencyValueInChaos")
+        this.DisplayToolTipAtFixedCoords := GuiGet("DisplayToolTipAtFixedCoords")
+        this.ScreenOffsetX := GuiGet("ScreenOffsetX")
+        this.ScreenOffsetY := GuiGet("ScreenOffsetY")
         this.ShowUniqueEvaluation := GuiGet("ShowUniqueEvaluation") 
         this.ShowGemEvaluation := GuiGet("ShowGemEvaluation") 
         this.GemQualityValueThreshold := GuiGet("GemQualityValueThreshold") 
@@ -5403,14 +5418,32 @@ ExtractRareItemTypeName(ItemName)
 ; Show tooltip, with fixed width font
 ShowToolTip(String)
 {
-    Global X
-    Global Y
-    Global ToolTipTimeout
-
+    Global X, Y, ToolTipTimeout, Opts
+    
     ; Get position of mouse cursor
     MouseGetPos, X, Y
 
-    ToolTip, %String%, X - 135, Y + 35
+    If (Not Opts.DisplayToolTipAtFixedCoords) 
+    {
+        ToolTip, %String%, X - 135, Y + 35
+    }
+    Else
+    {
+        CoordMode, ToolTip, Screen
+        ;~ GetScreenInfo()
+        ;~ TotalScreenWidth := Globals.Get("TotalScreenWidth", 0)
+        ;~ HalfWidth := Round(TotalScreenWidth / 2)
+        
+        ;~ SecondMonitorTopLeftX := HalfWidth
+        ;~ SecondMonitorTopLeftY := 0
+        ScreenOffsetY := Opts.ScreenOffsetY
+        ScreenOffsetX := Opts.ScreenOffsetX
+        
+        XCoord := 0 + ScreenOffsetX
+        YCoord := 0 + ScreenOffsetY
+        
+        ToolTip, %String%, XCoord, YCoord
+    }    
     Fonts.SetFixedFont()
     
     ; Set up count variable and start timer for tooltip timeout
@@ -5722,6 +5755,17 @@ AddToolTip(con, text, Modify=0){
 
 }
 
+GetScreenInfo()
+{
+    SysGet, TotalScreenWidth, 78
+    SysGet, TotalscreenHeight, 79
+    SysGet, MonitorCount, 80
+    
+    Globals.Set("MonitorCount", MonitorCount)
+    Globals.Set("TotalScreenWidth", TotalScreenWidth)
+    Globals.Set("TotalScreenHeight", TotalscreenHeight)    
+}
+
 ; ######### UNHANDLED CASE DIALOG ############
 
 ShowUnhandledCaseDialog()
@@ -5803,8 +5847,8 @@ CreateSettingsUI()
     AddToolTip(ShowUniqueEvaluationH, "Mark unique as valuable based on its item name`n(can be edited in data\ValuableUniques.txt)")
     GuiAddCheckbox("Show gem evaluation", "x17 y405 w210 h30", Opts.ShowGemEvaluation, "ShowGemEvaluation", "ShowGemEvaluationH", "SettingsUI_ChkShowGemEvaluation")
     AddToolTip(ShowGemEvaluationH, "Mark gem as valuable if quality is higher`nthan the following threshold`n(can be edited in data\ValuableGems.txt)")
-        GuiAddText("Gem quality valuable threshold:", "x37 y437 w150 h20", "LblGemQualityThreshold")
-        GuiAddEdit(Opts.GemQualityValueThreshold, "x197 y435 w40 h20", "GemQualityValueThreshold")
+        GuiAddText("Gem quality valuable threshold:", "x37 y439 w150 h20", "LblGemQualityThreshold")
+        GuiAddEdit(Opts.GemQualityValueThreshold, "x197 y437 w40 h20", "GemQualityValueThreshold")
     GuiAddCheckbox("Mark high number of links as valuable", "x17 y465 w210 h30", Opts.MarkHighLinksAsValuable, "MarkHighLinksAsValuable")
     
     ; Display - Affixes 
@@ -5826,7 +5870,7 @@ CreateSettingsUI()
         GuiAddCheckbox("Max span starting from first", "x307 y215 w190 h30", Opts.MaxSpanStartingFromFirst, "MaxSpanStartingFromFirst", "MaxSpanStartingFromFirstH")
         AddToolTip(MaxSpanStartingFromFirstH, "Construct a pseudo range by combining the lowest possible`naffix value bracket with the max possible based on item level")
     GuiAddCheckbox("Show affix bracket tier", "x287 y245 w210 h30", Opts.ShowAffixBracketTier, "ShowAffixBracketTier", "ShowAffixBracketTierH", "SettingsUI_ChkShowAffixBracketTier")
-        AddToolTip(ShowAffixBracketTierH, "Display affix bracket tier in reverse ordering, T1 being the best possible roll.")
+        AddToolTip(ShowAffixBracketTierH, "Display affix bracket tier in reverse ordering,`nT1 being the best possible roll.")
         GuiAddCheckbox("Tier relative to item lvl", "x307 y275 w190 h20", Opts.TierRelativeToItemLevel, "TierRelativeToItemLevel", "TierRelativeToItemLevelH")
         GuiAddText("(hold Shift to toggle temporarily)", "x330 y295 w190 h20", "LblTierRelativeToItemLevelOverrideNote")
         AddToolTip(TierRelativeToItemLevelH, "When showing affix bracket tier, make T1 being best possible`ntaking item level into account.")
@@ -5853,26 +5897,32 @@ CreateSettingsUI()
     
     ; Tooltip 
 
-    GuiAddGroupBox("Tooltip", "x7 y510 w260 h140")
+    GuiAddGroupBox("Tooltip", "x7 y515 w260 h185")
     
     GuiAddCheckBox("Use tooltip timeout", "x17 y530 w210 h30", Opts.UseTooltipTimeout, "UseTooltipTimeout", "UseTooltipTimeoutH", "SettingsUI_ChkUseTooltipTimeout")
     AddToolTip(UseTooltipTimeoutH, "Hide tooltip automatically after x amount of ticks have passed")
         GuiAddText("Timeout ticks (1 tick = 100ms):", "x27 y562 w150 h20", "LblToolTipTimeoutTicks")
         GuiAddEdit(Opts.ToolTipTimeoutTicks, "x187 y560 w50 h20", "ToolTipTimeoutTicks")
-    
-    GuiAddText("Mousemove threshold (px):", "x17 y592 w160 h20", "LblMouseMoveThreshold", "LblMouseMoveThresholdH")
-    AddToolTip(LblMouseMoveThresholdH, "Hide tooltip automatically after the mouse has moved x amount of pixels")
-    GuiAddEdit(Opts.MouseMoveThreshold, "x187 y590 w50 h20", "MouseMoveThreshold", "MouseMoveThresholdH")
 
-    GuiAddText("Font Size:", "x17 y622 w160 h20", "LblFontSize")
-    GuiAddEdit(Opts.FontSize, "x187 y620 w50 h20", "FontSize")
+    GuiAddCheckbox("Display at fixed coordinates", "x17 y580 w230 h30", Opts.DisplayToolTipAtFixedCoords, "DisplayToolTipAtFixedCoords", "DisplayToolTipAtFixedCoordsH", "SettingsUI_ChkDisplayToolTipAtFixedCoords")
+    AddToolTip(DisplayToolTipAtFixedCoordsH, "Show tooltip in virtual screen space at the fixed`ncoordinates given below. Virtual screen space means`nthe full desktop frame, including any secondary`nmonitors. Coords are relative to the top left edge`nand increase going down and to the right.")
+        GuiAddText("X:", "x37 y612 w20 h20", "LblScreenOffsetX")
+        GuiAddEdit(Opts.ScreenOffsetX, "x55 y610 w40 h20", "ScreenOffsetX")
+        GuiAddText("Y:", "x105 y612 w20 h20", "LblScreenOffsetY")
+        GuiAddEdit(Opts.ScreenOffsetY, "x125 y610 w40 h20", "ScreenOffsetY")
+
+    GuiAddText("Mousemove threshold (px):", "x17 y642 w160 h20", "LblMouseMoveThreshold", "LblMouseMoveThresholdH")
+    AddToolTip(LblMouseMoveThresholdH, "Hide tooltip automatically after the mouse has moved x amount of pixels")
+    GuiAddEdit(Opts.MouseMoveThreshold, "x187 y640 w50 h20", "MouseMoveThreshold", "MouseMoveThresholdH")
+
+    GuiAddText("Font Size:", "x17 y672 w160 h20", "LblFontSize")
+    GuiAddEdit(Opts.FontSize, "x187 y670 w50 h20", "FontSize")
 
     GuiAddText("Mouse over settings or see the beginning of the PoE-Item-Info.ahk script for comments on what these settings do exactly.", "x277 y575 w250 h60")
-    ;~ GuiAddButton("About", "x300 y595 w120 h23", "SettingsUI_BtnAbout")
 
-    GuiAddButton("&Defaults", "x287 y625 w80 h23", "SettingsUI_BtnDefaults")
-    GuiAddButton("&OK", "Default x372 y625 w75 h23", "SettingsUI_BtnOK")
-    GuiAddButton("&Cancel", "x452 y625 w80 h23", "SettingsUI_BtnCancel")
+    GuiAddButton("&Defaults", "x287 y670 w80 h23", "SettingsUI_BtnDefaults")
+    GuiAddButton("&OK", "Default x372 y670 w75 h23", "SettingsUI_BtnOK")
+    GuiAddButton("&Cancel", "x452 y670 w80 h23", "SettingsUI_BtnCancel")
 }
 
 UpdateSettingsUI()
@@ -5885,6 +5935,45 @@ UpdateSettingsUI()
     GuiControl,, ShowMaxSockets, % Opts.ShowMaxSockets
     GuiControl,, ShowDamageCalculations, % Opts.ShowDamageCalculations
     GuiControl,, ShowCurrencyValueInChaos, % Opts.ShowCurrencyValueInChaos
+    GuiControl,, DisplayToolTipAtFixedCoords, % Opts.DisplayToolTipAtFixedCoords
+    If (Opts.DisplayToolTipAtFixedCoords == False) 
+    {
+        GuiControl, Disable, LblScreenOffsetX
+        GuiControl, Disable, ScreenOffsetX
+        GuiControl, Disable, LblScreenOffsetY
+        GuiControl, Disable, ScreenOffsetY        
+    }
+    Else
+    {
+        GuiControl, Enable, LblScreenOffsetX
+        GuiControl, Enable, ScreenOffsetX
+        GuiControl, Enable, LblScreenOffsetY
+        GuiControl, Enable, ScreenOffsetY
+    }
+    ;~ GetScreenInfo()
+    ;~ If (Globals.Get("MonitorCount", 1) > 1) 
+    ;~ {
+        ;~ GuiControl,, DisplayToolTipAtFixedCoords, % Opts.DisplayToolTipAtFixedCoords
+        ;~ GuiControl,, ScreenOffsetX, % Opts.ScreenOffsetX
+        ;~ GuiControl,, ScreenOffsetY, % Opts.ScreenOffsetY
+        ;~ GuiControl, Enable, DisplayToolTipAtFixedCoords
+        ;~ GuiControl, Enable, LblScreenOffsetX
+        ;~ GuiControl, Enable, ScreenOffsetX
+        ;~ GuiControl, Enable, LblScreenOffsetY
+        ;~ GuiControl, Enable, ScreenOffsetY
+    ;~ }
+    ;~ Else
+    ;~ {
+        ;~ GuiControl,, DisplayToolTipAtFixedCoords, 0
+        ;~ GuiControl,, ScreenOffsetX, 0
+        ;~ GuiControl,, ScreenOffsetY, 0
+        ;~ GuiControl, Disable, DisplayToolTipAtFixedCoords
+        ;~ GuiControl, Disable, LblScreenOffsetX
+        ;~ GuiControl, Disable, ScreenOffsetX
+        ;~ GuiControl, Disable, LblScreenOffsetY
+        ;~ GuiControl, Disable, ScreenOffsetY
+    ;~ }
+    
     GuiControl,, ShowUniqueEvaluation, % Opts.ShowUniqueEvaluation
     GuiControl,, ShowGemEvaluation, % Opts.ShowGemEvaluation
     If (Opts.ShowGemEvaluation == False) 
@@ -5965,7 +6054,7 @@ ShowSettingsUI()
     SetTimer, ToolTipTimer, Off
     ToolTip
     Fonts.SetUIFont(9)
-    Gui, Show, w545 h665, PoE Item Info Settings
+    Gui, Show, w545 h710, PoE Item Info Settings
 }
 
 IniRead(ConfigPath, Section_, Key, Default_) 
@@ -6036,6 +6125,9 @@ ReadConfig(ConfigPath="config.ini")
         
         Opts.MouseMoveThreshold := IniRead(ConfigPath, "Tooltip", "MouseMoveThreshold", Opts.MouseMoveThreshold)
         Opts.UseTooltipTimeout := IniRead(ConfigPath, "Tooltip", "UseTooltipTimeout", Opts.UseTooltipTimeout)
+        Opts.DisplayToolTipAtFixedCoords := IniRead(ConfigPath, "Tooltip", "DisplayToolTipAtFixedCoords", Opts.DisplayToolTipAtFixedCoords)
+        Opts.ScreenOffsetX := IniRead(ConfigPath, "Tooltip", "ScreenOffsetX", Opts.ScreenOffsetX)
+        Opts.ScreenOffsetY := IniRead(ConfigPath, "Tooltip", "ScreenOffsetY", Opts.ScreenOffsetY)
         Opts.ToolTipTimeoutTicks := IniRead(ConfigPath, "Tooltip", "ToolTipTimeoutTicks", Opts.ToolTipTimeoutTicks)
         Opts.FontSize := IniRead(ConfigPath, "Tooltip", "FontSize", Opts.FontSize)
     }
@@ -6104,6 +6196,9 @@ WriteConfig(ConfigPath="config.ini")
     
     IniWrite(Opts.MouseMoveThreshold, ConfigPath, "Tooltip", "MouseMoveThreshold")
     IniWrite(Opts.UseTooltipTimeout, ConfigPath, "Tooltip", "UseTooltipTimeout")
+    IniWrite(Opts.DisplayToolTipAtFixedCoords, ConfigPath, "Tooltip", "DisplayToolTipAtFixedCoords")
+    IniWrite(Opts.ScreenOffsetX, ConfigPath, "Tooltip", "ScreenOffsetX")
+    IniWrite(Opts.ScreenOffsetY, ConfigPath, "Tooltip", "ScreenOffsetY")
     IniWrite(Opts.ToolTipTimeoutTicks, ConfigPath, "Tooltip", "ToolTipTimeoutTicks")
     IniWrite(Opts.FontSize, ConfigPath, "Tooltip", "FontSize") 
 }
@@ -6276,6 +6371,24 @@ SettingsUI_ChkUseTooltipTimeout:
         GuiControl, Enable, ToolTipTimeoutTicks
     }
     return
+    
+SettingsUI_ChkDisplayToolTipAtFixedCoords:
+    GuiControlGet, IsChecked,, DisplayToolTipAtFixedCoords
+    If (Not IsChecked) 
+    {
+        GuiControl, Disable, LblScreenOffsetX
+        GuiControl, Disable, ScreenOffsetX
+        GuiControl, Disable, LblScreenOffsetY
+        GuiControl, Disable, ScreenOffsetY
+    }
+    Else
+    {
+        GuiControl, Enable, LblScreenOffsetX
+        GuiControl, Enable, ScreenOffsetX
+        GuiControl, Enable, LblScreenOffsetY
+        GuiControl, Enable, ScreenOffsetY
+    }
+    return
 
 MenuTray_About:
     IfNotEqual, FirstTimeA, No
@@ -6291,15 +6404,12 @@ MenuTray_About:
 		Gui, 2:Add, Text, x260 y57 w170 h20 gVisitForumsThread Center, PoE forums thread
 		Gui, 2:Add, Text, x260 y87 w170 h20 gAboutDlg_AhkHome Center, AutoHotkey homepage
 		Gui, 2:Add, Text, x260 y117 w170 h20 gAboutDlg_GitHub Center, PoE-Item-Info GitHub
-		;~ Gui, 2:Font, Underline C154D85 S7,verdana
-		;~ Gui, 2:Add, Text, 0x8000 x326 y147 w100 h20 gGitHub, PoE-Item-Info GitHub
 		Gui, 2:Font, S7 CDefault normal, Verdana
 		Gui, 2:Add, Text, x16 y207 w410 h80,
 		(LTrim
         Shows affix breakdowns and other useful infos for any item or item link.
         
-        Usage: Set PoE to Windowed mode and hover over any item or item link. 
-        Press Ctrl+C to show a tooltip.
+        Usage: Set PoE to Windowed Fullscreen mode and hover over any item or item link. Press Ctrl+C to show a tooltip.
         
         (c) %A_YYYY% Hazydoc, Nipper4369 and contributors:
         )

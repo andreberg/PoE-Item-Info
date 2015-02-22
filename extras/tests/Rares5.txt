@@ -566,3 +566,27 @@ Itemlevel: 30
 +17% to Cold Resistance
 +17% to Lightning Resistance
 14% increased Stun Recovery
+#################### 25
+Rarity: Rare
+Sol Needle
+Imbued Wand
+--------
+Wand
+Physical Damage: 19-35
+Critical Strike Chance: 8.00%
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 59
+Int: 188
+--------
+Sockets: B B B
+--------
+Itemlevel: 70
+--------
+19% increased Spell Damage
+--------
+37% increased Spell Damage
+32% increased Global Critical Strike Multiplier
++70 to maximum Mana
++29% to Lightning Resistance
