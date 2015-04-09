@@ -5298,9 +5298,8 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
         TT = %TT%`n%MapDescription%
     }
 
-    ; Implicit mod range, only appears in belts/rings/amulets/quivers.
-    ; Also for unique items, there is another tooltip section so they are not here
-    If (not Item.IsUnique and (Item.IsAmulet or (Item.IsRing and not Item.IsUnsetRing) or Item.IsBelt or Item.IsQuiver or Item.IsBow or Item.IsWand))
+    ; Implicit mod range only for non uniques and only if we should mirror affix lines
+    If (Opts.MirrorAffixLines == 1 and not Item.IsUnique)
     {
         Loop, Read, %A_WorkingDir%\data\Implicits.txt
         {
@@ -5328,11 +5327,22 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             {
                 StringSplit, LineParts, A_LoopReadLine, |
                 ItemImplicitLine := ItemDataParts%ItemImplicitDataIndex%
-                If (StrLen(ItemImplicitLine) > Opts.MirrorLineFieldWidth)
+
+                Delim := Opts.AffixDetailDelimiter
+                Ellipsis := Opts.AffixDetailEllipsis
+
+                If (Opts.MirrorLineFieldWidth > 0)
                 {
-                    ItemImplicitLine := SubStr(ItemImplicitLine, 1, Opts.MirrorLineFieldWidth) . Opts.AffixDetailEllipsis
+                    If(StrLen(ItemImplicitLine) > Opts.MirrorLineFieldWidth)
+                    {
+                        ItemImplicitLine := StrTrimSpaceRight(SubStr(ItemImplicitLine, 1, Opts.MirrorLineFieldWidth)) . Ellipsis
+                    }
+                    ItemImplicitLine := StrPad(ItemImplicitLine, Opts.MirrorLineFieldWidth + StrLen(Ellipsis))
                 }
-                TT = %TT%`n--------`n%ItemImplicitLine%`t%LineParts2%
+
+                ItemImplicitValue := StrPad(LineParts2, Opts.ValueRangeFieldWidth, "left")
+
+                TT := TT . "`n--------`n" . ItemImplicitLine . Delim . ItemImplicitValue
                 Break
             }
         }
