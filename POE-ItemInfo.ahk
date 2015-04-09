@@ -5313,7 +5313,12 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             IfInString, A_LoopReadLine, %ItemTypeName%
             {
                 StringSplit, LineParts, A_LoopReadLine, |
-                ItemImplicitDataIndex := ItemDataIndexAffixes - 1
+                If (RarityLevel = 1)
+                {
+                    ItemImplicitDataIndex := ItemDataIndexAffixes
+                } Else {
+                    ItemImplicitDataIndex := ItemDataIndexAffixes - 1
+                }
                 ItemImplicitLine := ItemDataParts%ItemImplicitDataIndex%
                 If (StrLen(ItemImplicitLine) > Opts.MirrorLineFieldWidth)
                 {
