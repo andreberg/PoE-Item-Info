@@ -443,6 +443,7 @@ class Item {
     IsThreeSocket := ""
     IsQuiver := ""
     IsWeapon := ""
+    IsWand := ""
     IsMap := ""
     IsMirrored := ""
     HasEffect := ""
@@ -5020,6 +5021,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     Item.IsRing := False
     Item.IsUnsetRing := False
     Item.IsBow := False
+    Item.IsWand := False
     Item.IsAmulet := False
     Item.IsSingleSocket := False
     Item.IsFourSocket := False
@@ -5137,6 +5139,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     Item.RarityLevel := RarityLevel
 
     Item.IsBow := (Item.SubType == "Bow")
+    Item.IsWand := (Item.SubType == "Wand")
     Item.IsFlask := (Item.SubType == "Flask")
     Item.IsBelt := (Item.SubType == "Belt")
     Item.IsRing := (Item.SubType == "Ring")
@@ -5297,7 +5300,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
 
     ; Implicit mod range, only appears in belts/rings/amulets/quivers.
     ; Also for unique items, there is another tooltip section so they are not here
-    If (not Item.IsUnique and (Item.IsAmulet or (Item.IsRing and not Item.IsUnsetRing) or Item.IsBelt or Item.IsQuiver))
+    If (not Item.IsUnique and (Item.IsAmulet or (Item.IsRing and not Item.IsUnsetRing) or Item.IsBelt or Item.IsQuiver or Item.IsBow or Item.IsWand))
     {
         Loop, Read, %A_WorkingDir%\data\Implicits.txt
         {
@@ -5310,15 +5313,20 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             {
                 Continue
             }
-            IfInString, A_LoopReadLine, %ItemTypeName%
+            If (RarityLevel = 1)
+            {
+                ItemImplicitDataIndex := ItemDataIndexAffixes
+            } Else {
+                ItemImplicitDataIndex := ItemDataIndexAffixes - 1
+            }
+            If (Item.IsUnidentified or RarityLevel = 1) {
+                ItemTypeNameLocal := Item.Name
+            } Else {
+                ItemTypeNameLocal := Item.TypeName
+            }
+            IfInString, A_LoopReadLine, %ItemTypeNameLocal%
             {
                 StringSplit, LineParts, A_LoopReadLine, |
-                If (RarityLevel = 1)
-                {
-                    ItemImplicitDataIndex := ItemDataIndexAffixes
-                } Else {
-                    ItemImplicitDataIndex := ItemDataIndexAffixes - 1
-                }
                 ItemImplicitLine := ItemDataParts%ItemImplicitDataIndex%
                 If (StrLen(ItemImplicitLine) > Opts.MirrorLineFieldWidth)
                 {
