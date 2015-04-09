@@ -1,0 +1,42 @@
+; jewelry data from http://www.pathofexile.com/item-data/jewelry/order-by/implicit_mods/order/asc
+; quiver data from http://pathofexile.gamepedia.com/Quivers
+
+Paua Amulet|20-30
+Coral Amulet|2-4
+Jade Amulet|20-30
+Amber Amulet|20-30
+Lapis Amulet|20-30
+Gold Amulet|12-20
+Turquoise Amulet|16-24
+Agate Amulet|16-24
+Citrine Amulet|16-24
+Onyx Amulet|10-16
+
+Chain Belt|9-20
+Rustic Sash|12-24
+Heavy Belt|25-35
+Leather Belt|25-40
+Golden Obi|20-30
+Cloth Belt|15-25
+Studded Belt|20-30
+
+Coral Ring|20-30
+Paua Ring|20-25
+Gold Ring|6-15
+Topaz Ring|20-30
+Ruby Ring|20-30
+Sapphire Ring|20-30
+Golden Hoop|8-12
+Two-Stone Ring|12-16
+Two-Stone Ring|12-16
+Two-Stone Ring|12-16
+Moonstone Ring|15-25
+Diamond Ring|20-30
+Prismatic Ring|8-10
+Amethyst Ring|9-13
+
+Two-Point Arrow Quiver|20-30
+Sharktooth Arrow Quiver|3-4
+Blunt Arrow Quiver|25-35
+Spike-Point Arrow Quiver|20-30
+Light Quiver|30-40
