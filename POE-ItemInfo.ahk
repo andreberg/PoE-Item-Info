@@ -1,6 +1,6 @@
 ﻿; Path of Exile Item Info Tooltip
 ;
-; Version: 1.8.5 (hazydoc / IGN:Sadou)
+; Version: 1.8.6 (hazydoc / IGN:Sadou)
 ;
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
@@ -755,7 +755,19 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
         ; and thus should come first
         ; Note: still need to work on proper id for 
         ; all armour types.
-        IfInString, A_LoopField, Ringmail
+        IfInString, A_LoopField, Ringmail Gloves
+        {
+            BaseType = Armour
+            SubType = Gloves
+            return
+        }
+        IfInString, A_LoopField, Ringmail Boots
+        {
+            BaseType = Armour
+            SubType = Gloves
+            return
+        }
+        If (RegExMatch(A_LoopField, "Ringmail$"))
         {
             BaseType = Armour
             SubType = BodyArmour
@@ -793,7 +805,7 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
             SubType = Amulet
             return
         }
-        IfInString, A_LoopField, Ring
+        If(RegExMatch(A_LoopField, "\bRing\b"))
         {
             BaseType = Item
             SubType = Ring
@@ -1367,8 +1379,19 @@ ParseRarity(ItemData_NamePlate)
     return RarityParts%RarityParts%2
 }
 
+Assert(expr, msg) 
+{
+    If (Not (expr))
+    {
+        MsgBox, 4112, Assertion Failure, %msg%
+        ExitApp
+    }
+}
+
 GetItemDataChunk(ItemDataText, MatchWord)
 {
+    Assert(StrLen(MatchWord) > 0, "GetItemDataChunk: parameter 'MatchWord' can't be empty")
+    
     StringReplace, TempResult, ItemDataText, --------`r`n, ``, All  
     StringSplit, ItemDataChunks, TempResult, ``
     Loop, %ItemDataChunks0%
@@ -1491,7 +1514,38 @@ ParseRange(RangeChunk, ByRef Hi, ByRef Lo)
     }
 }
 
-ParseItemLevel(ItemDataText, PartialString="Itemlevel:")
+ParseItemLevel(ItemDataText)
+{
+    ; XXX
+    ; Add support for The Awakening Closed Beta
+    ; Once TA is released we won't need to support both occurences of
+    ; the word "Item level" any more...
+    ItemDataChunk := GetItemDataChunk(ItemDataText, "Itemlevel:")
+    If (StrLen(ItemDataChunk) <= 0)
+    {
+        ItemDataChunk := GetItemDataChunk(ItemDataText, "Item Level:")
+    }
+    
+    Assert(StrLen(ItemDataChunk) > 0, "ParseItemLevel: couldn't parse item data chunk")
+    
+    Loop, Parse, ItemDataChunk, `n, `r
+    {
+        IfInString, A_LoopField, Itemlevel:
+        {
+            StringSplit, ItemLevelParts, A_LoopField, %A_Space%
+            Result := StrTrimWhitespace(ItemLevelParts2)
+            return Result
+        }
+        IfInString, A_LoopField, Item Level:
+        {
+            StringSplit, ItemLevelParts, A_LoopField, %A_Space%
+            Result := StrTrimWhitespace(ItemLevelParts3)
+            return Result
+        }
+    }
+}
+
+ParseGemLevel(ItemDataText, PartialString="Level:")
 {
     ItemDataChunk := GetItemDataChunk(ItemDataText, PartialString)
     Loop, Parse, ItemDataChunk, `n, `r
@@ -5100,7 +5154,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     Item.IsGem := (InStr(ItemData.Rarity, "Gem")) 
     Item.IsCurrency := (InStr(ItemData.Rarity, "Currency"))
     
-    If (Not InStr(ItemDataText, "Itemlevel:") and Not Item.IsGem and Not Item.IsCurrency)
+    If (Not (InStr(ItemDataText, "Itemlevel:") or InStr(ItemDataText, "Item Level:")) and Not Item.IsGem and Not Item.IsCurrency)
     {
         return Item.Name
     }
@@ -5108,7 +5162,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     If (Item.IsGem)
     {
         RarityLevel := 0
-        Item.Level := ParseItemLevel(ItemDataText, "Level:")
+        Item.Level := ParseGemLevel(ItemDataText, "Level:")
         ItemLevelWord := "Gem Level:"
         Item.BaseType := "Jewelry"
     }
@@ -6487,3 +6541,8 @@ UnhandledDlg_OK:
     return
 
 ; ############ ADD YOUR OWN MACROS HERE #############
+
+/* #IfWinActive Path of Exile ahk_class Direct3DWindowClass ahk_exe PathOfExile.exe
+{
+   F2::SendEvent {Enter}/oos{Enter} 
+} */

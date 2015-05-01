@@ -590,3 +590,73 @@ Itemlevel: 70
 32% increased Global Critical Strike Multiplier
 +70 to maximum Mana
 +29% to Lightning Resistance
+#################### 26
+Rarity: Rare
+Blood Caress
+Ringmail Gloves
+--------
+Armour: 31
+Energy Shield: 9
+--------
+Requirements:
+Level: 19
+Str: 16
+Int: 16
+--------
+Sockets: B 
+--------
+Itemlevel: 23
+--------
++20 to Strength
+Adds 5-7 Fire Damage
++34 to maximum Mana
++8% to Fire Resistance
+#################### 27
+Rarity: Rare
+Death Edge
+Imbued Wand
+--------
+Wand
+Physical Damage: 19-35
+Critical Strike Chance: 11.04% (augmented)
+Attacks per Second: 1.67 (augmented)
+--------
+Requirements:
+Level: 59
+Int: 188 (unmet)
+--------
+Sockets: R-R-B
+--------
+Itemlevel: 73
+--------
+19% increased Spell Damage
+--------
+20% increased Spell Damage
+11% increased Attack Speed
+38% increased Critical Strike Chance
++73 to maximum Mana
++4 Life gained for each Enemy hit by your Attacks
+42% increased Spell Damage
+#################### 28
+Rarity: Rare
+Loath Spire
+Imbued Wand
+--------
+Wand
+Physical Damage: 19-35
+Critical Strike Chance: 9.76% (augmented)
+Attacks per Second: 1.50
+--------
+Requirements:
+Level: 59
+Int: 188
+--------
+Sockets: B
+--------
+Itemlevel: 70
+--------
+19% increased Spell Damage
+--------
+67% increased Spell Damage
+22% increased Critical Strike Chance
++78 to maximum Mana
