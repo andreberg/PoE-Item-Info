@@ -1,81 +1,81 @@
 ; One exact item name per line.
 ; Line comments with semicolon. Blank lines will be ignored.
-Abyssus|valuable
-Aegis Aurora|valuable
-Alpha's Howl|valuable
-Andvarius|valuable
-Atziri's Acuity|valuable
-Atziri's Disfavour|valuable
-Atziri's Mirror|valuable
-Atziri's Promise|valuable
-Auxium|valuable
-Belly of the Beast|valuable
-Berek's Respite|valuable
-Bino's Kitchen Knife|valuable
-Bloodseeker|valuable
-Carcass Jack|valuable
-Carnage Heart|valuable
-Crown of Eyes|valuable
-Daresso's Defiance|valuable
-Death Rush|valuable
-Death's Oath|valuable
-Divination Distillate|valuable
-Doedre's Damning|valuable
-Doryani's Invitation|valuable
-Dream Fragments|valuable
-Drillneck|valuable
-Essentia Sanguis|valuable
-Eye of Chayula|valuable
-Gifts from Above|valuable
-Headhunter|valuable
-Heartbreaker|valuable
-Kaom's Heart|valuable
-Kaom's Primacy|valuable
-Kongor's Undying Rage|valuable
-Le Heup of All|valuable
-Lioneye's Glare|valuable
-Maligaro's Virtuosity|valuable
-Marylene's Fallacy|valuable
-Meginord's Girdle|valuable
-Midnight Bargain|valuable
-Ming's Heart|valuable
-Mon'tregul's Grasp|valuable
-Olmec's Sanctum|valuable
-Oro's Sacrifice|valuable
-Prism Guardian|valuable
-Rat's Nest|valuable
-Rathpith Globe|valuable
-Reaper's Pursuit|valuable
-Rearguard|valuable
-Rime Gaze|valuable
-Romira's Banquet|valuable
-Saffell's Frame|valuable
-Shavronne's Revelation|valuable
-Shavronne's Wrappings|valuable
-Skullhead|valuable
-Snakebite|valuable
-Solaris Lorica|valuable
-Song of the Sirens|valuable
-Soul Taker|valuable
-Tabula Rasa|valuable
-Taryn's Shiver|valuable
-The Anvil|valuable
-The Bringer of Rain|valuable
-The Covenant|valuable
-The Goddess Bound|valuable
-The Goddess Scorned|valuable
-The Supreme Truth|valuable
-The Taming|valuable
-The Vertex|valuable
-Thief's Torment|valuable
-Thunderfist|valuable
-Vaults of Atziri|valuable
-Vis Mortis|valuable
-Void Battery|valuable
-Voidbringer|valuable
-Voideye|valuable
-Voll's Devotion|valuable
-Voltaxic Rift|valuable
-Wheel of the Stormsail|valuable
-Windscream|valuable
-Wings of Entropy|valuable
+Abyssus
+Aegis Aurora
+Alpha's Howl
+Andvarius
+Atziri's Acuity
+Atziri's Disfavour
+Atziri's Mirror
+Atziri's Promise
+Auxium
+Belly of the Beast
+Berek's Respite
+Bino's Kitchen Knife
+Bloodseeker
+Carcass Jack
+Carnage Heart
+Crown of Eyes
+Daresso's Defiance
+Death Rush
+Death's Oath
+Divination Distillate
+Doedre's Damning
+Doryani's Invitation
+Dream Fragments
+Drillneck
+Essentia Sanguis
+Eye of Chayula
+Gifts from Above
+Headhunter
+Heartbreaker
+Kaom's Heart
+Kaom's Primacy
+Kongor's Undying Rage
+Le Heup of All
+Lioneye's Glare
+Maligaro's Virtuosity
+Marylene's Fallacy
+Meginord's Girdle
+Midnight Bargain
+Ming's Heart
+Mon'tregul's Grasp
+Olmec's Sanctum
+Oro's Sacrifice
+Prism Guardian
+Rat's Nest
+Rathpith Globe
+Reaper's Pursuit
+Rearguard
+Rime Gaze
+Romira's Banquet
+Saffell's Frame
+Shavronne's Revelation
+Shavronne's Wrappings
+Skullhead
+Snakebite
+Solaris Lorica
+Song of the Sirens
+Soul Taker
+Tabula Rasa
+Taryn's Shiver
+The Anvil
+The Bringer of Rain
+The Covenant
+The Goddess Bound
+The Goddess Scorned
+The Supreme Truth
+The Taming
+The Vertex
+Thief's Torment
+Thunderfist
+Vaults of Atziri
+Vis Mortis
+Void Battery
+Voidbringer
+Voideye
+Voll's Devotion
+Voltaxic Rift
+Wheel of the Stormsail
+Windscream
+Wings of Entropy
