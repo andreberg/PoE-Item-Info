@@ -6487,3 +6487,11 @@ UnhandledDlg_OK:
     return
 
 ; ############ ADD YOUR OWN MACROS HERE #############
+
+#IfWinActive Path of Exile
+SendMode Input
+{
+F2::Send {enter}/oos{enter}
+F3::Send {enter}/remaining{enter}
+F4::Send {enter}/itemlevel{enter}
+}
