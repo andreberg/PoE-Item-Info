@@ -5367,9 +5367,20 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
         TT = %TT%`n--------`nUnidentified
     }
 
-    If ((Item.IsUnique and (Opts.ShowUniqueEvaluation == 1) and UniqueIsValuable(Item.Name)) or (Opts.MarkHighLinksAsValuable == 1 and (Item.IsUnique or Item.IsRare) and ItemData.Links >= 5))
+    If (Opts.MarkHighLinksAsValuable == 1 and (Item.IsUnique or Item.IsRare) and ItemData.Links >= 5)
     {
         TT = %TT%`n--------`nValuable
+    }
+    If (Item.IsUnique and (Opts.ShowUniqueEvaluation == 1))
+    {
+		If UniqueIsValuable(Item.Name)
+		{
+			TT = %TT%`n--------`nValuable
+		}
+		Else
+		{
+			TT = %TT%`n--------`nValue not listed
+		}
     }
 
     If (Item.IsMirrored)
