@@ -26,3 +26,16 @@ Sibyl's Lament  ; 1 Alt shards + 3 Alch shards
 Infernal Mantle  ; 10 Alt shards + 1 Alch shards
 Mindspiral  ; 12 Alch shards
 Asenath's Mark  ; 12 Alt shards
+Matua Tupuna  ; 4 Alt shards + 19 Alch shards
+Terminus Est  ; 16 Alt shards + 6 Alch shards
+Last Resort  ; 8 Alt shards
+Asphyxia's Wrath  ; 8 Alt shards + 9 Alch shards
+Dusktoe  ; 12 Alt shards + 4 Alch shards
+Araku Tiki  ; 5 Alt shards + 12 Alch shards
+The Ignomon  ; 11 Alt shards
+Bloodboil  ; 8 Alt shards + 10 Alch shards
+Kaom's Sign  ; 8 Alt shards + 3 Alch shards
+Wideswing  ; 7 Alt shards + 2 Alch shards
+Bones of Ullr  ; 12 Alt shards + 6 Alch shards
+Icetomb  ; 10 Alt shards
+Voll's Protector  ; 4 Alt shards + 3 Alch shards
