@@ -39,3 +39,11 @@ Wideswing  ; 7 Alt shards + 2 Alch shards
 Bones of Ullr  ; 12 Alt shards + 6 Alch shards
 Icetomb  ; 10 Alt shards
 Voll's Protector  ; 4 Alt shards + 3 Alch shards
+Springleaf  ; 4 Alt shards + 12 Alch shards
+Sin Trek  ; 15 Alt shards + 6 Alch shards
+Sadima's Touch  ; 10 Alt shards + 2 Alch shards
+Leer Cast  ; 6 Alt shards + 6 Alch shards
+Ezomyte Peak  ; 8 Alt shards
+Ondar's Clasp  ; 7 Alt shards
+The Blood Thorn  ; 8 Alt shards + 3 Alch shards
+Rigvald's Charge  ; 15 Alt shards
