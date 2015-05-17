@@ -29,3 +29,10 @@ Reduced Mana
 Slower Projectiles
 Spell Totem
 Temporal Chains
+Vaal Cyclone
+Vaal Discipline
+Vaal Grace
+Vaal Haste
+Vaal Immortal Call
+Vaal Molten Shell
+Vaal Spark
