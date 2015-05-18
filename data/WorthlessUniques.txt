@@ -1,5 +1,10 @@
 ; One exact item name per line.
 ; Line comments with semicolon. Blank lines will be ignored.
+;
+; Items are considered 'worthless' if there are more than 99 offers at poegoods for 1 chaos or less in standard.
+; This may of course be different in leagues and races or as new builds become popular.
+; Vendor pizes as comment on each line.
+;
 Al Dhih  ; 10 Alt shards
 Ambu's Charge
 Foxshade
