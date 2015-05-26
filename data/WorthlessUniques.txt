@@ -52,3 +52,9 @@ Ezomyte Peak  ; 8 Alt shards
 Ondar's Clasp  ; 7 Alt shards
 The Blood Thorn  ; 8 Alt shards + 3 Alch shards
 Rigvald's Charge  ; 15 Alt shards
+Daresso's Courage  ; 13 Alt shards + 6 Alch shards
+Sundance  ; 17 Alt shards + 2 Alch shards
+Ungil's Gauche  ; 1 Alt shards + 6 Alch shards
+Goldrim  ; 8 Alt shards + 4 Alch shards
+Prismatic Eclipse  ; 4 Alt shards + 14 Alch shards
+Deidbell  ; 8 Alt shards
