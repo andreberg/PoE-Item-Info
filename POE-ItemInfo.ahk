@@ -4753,6 +4753,23 @@ UniqueIsValuable(ItemName)
     return False
 }
 
+UniqueIsWorthless(ItemName)
+{
+    Loop, Read, %A_ScriptDir%\data\WorthlessUniques.txt
+    {
+        Line := StripLineCommentRight(A_LoopReadLine)
+        If (SkipLine(Line))
+        {
+            Continue
+        }
+        IfInString, ItemName, %Line%
+        {
+            return True
+        }
+    }
+    return False
+}
+
 GemIsDropOnly(ItemName)
 {
     Loop, Read, %A_ScriptDir%\data\DropOnlyGems.txt
@@ -5475,9 +5492,24 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
         TT = %TT%`n--------`nUnidentified
     }
 
-    If ((Item.IsUnique and (Opts.ShowUniqueEvaluation == 1) and UniqueIsValuable(Item.Name)) or (Opts.MarkHighLinksAsValuable == 1 and (Item.IsUnique or Item.IsRare) and ItemData.Links >= 5))
+    If (Opts.MarkHighLinksAsValuable == 1 and (Item.IsUnique or Item.IsRare) and ItemData.Links >= 5)
     {
         TT = %TT%`n--------`nValuable
+    }
+    If (Item.IsUnique and (Opts.ShowUniqueEvaluation == 1))
+    {
+		If UniqueIsValuable(Item.Name)
+		{
+			TT = %TT%`n--------`nValuable
+		}
+		Else If UniqueIsWorthless(Item.Name)
+		{
+			TT = %TT%`n--------`nWorthless
+		}
+		Else
+		{
+			TT = %TT%`n--------`nValue not listed
+		}
     }
 
     If (Item.IsMirrored)

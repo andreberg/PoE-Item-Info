@@ -15,6 +15,7 @@ Bino's Kitchen Knife
 Bloodseeker
 Carcass Jack
 Carnage Heart
+Cloak of Defiance
 Crown of Eyes
 Daresso's Defiance
 Death Rush
@@ -39,6 +40,7 @@ Marylene's Fallacy
 Meginord's Girdle
 Midnight Bargain
 Ming's Heart
+Mjölner
 Mon'tregul's Grasp
 Olmec's Sanctum
 Oro's Sacrifice
