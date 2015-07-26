@@ -5481,6 +5481,9 @@ ShowToolTip(String)
 
     If (Not Opts.DisplayToolTipAtFixedCoords) 
     {
+        ; Workaround for issue #2 (tooltip quickly disappears in Windows 7+)
+        ToolTip, %String%, X - 135, Y + 35
+        Fonts.SetFixedFont()
         ToolTip, %String%, X - 135, Y + 35
     }
     Else
@@ -5498,9 +5501,11 @@ ShowToolTip(String)
         XCoord := 0 + ScreenOffsetX
         YCoord := 0 + ScreenOffsetY
         
+        ; Workaround for issue #2 (tooltip quickly disappears in Windows 7+)
+        ToolTip, %String%, XCoord, YCoord
+        Fonts.SetFixedFont()
         ToolTip, %String%, XCoord, YCoord
     }    
-    Fonts.SetFixedFont()
     
     ; Set up count variable and start timer for tooltip timeout
     ToolTipTimeout := 0
