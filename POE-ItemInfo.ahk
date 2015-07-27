@@ -1670,7 +1670,7 @@ MakeAffixDetailLine(AffixLine, AffixType, ValueRange, Tier)
     Global ItemData
     Delim := "|" ; Internal delimiter, used as string split char later - do not change to the user adjustable delimiter
     Line := AffixLine . Delim . ValueRange . Delim . AffixType
-    If (ItemData.Rarity == "Rare")
+    If (ItemData.Rarity == "Rare" or ItemData.Rarity == "Magic")
     {
         Line := Line . Delim . Tier
     }
