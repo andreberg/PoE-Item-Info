@@ -600,6 +600,10 @@ ParseElementalDamage(String, DmgType, ByRef DmgLo, ByRef DmgHi)
 {
     IfInString, String, %DmgType% Damage
     {
+        IfInstring, String, to spells
+        {
+            return
+        }
         IfInString, String, Converted to or IfInString, String, taken as
         {
             return
