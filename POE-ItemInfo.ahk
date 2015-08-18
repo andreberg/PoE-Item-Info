@@ -5,10 +5,10 @@
 ; This script was originally based on the POE_iLVL_DPS-Revealer script (v1.2d) found here:
 ; https://www.pathofexile.com/forum/view-thread/594346
 ;
-; Changes to the POE_iLVL_DPS-Revealer script as recent as it's version 1.4.1 have been 
+; Changes to the POE_iLVL_DPS-Revealer script as recent as it's version 1.4.1 have been
 ; brought over. Thank you Nipper4369 and Kislorod!
 ;
-; The script has been added to substantially to enable the following features in addition to 
+; The script has been added to substantially to enable the following features in addition to
 ; itemlevel and weapon DPS reveal:
 ;
 ;   - show total affix statistic for rare items
@@ -23,35 +23,35 @@
 ;   - can show a reminder for uniques that are generally considered valuable (user adjustable as well)
 ;   - adds a system tray icon and proper system tray description tooltip
 ;
-; All of these features are user-adjustable by using a "database" of text files which come 
+; All of these features are user-adjustable by using a "database" of text files which come
 ; with the script and are easy to edit by non developers. See header comments in those files
 ; for format infos and data sources.
 ;
 ; Known issues:
-;     
+;
 ;     Even though there have been tons of tests made on composite affix combinations, I expect
 ;     there to be edge cases still that may return an invalid or not found affix bracket.
 ;     You can see these entries in the affix detail lines if they have the text "n/a" (not available)
 ;     somewhere in them or if you see an empty range " - *". The star by the way marks ranges
-;     that have been added together for a guessed attempt as to the composition of a possible 
-;     compound affix. If you see this star, take a closer look for a moment to check if the 
+;     that have been added together for a guessed attempt as to the composition of a possible
+;     compound affix. If you see this star, take a closer look for a moment to check if the
 ;     projection is correct. I expect these edge cases to be properly dealt with over time as the
-;     script matures. For now I'd estimate that at least 80% of the truly hard cases are correctly 
+;     script matures. For now I'd estimate that at least 80% of the truly hard cases are correctly
 ;     identified.
 ;
 ;     Some background info: because the game concatenates values from multiple affix sources into
-;     one final entry on the ingame tooltip there is no reliable way to work backwards from the 
-;     composite value to each individual part. For example, Stun Recovery can be added as suffix if 
+;     one final entry on the ingame tooltip there is no reliable way to work backwards from the
+;     composite value to each individual part. For example, Stun Recovery can be added as suffix if
 ;     it contributes alone, but can also be a prefix if it is a composite of Stun Recovery and
 ;     Evasion Rating (or others). Because there is one final entry, while prefix and suffix can
-;     appear at the same time and will be added together, you can't reliably reverse engineer which 
+;     appear at the same time and will be added together, you can't reliably reverse engineer which
 ;     affix contributed what part of the composite value. This is akin to taking a random source of
-;     numbers, adding them up to one value and then asking someone to work out backwards what the 
+;     numbers, adding them up to one value and then asking someone to work out backwards what the
 ;     original source values were.
 ;     Similarily, in cases like boosted Stun Recovery (1) and Evasion Rating (2) on an item in difficult
-;     cases there is no 100% reliable way to tell if the prefix "+ Evasion Rating / incr. Stun Recovery" 
-;     contributed to both stats at once or if the suffix "+ Stun Recovery" contributed to (1) 
-;     and the prefix "+ Evasion Rating" cotributed to (2) or possibly a combination of both. 
+;     cases there is no 100% reliable way to tell if the prefix "+ Evasion Rating / incr. Stun Recovery"
+;     contributed to both stats at once or if the suffix "+ Stun Recovery" contributed to (1)
+;     and the prefix "+ Evasion Rating" cotributed to (2) or possibly a combination of both.
 ;     Often it is possible to make guesses by working your way backwards from both partial affixes, by
 ;     looking at the affix bracket ranges and the item level to see what is even possible to be there and
 ;     what isn't. In the worst case for a double compound affix, all four ranges will be possible to be
@@ -65,11 +65,11 @@
 ;     where this prefix/suffix limit is overcapped. It may happen that the tooltip shows 4 suffixes,
 ;     and 3 prefixes total. In this case the most likely explanation is that the script failed to properly
 ;     determine composite affixes. Composite affixes ("Comp. Prefix" or "Comp. Suffix" in the tooltip)
-;     are two affix lines on the ingame tooltip that together form one single composite affix. 
+;     are two affix lines on the ingame tooltip that together form one single composite affix.
 ;     Edit v1.4: This hasn't happened for a longer time now, but I am leaving this important note in
 ;     so end users stay vigilant (assuming anyone even reads this wall of text :)).
 ;
-;   - I do not know which affixes are affected by +% Item Quality. Currently I have functions in place 
+;   - I do not know which affixes are affected by +% Item Quality. Currently I have functions in place
 ;     that can boost a range or a single value to adjust for Item Quality but currently these aren't used
 ;     much. Partially this is also because it is not easy to tell if out-of-bounds cases are the result
 ;     of faulty input data (I initially pulled data from the PoE mods compendium but later made the PoE
@@ -86,11 +86,11 @@
 ;
 ; Notes:
 ;
-;   - Global values marked with an inline comment "d" are globals for debugging so they can be easily 
-;     (re-)enabled using global search and replace. Marking variables as global means they will show 
+;   - Global values marked with an inline comment "d" are globals for debugging so they can be easily
+;     (re-)enabled using global search and replace. Marking variables as global means they will show
 ;     up in AHK's Variables and contents view of the script.
-;   
-; Needs AutoHotKey v1.1.05 or later 
+;
+; Needs AutoHotKey v1.1.05 or later
 ;   from http://ahkscript.org and NOT http://www.autohotkey.com
 ;   the latter domain was apparently taken over by a for-profit company!
 ;
@@ -114,7 +114,7 @@
 
 ; Run test suites (see end of script)
 ; Note: don't set this to true for normal every day use...
-; This is just for fellow developers. 
+; This is just for fellow developers.
 RunTests := False
 
 #SingleInstance force
@@ -134,11 +134,11 @@ If (A_AhkVersion <= AHKVersionRequired)
 
 ; Instead of polluting the default namespace with Globals, create our own Globals "namespace".
 class Globals {
-    
+
     Set(name, value) {
         Globals[name] := value
     }
-    
+
     Get(name, value_default="") {
         result := Globals[name]
         If (result == "") {
@@ -156,7 +156,7 @@ class UserOptions {
 
     OnlyActiveIfPOEIsFront := 1     ; Set to 1 to make it so the script does nothing if Path of Exile window isn't the frontmost.
                                     ; If 0, the script also works if PoE isn't frontmost. This is handy for have the script parse
-                                    ; textual item representations appearing somewhere else, like in the forums or text files. 
+                                    ; textual item representations appearing somewhere else, like in the forums or text files.
 
     ShowItemLevel := 1              ; Show item level and the item type's base level (enabled by default change to 0 to disable)
     ShowMaxSockets := 1             ; Show the max sockets based on ilvl and type
@@ -164,46 +164,46 @@ class UserOptions {
 
     ShowAffixTotals := 1            ; Show total affix statistics
     ShowAffixDetails := 1           ; Show detailed info about affixes
-    ShowAffixLevel := 0             ; Show item level of the affix 
+    ShowAffixLevel := 0             ; Show item level of the affix
     ShowAffixBracket := 1           ; Show range for the affix' bracket as is on the item
     ShowAffixMaxPossible := 1       ; Show max possible bracket for an affix based on the item's item level
-    ShowAffixBracketTier := 1       ; Show a T# indicator of the tier the affix bracket is in. 
+    ShowAffixBracketTier := 1       ; Show a T# indicator of the tier the affix bracket is in.
                                     ; T1 being the highest possible, T2 second-to-highest and so on
-                                    
+
     ShowAffixBracketTierTotal := 1  ; Appends the total number of tiers for a given affix in parentheses T/#Total
                                     ; T4/8 would represent the fourth highest tier, in eight total tiers.
 
     TierRelativeToItemLevel := 0    ; When determining the affix bracket tier, take item level into consideration.
                                     ; However, this also means that the lower the item level the less the diversity
-                                    ; of possible affix tiers since there aren't as many possibilities. This will 
-                                    ; give the illusion that a low level item might be really, really good when it 
+                                    ; of possible affix tiers since there aren't as many possibilities. This will
+                                    ; give the illusion that a low level item might be really, really good when it
                                     ; has all T1 but in reality it can only have T1 since it's item level is so low
-                                    ; it can only ever take the first bracket. 
-                                    ; 
+                                    ; it can only ever take the first bracket.
+                                    ;
                                     ; If this option is set to 0, the tiers will always display relative to the full
                                     ; range of tiers available, ignoring the item level.
 
-    ShowCurrencyValueInChaos := 1   ; Convert the value of currency items into chaos orbs. 
+    ShowCurrencyValueInChaos := 1   ; Convert the value of currency items into chaos orbs.
                                     ; This is based on the rates defined in <datadir>\CurrencyRates.txt
                                     ; You should edit this file with the current currency rates.
 
-    ShowUniqueEvaluation := 1       ; Display reminder when a unique is valuable. 
+    ShowUniqueEvaluation := 1       ; Display reminder when a unique is valuable.
                                     ; This is based on <datadir>\ValuableUniques.txt
                                     ; You can edit this file to suit your own needs.
 
-    ShowGemEvaluation := 1          ; Display reminder when a gem is valuable and/or drop only. 
+    ShowGemEvaluation := 1          ; Display reminder when a gem is valuable and/or drop only.
                                     ; This is based on <datadir>\ValuableGems.txt and <datadir>\DropOnlyGems.txt
                                     ; You can edit these files to suit your own needs.
 
     GemQualityValueThreshold := 10  ; If the gem's added quality exceeds this value, consider it valuable regardless of which gem it is.
 
-    MaxSpanStartingFromFirst := 1   ; When showing max possible, don't just show the highest possible affix bracket 
-                                    ; but construct a pseudo range which spans the lower bound of the lowest possible 
-                                    ; bracket to the upper bound of the highest possible one. 
+    MaxSpanStartingFromFirst := 1   ; When showing max possible, don't just show the highest possible affix bracket
+                                    ; but construct a pseudo range which spans the lower bound of the lowest possible
+                                    ; bracket to the upper bound of the highest possible one.
                                     ;
-                                    ; This is usually what you want to see when evaluating an item's worth. The exception 
+                                    ; This is usually what you want to see when evaluating an item's worth. The exception
                                     ; being when you want to reroll an affix to the highest possible value within it's
-                                    ; current bracket - then you need to see the affix range that is actually on the item 
+                                    ; current bracket - then you need to see the affix range that is actually on the item
                                     ; right now.
 
     CompactDoubleRanges := 1        ; Show double ranges as "1-172" instead of "1-8 to 160-172"
@@ -211,15 +211,15 @@ class UserOptions {
 
     MarkHighLinksAsValuable := 1    ; Mark rares or uniques with 5L or 6L as valuable.
 
-    MirrorAffixLines := 1           ; Show a copy of the affix line in question when showing affix details. 
+    MirrorAffixLines := 1           ; Show a copy of the affix line in question when showing affix details.
                                     ;
-                                    ; For example, would display "Prefix, 5-250" instead of "+246 to Accuracy Rating, Prefix, 5-250". 
-                                    ; Since the affixes are processed in order one can attribute which is which to the ordering of 
+                                    ; For example, would display "Prefix, 5-250" instead of "+246 to Accuracy Rating, Prefix, 5-250".
+                                    ; Since the affixes are processed in order one can attribute which is which to the ordering of
                                     ; the lines in the tooltip to the item data in game.
 
-    MirrorLineFieldWidth := 18      ; Mirrored affix line width. Set to a number above 0 to truncate (or pad) to this many characters. 
+    MirrorLineFieldWidth := 18      ; Mirrored affix line width. Set to a number above 0 to truncate (or pad) to this many characters.
                                     ; Appends AffixDetailEllipsis when truncating.
-    ValueRangeFieldWidth := 7       ; Width of field that displays the affix' value range(s). Set to a number larger than 0 to truncate (or pad) to this many characters. 
+    ValueRangeFieldWidth := 7       ; Width of field that displays the affix' value range(s). Set to a number larger than 0 to truncate (or pad) to this many characters.
                                     ;
                                     ; Keep in mind that there are sometimes double ranges to be displayed. Like for example on an axe, implicit physical damage might
                                     ; have a lower bound range and a upper bound range. In this case the lower bound range can have at most a 3 digit minimum value,
@@ -235,7 +235,7 @@ class UserOptions {
                                     ; the affix line will be cut off and this text will be appended at the end to indicate tha the line was truncated.
                                     ;
                                     ; Usually this is set to the ASCII or Unicode value of the three dot ellipsis (alt code: 0133).
-                                    ; Note that the correct display of text characters outside the ASCII standard depend on the file encoding and the 
+                                    ; Note that the correct display of text characters outside the ASCII standard depend on the file encoding and the
                                     ; AHK version used. For best results, save this file as ANSI encoding which can be read and displayed correctly by
                                     ; either ANSI based AutoHotkey or Unicode based AutoHotkey.
                                     ;
@@ -260,7 +260,7 @@ class UserOptions {
     ; Displays the tooltip in virtual screen space at fixed coordinates.
     ; Virtual screen space means the complete desktop frame, including any secondary monitors.
     DisplayToolTipAtFixedCoords := 0
-    
+
     ; Coordinates relative to top left corner, increasing by going down and to the right.
     ; Only used if DisplayToolTipAtFixedCoords is 1.
     ScreenOffsetX := 0
@@ -268,63 +268,63 @@ class UserOptions {
 
     ScanUI()
     {
-        this.OnlyActiveIfPOEIsFront := GuiGet("OnlyActiveIfPOEIsFront") 
-        this.ShowItemLevel := GuiGet("ShowItemLevel") 
-        this.ShowMaxSockets := GuiGet("ShowMaxSockets") 
-        this.ShowDamageCalculations := GuiGet("ShowDamageCalculations") 
-        this.ShowAffixTotals := GuiGet("ShowAffixTotals") 
-        this.ShowAffixDetails := GuiGet("ShowAffixDetails") 
-        this.ShowAffixLevel := GuiGet("ShowAffixLevel") 
-        this.ShowAffixBracket := GuiGet("ShowAffixBracket") 
-        this.ShowAffixMaxPossible := GuiGet("ShowAffixMaxPossible") 
-        this.ShowAffixBracketTier := GuiGet("ShowAffixBracketTier") 
-        this.ShowAffixBracketTierTotal := GuiGet("ShowAffixBracketTierTotal") 
-        this.TierRelativeToItemLevel := GuiGet("TierRelativeToItemLevel") 
+        this.OnlyActiveIfPOEIsFront := GuiGet("OnlyActiveIfPOEIsFront")
+        this.ShowItemLevel := GuiGet("ShowItemLevel")
+        this.ShowMaxSockets := GuiGet("ShowMaxSockets")
+        this.ShowDamageCalculations := GuiGet("ShowDamageCalculations")
+        this.ShowAffixTotals := GuiGet("ShowAffixTotals")
+        this.ShowAffixDetails := GuiGet("ShowAffixDetails")
+        this.ShowAffixLevel := GuiGet("ShowAffixLevel")
+        this.ShowAffixBracket := GuiGet("ShowAffixBracket")
+        this.ShowAffixMaxPossible := GuiGet("ShowAffixMaxPossible")
+        this.ShowAffixBracketTier := GuiGet("ShowAffixBracketTier")
+        this.ShowAffixBracketTierTotal := GuiGet("ShowAffixBracketTierTotal")
+        this.TierRelativeToItemLevel := GuiGet("TierRelativeToItemLevel")
         this.ShowCurrencyValueInChaos := GuiGet("ShowCurrencyValueInChaos")
         this.DisplayToolTipAtFixedCoords := GuiGet("DisplayToolTipAtFixedCoords")
         this.ScreenOffsetX := GuiGet("ScreenOffsetX")
         this.ScreenOffsetY := GuiGet("ScreenOffsetY")
-        this.ShowUniqueEvaluation := GuiGet("ShowUniqueEvaluation") 
-        this.ShowGemEvaluation := GuiGet("ShowGemEvaluation") 
-        this.GemQualityValueThreshold := GuiGet("GemQualityValueThreshold") 
-        this.MaxSpanStartingFromFirst := GuiGet("MaxSpanStartingFromFirst") 
-        this.CompactDoubleRanges := GuiGet("CompactDoubleRanges") 
-        this.CompactAffixTypes := GuiGet("CompactAffixTypes") 
-        this.MarkHighLinksAsValuable := GuiGet("MarkHighLinksAsValuable") 
-        this.MirrorAffixLines := GuiGet("MirrorAffixLines") 
-        this.MirrorLineFieldWidth := GuiGet("MirrorLineFieldWidth") 
-        this.ValueRangeFieldWidth := GuiGet("ValueRangeFieldWidth") 
+        this.ShowUniqueEvaluation := GuiGet("ShowUniqueEvaluation")
+        this.ShowGemEvaluation := GuiGet("ShowGemEvaluation")
+        this.GemQualityValueThreshold := GuiGet("GemQualityValueThreshold")
+        this.MaxSpanStartingFromFirst := GuiGet("MaxSpanStartingFromFirst")
+        this.CompactDoubleRanges := GuiGet("CompactDoubleRanges")
+        this.CompactAffixTypes := GuiGet("CompactAffixTypes")
+        this.MarkHighLinksAsValuable := GuiGet("MarkHighLinksAsValuable")
+        this.MirrorAffixLines := GuiGet("MirrorAffixLines")
+        this.MirrorLineFieldWidth := GuiGet("MirrorLineFieldWidth")
+        this.ValueRangeFieldWidth := GuiGet("ValueRangeFieldWidth")
         this.AffixDetailDelimiter := GuiGet("AffixDetailDelimiter")
-        this.AffixDetailEllipsis := GuiGet("AffixDetailEllipsis") 
-        this.PutResultsOnClipboard := GuiGet("PutResultsOnClipboard")  
-        this.MouseMoveThreshold := GuiGet("MouseMoveThreshold") 
-        this.UseTooltipTimeout := GuiGet("UseTooltipTimeout") 
-        this.ToolTipTimeoutTicks := GuiGet("ToolTipTimeoutTicks") 
+        this.AffixDetailEllipsis := GuiGet("AffixDetailEllipsis")
+        this.PutResultsOnClipboard := GuiGet("PutResultsOnClipboard")
+        this.MouseMoveThreshold := GuiGet("MouseMoveThreshold")
+        this.UseTooltipTimeout := GuiGet("UseTooltipTimeout")
+        this.ToolTipTimeoutTicks := GuiGet("ToolTipTimeoutTicks")
         this.FontSize := GuiGet("FontSize")
     }
 }
 Opts := new UserOptions()
 
 class Fonts {
-    
-    Init(FontSizeFixed, FontSizeUI) 
+
+    Init(FontSizeFixed, FontSizeUI)
     {
         this.FontSizeFixed := FontSizeFixed
         this.FontSizeUI := FontSizeUI
         this.FixedFont := this.CreateFixedFont(FontSizeFixed)
         this.UIFont := this.CreateUIFont(FontSizeUI)
     }
-    
+
     CreateFixedFont(FontSize_)
     {
         Options :=
-        If (!(FontSize_ == "")) 
+        If (!(FontSize_ == ""))
         {
             Options = s%FontSize_%
         }
         Gui Font, %Options%, Courier New
         Gui Font, %Options%, Consolas
-        Gui Add, Text, HwndHidden, 
+        Gui Add, Text, HwndHidden,
         SendMessage, 0x31,,,, ahk_id %Hidden%
         return ErrorLevel
     }
@@ -332,17 +332,17 @@ class Fonts {
     CreateUIFont(FontSize_)
     {
         Options :=
-        If (!(FontSize_ == "")) 
+        If (!(FontSize_ == ""))
         {
             Options = s%FontSize_%
         }
         Gui Font, %Options%, Tahoma
         Gui Font, %Options%, Segoe UI
-        Gui Add, Text, HwndHidden, 
+        Gui Add, Text, HwndHidden,
         SendMessage, 0x31,,,, ahk_id %Hidden%
         return ErrorLevel
     }
-    
+
     Set(NewFont)
     {
         AhkExe := GetAhkExeFilename()
@@ -352,7 +352,7 @@ class Fonts {
         SendMessage, 0x30, NewFont, 1,, ahk_class tooltips_class32 ahk_exe AutoHotkeyU32.exe
         SendMessage, 0x30, NewFont, 1,, ahk_class tooltips_class32 ahk_exe AutoHotkeyU64.exe
     }
-    
+
     SetFixedFont(FontSize_=-1)
     {
         If (FontSize_ == -1)
@@ -380,12 +380,12 @@ class Fonts {
         }
         this.Set(this.UIFont)
     }
-    
+
     GetFixedFont()
     {
         return this.FixedFont
     }
-    
+
     GetUIFont()
     {
         return this.UIFont
@@ -404,8 +404,8 @@ class ItemData_ {
     PartsLast := ""
     Rarity := ""
     Parts := []
-    
-    ClearParts() 
+
+    ClearParts()
     {
         Loop, % this.Parts.MaxIndex()
         {
@@ -443,6 +443,7 @@ class Item {
     IsThreeSocket := ""
     IsQuiver := ""
     IsWeapon := ""
+    IsWand := ""
     IsMap := ""
     IsMirrored := ""
     HasEffect := ""
@@ -454,8 +455,8 @@ class AffixTotals_ {
     NumPrefixes := 0
     NumSuffixes := 0
     NumTotals := 0
-    
-    Reset() 
+
+    Reset()
     {
         this.NumPrefixes := 0
         this.NumSuffixes := 0
@@ -465,18 +466,18 @@ class AffixTotals_ {
 AffixTotals := new AffixTotals_()
 
 class AffixLines_ {
-    
+
     __New()
     {
         this.Length := 0
     }
-    
+
     ; Sets fields to empty string
     Clear(Index)
     {
         this[Index] := ""
     }
-    
+
     ClearAll()
     {
         Loop, % this.MaxIndex()
@@ -484,9 +485,9 @@ class AffixLines_ {
             this.Clear(A_Index)
         }
     }
-    
+
     ; Actually removes fields
-    Reset() 
+    Reset()
     {
         Loop, % this.MaxIndex()
         {
@@ -494,7 +495,7 @@ class AffixLines_ {
         }
         this.Length := 0
     }
-    
+
     Set(Index, Contents)
     {
         this[Index] := Contents
@@ -578,7 +579,7 @@ OpenCreateDataTextFile(Filename)
     }
     Else
     {
-        
+
         File := FileOpen(Filepath, "w")
         if !IsObject(File)
         {
@@ -597,13 +598,17 @@ OpenCreateDataTextFile(Filename)
 
 ParseElementalDamage(String, DmgType, ByRef DmgLo, ByRef DmgHi)
 {
-    IfInString, String, %DmgType% Damage 
+    IfInString, String, %DmgType% Damage
     {
+        IfInstring, String, to spells
+        {
+            return
+        }
         IfInString, String, Converted to or IfInString, String, taken as
         {
             return
         }
-        IfNotInString, String, increased 
+        IfNotInString, String, increased
         {
             StringSplit, Arr, String, %A_Space%
             StringSplit, Arr, Arr2, -
@@ -613,14 +618,14 @@ ParseElementalDamage(String, DmgType, ByRef DmgLo, ByRef DmgHi)
     }
 }
 
-; Function that checks item type name against entries 
+; Function that checks item type name against entries
 ; from ItemList.txt to get the item's base level
 ; Added by kongyuyu, changed by hazydoc
 CheckBaseLevel(ItemTypeName)
 {
     ItemListArray = 0
-    Loop, Read, %A_ScriptDir%\data\ItemList.txt 
-    {  
+    Loop, Read, %A_ScriptDir%\data\ItemList.txt
+    {
         ; This loop retrieves each line from the file, one at a time.
         ItemListArray += 1  ; Keep track of how many items are in the array.
         StringSplit, NameLevel, A_LoopReadLine, |,
@@ -630,7 +635,7 @@ CheckBaseLevel(ItemTypeName)
 
     Loop %ItemListArray% {
         element := Array%A_Index%1
-        If(ItemTypeName == element) 
+        If(ItemTypeName == element)
         {
             BaseLevel := Array%A_Index%2
             Break
@@ -748,12 +753,12 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
         }
     }
 
-    ; Check name plate section 
+    ; Check name plate section
     Loop, Parse, ItemDataNamePlate, `n, `r
     {
         ; a few cases that cause incorrect id later
         ; and thus should come first
-        ; Note: still need to work on proper id for 
+        ; Note: still need to work on proper id for
         ; all armour types.
         IfInString, A_LoopField, Ringmail Gloves
         {
@@ -826,7 +831,7 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
         IfInString, A_LoopField, %A_Space%Map
         {
             Global matchList
-            BaseType = Map      
+            BaseType = Map
             Loop % matchList.MaxIndex()
             {
                 Match := matchList[A_Index]
@@ -836,7 +841,7 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
                     return
                 }
             }
-            
+
             SubType = Unknown%A_Space%Map
             return
         }
@@ -846,9 +851,9 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
             BaseType = Map
             SubType = Dry%A_Space%Peninsula
             return
-        }       
+        }
 
-        ; Shields 
+        ; Shields
         IfInString, A_LoopField, Shield
         {
             BaseType = Armour
@@ -971,7 +976,7 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
             SubType = Helmet
             return
         }
-        
+
         ; Boots
         IfInString, A_LoopField, Boots
         {
@@ -984,13 +989,13 @@ ParseItemType(ItemDataStats, ItemDataNamePlate, ByRef BaseType, ByRef SubType, B
             BaseType = Armour
             SubType = Boots
             return
-        }   
+        }
         IfInString, A_LoopField, Slippers
         {
             BaseType = Armour
             SubType = Boots
             return
-        }                   
+        }
     }
 
     ; TODO: need a reliable way to determine sub type for armour
@@ -1011,7 +1016,7 @@ GetClipboardContents(DropNewlines=False)
         }
     }
     Else
-    {   
+    {
         Loop, Parse, Clipboard, `n, `r
         {
             Result := Result . A_LoopField
@@ -1025,7 +1030,7 @@ SetClipboardContents(String)
     Clipboard := String
 }
 
-; Splits StrInput on StrDelimiter. Returns an object that has a 'length' field 
+; Splits StrInput on StrDelimiter. Returns an object that has a 'length' field
 ; containing the number of parts and 0 .. (length) fields containing the substrings.
 ; Example: if parts is the object returned by this function, then
 ;   'parts.length' gives the number of parts
@@ -1049,12 +1054,12 @@ SplitString(StrInput, StrDelimiter)
 ; TODO: LookupAffixBracket and LookupAffixData contain a lot of duplicate code.
 
 ; Look up just the most applicable bracket for an affix.
-; Most applicable means Value is between bounds of bracket range or 
+; Most applicable means Value is between bounds of bracket range or
 ; highest entry possible given the item level.
 ;
 ; Returns "#-#" format range
 ;
-; If Value is unspecified ("") return the max possible 
+; If Value is unspecified ("") return the max possible
 ; bracket based on item level
 LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="", ByRef BracketIndex=0)
 {
@@ -1069,14 +1074,14 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="", ByRef B
     LookupIsDoubleRange := False ; For affixes like "Adds +# ... Damage" which have a lower and an upper bound range
     BracketRange := "n/a"
     Loop, Read, %A_ScriptDir%\%Filename%
-    {  
+    {
         AffixDataIndex += 1
         StringSplit, AffixDataParts, A_LoopReadLine, |,
         RangeLevel := AffixDataParts1
         RangeValues := AffixDataParts2
         If (RangeLevel > ItemLevel)
         {
-            AffixDataIndex -= 1 ; Since we added 1 above, before we noticed range level is above item level 
+            AffixDataIndex -= 1 ; Since we added 1 above, before we noticed range level is above item level
             Break
         }
         IfInString, RangeValues, `,
@@ -1125,7 +1130,7 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="", ByRef B
                 AffixLevel = %RangeLevel%
             }
         }
-        If (Value == "") 
+        If (Value == "")
         {
             AffixLevel = %RangeLevel%
         }
@@ -1135,14 +1140,14 @@ LookupAffixBracket(Filename, ItemLevel, Value="", ByRef BracketLevel="", ByRef B
     return BracketRange
 }
 
-; Look up complete data for an affix. Depending on settings flags 
+; Look up complete data for an affix. Depending on settings flags
 ; this may include many things, and will return a string used for
-; end user display rather than further calculations. 
+; end user display rather than further calculations.
 ; Use LookupAffixBracket if you need a range format to do calculations with.
 LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
 {
     Global Opts
-    
+
     AffixLevel := 0
     AffixDataIndex := 0
     ValueLo := Value             ; Value from ingame tooltip
@@ -1152,7 +1157,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
     FirstRangeValues =
     BracketRange := "n/a"
     MaxRange =
-    FinalRange = 
+    FinalRange =
     MaxLevel := 1
     RangeLevel := 1
     Tier := 0
@@ -1165,7 +1170,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
     ; TODO refactor pre-pass into its own method
     ; Pre-pass to determine max tier
     Loop, Read, %A_ScriptDir%\%Filename%
-    {  
+    {
         StringSplit, AffixDataParts, A_LoopReadLine, |,
         RangeLevel := AffixDataParts1
         If (Globals.Get("TierRelativeToItemLevelOverride", Opts.TierRelativeToItemLevel) and (RangeLevel > ItemLevel))
@@ -1177,7 +1182,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
     }
 
     Loop, Read, %A_ScriptDir%\%Filename%
-    {  
+    {
         AffixDataIndex += 1
         StringSplit, AffixDataParts, A_LoopReadLine, |,
         RangeValues := AffixDataParts2
@@ -1203,10 +1208,10 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
             ;       GLobal UBMin     ; (U)pper (B)ound minimum value
             ;       GLobal UBMax     ; (U)pper (B)ound maximum value
             ;       ; same, just for the first range's values
-            ;       Global FRLBMin   
-            ;       Global FRLBMax   
-            ;       Global FRUBMin   
-            ;       Global FRUBMax   
+            ;       Global FRLBMin
+            ;       Global FRLBMax
+            ;       Global FRUBMin
+            ;       Global FRUBMax
             ; Example lines from txt file database for double range lookups:
             ;  3|1,14-15
             ; 13|1-3,35-37
@@ -1236,7 +1241,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
                 ParseRange(FRUB, FRUBMax, FRUBMin)
                 ParseRange(FRLB, FRLBMax, FRLBMin)
             }
-            If ((LBMin == LBMax) or Opts.CompactDoubleRanges) 
+            If ((LBMin == LBMax) or Opts.CompactDoubleRanges)
             {
                 LBPart = %LBMin%
             }
@@ -1244,7 +1249,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
             {
                 LBPart = %LBMin%-%LBMax%
             }
-            If ((UBMin == UBMax) or Opts.CompactDoubleRanges) 
+            If ((UBMin == UBMax) or Opts.CompactDoubleRanges)
             {
                 UBPart = %UBMax%
             }
@@ -1309,7 +1314,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
                 }
                 AffixLevel = %MaxLevel%
                 Tier := ((MaxTier - AffixDataIndex) + 1)
-                
+
                 If (Opts.ShowAffixBracketTierTotal)
                 {
                     Tier := Tier . "/" . MaxTier
@@ -1334,7 +1339,7 @@ LookupAffixData(Filename, ItemLevel, Value, ByRef BracketLevel="", ByRef Tier=0)
 AssembleValueRangeFields(BracketRange, BracketLevel, MaxRange="", MaxLevel=0)
 {
     Global Opts
-    
+
     If (Opts.ShowAffixBracket)
     {
         FinalRange := BracketRange
@@ -1458,7 +1463,7 @@ ParseRequirements(ItemDataChunk, ByRef Level, ByRef Attributes, ByRef Values="")
     Delim := ","
     DelimLen := StrLen(Delim)
     Loop, Parse, ItemDataChunk, `n, `r
-    {    
+    {
         If StrLen(A_LoopField) = 0
         {
             Break ; Not interested in blank lines
@@ -1591,7 +1596,7 @@ StrTrimWhitespace(String)
 
 ; Pads a string with a multiple of PadChar to become a wanted total length.
 ; Note that Side is the side that is padded not the anchored side.
-; Meaning, if you pad right side, the text will move left. If Side was an 
+; Meaning, if you pad right side, the text will move left. If Side was an
 ; anchor instead, the text would move right if anchored right.
 StrPad(String, Length, Side="right", PadChar=" ")
 {
@@ -1613,7 +1618,7 @@ StrPad(String, Length, Side="right", PadChar=" ")
     return Result
 }
 
-; Prefix a string s with another string prefix. 
+; Prefix a string s with another string prefix.
 ; Does nothing if s is already prefixed.
 StrPrefix(s, prefix) {
     If (s == "") {
@@ -1650,7 +1655,7 @@ NumFormat(Num, Format)
 }
 
 ; Pads a number with prefixed 0s and optionally rounds or appends to specified decimal places width.
-NumPad(Num, TotalWidth, DecimalPlaces=0) 
+NumPad(Num, TotalWidth, DecimalPlaces=0)
 {
     myFormat = 0%TotalWidth%.%DecimalPlaces%
     newNum := NumFormat(Num, myFormat)
@@ -1686,7 +1691,7 @@ AppendAffixInfo(Line, AffixPos)
 AssembleAffixDetails()
 {
     Global Opts, AffixLines
-    
+
     AffixLine =
     AffixType =
     ValueRange =
@@ -1719,7 +1724,7 @@ AssembleAffixDetails()
             If (Opts.MirrorLineFieldWidth > 0)
             {
                 If(StrLen(AffixLine) > Opts.MirrorLineFieldWidth)
-                {   
+                {
                     AffixLine := StrTrimSpaceRight(SubStr(AffixLine, 1, Opts.MirrorLineFieldWidth)) . Ellipsis
                 }
                 AffixLine := StrPad(AffixLine, Opts.MirrorLineFieldWidth + StrLen(Ellipsis))
@@ -1745,7 +1750,7 @@ AssembleAffixDetails()
                 {
                     TierString := ""
                 }
-                If (Opts.ShowAffixLevel) 
+                If (Opts.ShowAffixLevel)
                 {
                     AdditionalPadding := AdditionalPadding . StrMult(" ", Opts.ValueRangeFieldWidth)
                 }
@@ -1756,7 +1761,7 @@ AssembleAffixDetails()
                 }
                 TierString := TierString . AdditionalPadding
             }
-            Else 
+            Else
             {
                 AddedWidth := 0
                 If (Opts.ShowAffixBracketTierTotal)
@@ -1829,7 +1834,7 @@ AdjustRangeForQuality(ValueRange, ItemQuality, Direction="up")
     return ValueRange
 }
 
-; Checks ActualValue against ValueRange, returning 1 if 
+; Checks ActualValue against ValueRange, returning 1 if
 ; ActualValue is within bounds of ValueRange, 0 otherwise.
 WithinBounds(ValueRange, ActualValue)
 {
@@ -2018,17 +2023,17 @@ ExtractCompositeAffixBalance(ProcessedData, ByRef CompPrefixes, ByRef CompSuffix
 }
 
 ParseFlaskAffixes(ItemDataAffixes)
-{    
+{
     Global AffixTotals
-    
+
     IfInString, ItemDataChunk, Unidentified
     {
         return ; Not interested in unidentified items
     }
-    
+
     NumPrefixes := 0
     NumSuffixes := 0
-    
+
     Loop, Parse, ItemDataAffixes, `n, `r
     {
         If StrLen(A_LoopField) = 0
@@ -2037,7 +2042,7 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
 
         ; Suffixes
-        
+
         IfInString, A_LoopField, Dispels
         {
             ; Covers Shock, Burning and Frozen and Chilled
@@ -2087,12 +2092,12 @@ ParseFlaskAffixes(ItemDataAffixes)
             }
             Continue
         }
-        
+
         ; Prefixes
-        
+
         IfInString, A_LoopField, Recovery Speed
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
@@ -2100,7 +2105,7 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
         IfInString, A_LoopField, Amount Recovered
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
@@ -2108,7 +2113,7 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
         IfInString, A_LoopField, Charges
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
@@ -2116,7 +2121,7 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
         IfInString, A_LoopField, Instant
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
@@ -2124,7 +2129,7 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
         IfInString, A_LoopField, Charge when
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
@@ -2132,7 +2137,7 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
         IfInString, A_LoopField, Recovery when
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
@@ -2140,7 +2145,7 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
         IfInString, A_LoopField, Mana Recovered
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
@@ -2148,27 +2153,27 @@ ParseFlaskAffixes(ItemDataAffixes)
         }
         IfInString, A_LoopField, Life Recovered
         {
-            If (NumPrefixes < 1) 
+            If (NumPrefixes < 1)
             {
                 NumPrefixes += 1
             }
             Continue
         }
     }
-    
+
     AffixTotals.NumPrefixes := NumPrefixes
     AffixTotals.NumSuffixes := NumSuffixes
 }
 
 ; Try looking up the remainder bracket based on Bracket
-; This is done by calculating the rest value in three 
+; This is done by calculating the rest value in three
 ; different ways, falling through if not successful:
 ;
 ; 1) CurrValue - RangeMid(Bracket)
 ; 2) CurrValue - RangeMin(Bracket)
 ; 3) CurrValue - RangeMax(Bracket)
 ;
-; (Internal: RegExr x-forms): 
+; (Internal: RegExr x-forms):
 ;
 ; with ByRef BracketLevel:
 ;   ( *)(.+Rest) := CurrValue - RangeMid\((.+)\)\r *(.+) := LookupAffixBracket\((.+?), (.+?), (.+?), (.+?)\)
@@ -2206,7 +2211,7 @@ ParseAffixes(ItemDataAffixes, Item)
     ItemGripType := Item.GripType
     ItemLevel := Item.Level
     ItemQuality := Item.Quality
-    
+
      ; Reset the AffixLines "array" and other vars
     ResetAffixDetailVars()
 
@@ -2214,7 +2219,7 @@ ParseAffixes(ItemDataAffixes, Item)
     ; Acts as a loop index variable when iterating each affix data part.
     NumPrefixes := 0
     NumSuffixes := 0
-    
+
     ; Composition flags
     ;
     ; These are required for descision making later, when guesstimating
@@ -2239,16 +2244,16 @@ ParseAffixes(ItemDataAffixes, Item)
     HasMaxMana := 0
     HasMultipleCrafted := 0
 
-    ; Max mana already accounted for in case of Composite Prefix+Prefix 
+    ; Max mana already accounted for in case of Composite Prefix+Prefix
     ; "Spell Damage / Max Mana" + "Max Mana"
     MaxManaPartial =
 
-    ; Accuracy Rating already accounted for in case of 
-    ;   Composite Prefix + Composite Suffix: 
+    ; Accuracy Rating already accounted for in case of
+    ;   Composite Prefix + Composite Suffix:
     ;       "increased Physical Damage / to Accuracy Rating" +
     ;       "to Accuracy Rating / Light Radius"
-    ;   Composite Prefix + Suffix: 
-    ;       "increased Physical Damage / to Accuracy Rating" + 
+    ;   Composite Prefix + Suffix:
+    ;       "increased Physical Damage / to Accuracy Rating" +
     ;       "to Accuracy Rating"
     ARPartial =
     ARAffixTypePartial =
@@ -2258,10 +2263,10 @@ ParseAffixes(ItemDataAffixes, Item)
     BSRecPartial =
 
     ; --- PRE-PASS ---
-    
+
     ; To determine composition flags
     Loop, Parse, ItemDataChunk, `n, `r
-    {    
+    {
         If StrLen(A_LoopField) = 0
         {
             Break ; Not interested in blank lines
@@ -2270,7 +2275,7 @@ ParseAffixes(ItemDataAffixes, Item)
         {
             Break ; Not interested in unidentified items
         }
-                
+
         IfInString, A_LoopField, increased Light Radius
         {
             HasIncrLightRadius := A_Index
@@ -2351,13 +2356,13 @@ ParseAffixes(ItemDataAffixes, Item)
         }
     }
 
-    ; Note: yes, these superlong IfInString structures suck, but hey, 
+    ; Note: yes, these superlong IfInString structures suck, but hey,
     ; AHK sucks as an object-oriented scripting language, so bite me.
     ;
-    ; But in all seriousness, there are two main parts - Simple and 
+    ; But in all seriousness, there are two main parts - Simple and
     ; Complex Affixes - which could be refactored into their own helper
     ; methods.
-    
+
     ; --- SIMPLE AFFIXES ---
 
     Loop, Parse, ItemDataChunk, `n, `r
@@ -2370,7 +2375,7 @@ ParseAffixes(ItemDataAffixes, Item)
         {
             Break ; Not interested in unidentified items
         }
-        
+
         CurrValue := GetActualValue(A_LoopField)
         CurrTier := 0
         BracketLevel := 0
@@ -2400,7 +2405,7 @@ ParseAffixes(ItemDataAffixes, Item)
             Continue
         }
 
-        IfInString, A_LoopField, to all Attributes 
+        IfInString, A_LoopField, to all Attributes
         {
             NumSuffixes += 1
             ValueRange := LookupAffixData("data\ToAllAttributes.txt", ItemLevel, CurrValue, "", CurrTier)
@@ -2505,7 +2510,7 @@ ParseAffixes(ItemDataAffixes, Item)
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange, CurrTier), A_Index)
             Continue
         }
-        
+
         ; Flask affixes (on belts)
         IfInString, A_LoopField, reduced Flask Charges used
         {
@@ -2528,7 +2533,7 @@ ParseAffixes(ItemDataAffixes, Item)
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange, CurrTier), A_Index)
             Continue
         }
-        
+
         IfInString, A_LoopField, increased Quantity
         {
             NumSuffixes += 1
@@ -2659,9 +2664,9 @@ ParseAffixes(ItemDataAffixes, Item)
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, "Suffix", ValueRange, CurrTier), A_Index)
             Continue
         }
-        
+
         ; Prefixes
-        
+
         IfInString, A_LoopField, to Armour
         {
             NumPrefixes += 1
@@ -2684,7 +2689,7 @@ ParseAffixes(ItemDataAffixes, Item)
             AffixType := "Prefix"
             AEBracketLevel := 0
             ValueRange := LookupAffixData("data\ArmourAndEvasion.txt", ItemLevel, CurrValue, AEBracketLevel, CurrTier)
-            If (HasStunRecovery) 
+            If (HasStunRecovery)
             {
                 AEBracketLevel2 := AEBracketLevel
 
@@ -2700,11 +2705,11 @@ ParseAffixes(ItemDataAffixes, Item)
                 If (Not IsValidBracket(BSRecPartial) or Not IsValidBracket(AEBracket))
                 {
                     ; This means that we are actually dealing with a Prefix + Comp. Prefix.
-                    ; To get the part for the hybrid defence that is contributed by the straight prefix, 
+                    ; To get the part for the hybrid defence that is contributed by the straight prefix,
                     ; lookup the bracket level for the B&S Recovery line and then work out the partials
-                    ; for the hybrid stat from the bracket level of B&S Recovery. 
+                    ; for the hybrid stat from the bracket level of B&S Recovery.
                     ;
-                    ; For example: 
+                    ; For example:
                     ;   87% increased Armour and Evasion
                     ;   7% increased Stun Recovery
                     ;
@@ -2713,7 +2718,7 @@ ParseAffixes(ItemDataAffixes, Item)
                     ;      This works out to be 6-14.
                     ;   3) Subtract 6-14 from 87 to get the rest contributed by the hybrid stat as pure prefix.
                     ;
-                    ; Currently when subtracting a range from a single value we just use the range's 
+                    ; Currently when subtracting a range from a single value we just use the range's
                     ; max as single value. This may need changing depending on circumstance but it
                     ; works for now. EDIT: no longer the case, now uses RangeMid(...). EDIT2: Rest value calc
                     ; now routed through LookupRemainingAffixBracket() which uses trickle-down through all
@@ -2743,11 +2748,11 @@ ParseAffixes(ItemDataAffixes, Item)
                         ;
                         BSRecPartial := LookupAffixBracket("data\StunRecovery_Hybrid.txt", ItemLevel, "", BSRecBracketLevel)
                     }
-                   
+
                     AEBSBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", BSRecBracketLevel)
 
                     If (Not WithinBounds(AEBSBracket, CurrValue))
-                    {                        
+                    {
                         AEBracket := LookupRemainingAffixBracket("data\ArmourAndEvasion.txt", ItemLevel, CurrValue, AEBSBracket)
 
                         If (Not IsValidBracket(AEBracket))
@@ -2770,12 +2775,12 @@ ParseAffixes(ItemDataAffixes, Item)
                             }
                         }
                         Else
-                        {                
+                        {
                             ; Check if it isn't a simple case of Armour and Evasion (Prefix) + Stun Recovery (Suffix)
                             BSRecBracket := LookupAffixBracket("data\StunRecovery_Suffix.txt", ItemLevel, BSRecValue, BSRecBracketLevel, CurrTier)
                             If (IsValidRange(ValueRange) and IsValidBracket(BSRecBracket))
                             {
-                                ; -2 means for later that processing this hybrid defence stat 
+                                ; -2 means for later that processing this hybrid defence stat
                                 ; determined that Stun Recovery should be a simple suffix
                                 BSRecPartial := ""
                                 AffixType := "Prefix"
@@ -2800,7 +2805,7 @@ ParseAffixes(ItemDataAffixes, Item)
             AffixType := "Prefix"
             AESBracketLevel := 0
             ValueRange := LookupAffixData("data\ArmourAndEnergyShield.txt", ItemLevel, CurrValue, AESBracketLevel, CurrTier)
-            If (HasStunRecovery) 
+            If (HasStunRecovery)
             {
                 AESBracketLevel2 := AESBracketLevel
 
@@ -2859,7 +2864,7 @@ ParseAffixes(ItemDataAffixes, Item)
             AffixType := "Prefix"
             EESBracketLevel := 0
             ValueRange := LookupAffixData("data\EvasionAndEnergyShield.txt", ItemLevel, CurrValue, EESBracketLevel, CurrTier)
-            If (HasStunRecovery) 
+            If (HasStunRecovery)
             {
                 EESBracketLevel2 := EESBracketLevel
 
@@ -2891,7 +2896,7 @@ ParseAffixes(ItemDataAffixes, Item)
                     If (Not WithinBounds(EESBSBracket, CurrValue))
                     {
                         EESBracket := LookupRemainingAffixBracket("data\EvasionAndEnergyShield.txt", ItemLevel, CurrValue, EESBSBracket)
-                        
+
                         If (Not IsValidBracket(EESBracket))
                         {
                             EESBracket := LookupAffixBracket("data\HybridDefences_StunRecovery.txt", ItemLevel, CurrValue)
@@ -2937,7 +2942,7 @@ ParseAffixes(ItemDataAffixes, Item)
             {
                 ValueRange := LookupAffixData(PrefixPathOther, ItemLevel, CurrValue, IABracketLevel, CurrTier)
             }
-            If (HasStunRecovery) 
+            If (HasStunRecovery)
             {
                 IABracketLevel2 := IABracketLevel
 
@@ -2958,7 +2963,7 @@ ParseAffixes(ItemDataAffixes, Item)
                 If (Not IsValidBracket(BSRecPartial))
                 {
                     BSRecBracketLevel := 0
-                    BSRecPartial := LookupAffixBracket("data\StunRecovery_Armour.txt", ItemLevel, BSRecValue, BSRecBracketLevel)             
+                    BSRecPartial := LookupAffixBracket("data\StunRecovery_Armour.txt", ItemLevel, BSRecValue, BSRecBracketLevel)
                     If (Not IsValidBracket(BSRecPartial))
                     {
                         BSRecPartial := LookupAffixBracket("data\StunRecovery_Armour.txt", ItemLevel, "", BSRecBracketLevel)
@@ -3029,14 +3034,14 @@ ParseAffixes(ItemDataAffixes, Item)
             {
                 ValueRange := LookupAffixData(PrefixPathOther, ItemLevel, CurrValue, IEBracketLevel, CurrTier)
             }
-            If (HasStunRecovery) 
+            If (HasStunRecovery)
             {
                 IEBracketLevel2 := IEBracketLevel
 
                 ; Determine composite bracket level and store in IEBracketLevel2, for example:
                 ;   8% increased Evasion
-                ;   26% increased Stun Recovery 
-                ;   => 8% is bracket level 2 (6-14), so 'B&S Recovery from Evasion' level 2 makes 
+                ;   26% increased Stun Recovery
+                ;   => 8% is bracket level 2 (6-14), so 'B&S Recovery from Evasion' level 2 makes
                 ;      BSRec partial 6-7
                 ERSRBracket := LookupAffixBracket("data\Evasion_StunRecovery.txt", ItemLevel, CurrValue, IEBracketLevel2)
                 If (Not IsValidRange(ValueRange) and IsValidBracket(ERSRBracket))
@@ -3060,7 +3065,7 @@ ParseAffixes(ItemDataAffixes, Item)
                     {
                         BSRecPartial := LookupAffixBracket("data\StunRecovery_Evasion.txt", ItemLevel, "", BSRecBracketLevel)
                     }
-                   
+
                     IEBSBracket := LookupAffixBracket("data\Evasion_StunRecovery.txt", BSRecBracketLevel)
 
                     If (Not WithinBounds(IEBSBracket, CurrValue))
@@ -3113,7 +3118,7 @@ ParseAffixes(ItemDataAffixes, Item)
             PrefixPath := "data\IncrEnergyShield.txt"
             ValueRange := LookupAffixData(PrefixPath, ItemLevel, CurrValue, IESBracketLevel, CurrTier)
 
-            If (HasStunRecovery) 
+            If (HasStunRecovery)
             {
                 IESBracketLevel2 := IESBracketLevel
 
@@ -3142,7 +3147,7 @@ ParseAffixes(ItemDataAffixes, Item)
                     IESBSBracket := LookupAffixBracket("data\EnergyShield_StunRecovery.txt", BSRecBracketLevel)
 
                     If (Not WithinBounds(IEBSBracket, CurrValue))
-                    {                    
+                    {
                         IESBracket := LookupRemainingAffixBracket(PrefixPath, ItemLevel, CurrValue, IESBSBracket)
 
                         If (Not WithinBounds(IESBracket, CurrValue))
@@ -3446,7 +3451,7 @@ ParseAffixes(ItemDataAffixes, Item)
         CurrValue := GetActualValue(A_LoopField)
 
         ; "Spell Damage +%" (simple prefix)
-        ; "Spell Damage +% (1H)" / "Base Maximum Mana" - Limited to sceptres, wands, and daggers. 
+        ; "Spell Damage +% (1H)" / "Base Maximum Mana" - Limited to sceptres, wands, and daggers.
         ; "Spell Damage +% (Staff)" / "Base Maximum Mana"
         IfInString, A_LoopField, increased Spell Damage
         {
@@ -3463,12 +3468,12 @@ ParseAffixes(ItemDataAffixes, Item)
                     {
                         AffixType := "Comp. Prefix+Prefix"
                         NumPrefixes += 1
-                        
+
                         ; Need to find the bracket level by looking at max mana value instead
                         MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, MaxManaValue, MMBracketLevel)
                         If (Not IsValidBracket(MaxManaBracket))
                         {
-                            ; This actually means that both the "increased Spell Damage" line and 
+                            ; This actually means that both the "increased Spell Damage" line and
                             ; the "to maximum Mana" line are made up of Composite Prefix + Prefix.
                             ;
                             ; I haven't seen such an item yet, but you never know. In any case this
@@ -3499,7 +3504,7 @@ ParseAffixes(ItemDataAffixes, Item)
                     {
                         AffixType := "Comp. Prefix+Prefix"
                         NumPrefixes += 1
-                        
+
                         ; Need to find the bracket level by looking at max mana value instead
                         MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", ItemLevel, MaxManaValue, MMBracketLevel)
                         If (Not IsValidBracket(MaxManaBracket))
@@ -3523,13 +3528,13 @@ ParseAffixes(ItemDataAffixes, Item)
                                 ; Must be 1H Spell Damage and Max Mana + 1H Spell Damage (+ Max Mana)
                                 SD1HBracketLevel := 0
                                 SpellDamage1HBracket := LookupAffixBracket("data\SpellDamage_1H.txt", ItemLevel, "", SD1HBracketLevel)
-                                If (IsValidBracket(SpellDamage1HBracket)) 
+                                If (IsValidBracket(SpellDamage1HBracket))
                                 {
                                     SpellDamageBracket := LookupRemainingAffixBracket("data\SpellDamage_MaxMana_1H.txt", ItemLevel, CurrValue, SpellDamage1HBracket, SDBracketLevel)
                                     If (IsValidBracket(SpellDamageBracket))
                                     {
                                         MaxManaBracket := LookupAffixBracket("data\MaxMana_SpellDamage_StaffAnd1H.txt", SDBracketLevel, "", MMBracketLevel)
-                                        
+
                                         ; Check if max mana can be covered fully with the partial max mana bracket from Spell Damage Max Mana 1H
                                         MaxManaBracketRem := LookupRemainingAffixBracket("data\MaxMana.txt", ItemLevel, MaxManaValue, MaxManaBracket)
                                         If (Not IsValidBracket(MaxManaBracketRem))
@@ -3648,7 +3653,7 @@ ParseAffixes(ItemDataAffixes, Item)
                         Else
                         {
                             ; Could be that the spell damage affix is actually a pure spell damage affix
-                            ; (w/o the added max mana) so this would mean max mana is a pure prefix - if 
+                            ; (w/o the added max mana) so this would mean max mana is a pure prefix - if
                             ; NumPrefixes allows it, ofc...
                             If (NumPrefixes < 3)
                             {
@@ -3689,8 +3694,8 @@ ParseAffixes(ItemDataAffixes, Item)
             }
             Else
             {
-                ; Armour... 
-                ; Max Mana cannot appear on belts but I won't exclude them for now 
+                ; Armour...
+                ; Max Mana cannot appear on belts but I won't exclude them for now
                 ; to future-proof against when max mana on belts might be added.
                 Goto, SimpleMaxManaPrefix
             }
@@ -3705,7 +3710,7 @@ ParseAffixes(ItemDataAffixes, Item)
             Continue
         }
 
-        ; "Local Physical Damage +%" (simple Prefix) 
+        ; "Local Physical Damage +%" (simple Prefix)
         ; "Local Physical Damage +%" / "Local Accuracy Rating" (complex Prefix)
         ; - only on Weapons
         ; - needs to come before Accuracy Rating stuff (!)
@@ -3730,12 +3735,12 @@ ParseAffixes(ItemDataAffixes, Item)
                 IPDBracketLevel := 0
                 IPDBracket := LookupAffixBracket(IPDARPath, ItemLevel, CurrValue, IPDBracketLevel)
                 ARBracket := LookupAffixBracket(ARIPDPath, IPDBracketLevel)
-                
+
                 If (HasIncrLightRadius)
                 {
                     LRValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Light Radius")
-                    ; First check if the AR value that comes with the Comp. Prefix AR / Light Radius 
-                    ; already covers the complete AR value. If so, from that follows that the Incr. 
+                    ; First check if the AR value that comes with the Comp. Prefix AR / Light Radius
+                    ; already covers the complete AR value. If so, from that follows that the Incr.
                     ; Phys Damage value can only be a Damage Scaling prefix.
                     LRBracketLevel := 0
                     LRBracket := LookupAffixBracket("data\LightRadius_AccuracyRating.txt", ItemLevel, LRValue, LRBracketLevel)
@@ -3846,7 +3851,7 @@ ParseAffixes(ItemDataAffixes, Item)
             {
                 Goto, SimpleIPDPrefix
             }
-            
+
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange, CurrTier), A_Index)
             Continue
 
@@ -3868,7 +3873,7 @@ ParseAffixes(ItemDataAffixes, Item)
             ARPartial := ARBracket
             Continue
         }
-        
+
         IfInString, A_LoopField, increased Stun Recovery
         {
             AffixType := "Prefix"
@@ -3884,7 +3889,7 @@ ParseAffixes(ItemDataAffixes, Item)
                     {
                         PartialAffixString := "increased Armour and Evasion"
                     }
-                    If (HasIncrEvasionAndES) 
+                    If (HasIncrEvasionAndES)
                     {
                         PartialAffixString := "increased Evasion and Energy Shield"
                     }
@@ -3923,7 +3928,7 @@ ParseAffixes(ItemDataAffixes, Item)
                                             {
                                                 ; TODO: properly deal with this quick fix!
                                                 ;
-                                                ; if this point is reached this means that the parts that give to 
+                                                ; if this point is reached this means that the parts that give to
                                                 ; increased armor/evasion/es/hybrid + stun recovery need to fully be
                                                 ; re-evaluated.
                                                 ;
@@ -3933,7 +3938,7 @@ ParseAffixes(ItemDataAffixes, Item)
                                                 ;   24% increased Stun Recovery
                                                 ;
                                                 ; Since it's ilvl 62, we assume the hybrid + stun recovery bracket to be the
-                                                ; highest possible (lvl 60 bracket), which is 42-50. So that's max 50 of the 
+                                                ; highest possible (lvl 60 bracket), which is 42-50. So that's max 50 of the
                                                 ; 118 dealth with.
                                                 ; Consequently, that puts the stun recovery partial at 14-15 for the lvl 60 bracket.
                                                 ; This now leaves, 68 of hybrid defence to account for, which we can do by assuming
@@ -3944,7 +3949,7 @@ ParseAffixes(ItemDataAffixes, Item)
                                                 ; Just assume the rest comes from a stun recovery suffix and look it up. Except the
                                                 ; lowest possible entry for a stun recovery suffix is 11! Leaving us with the issues that
                                                 ; we know that CP+P is right for the hybrid + stun recovery line and CP+S is right for the
-                                                ; stun recovery line. 
+                                                ; stun recovery line.
                                                 ; Most likely, what is wrong is the assumption earlier to take the highest possible
                                                 ; hybrid + stun recovery bracket. Problem is that wasn't apparent when hybrid defences
                                                 ; was processed.
@@ -3962,7 +3967,7 @@ ParseAffixes(ItemDataAffixes, Item)
                                                 ValueRange := AddRange(BSRecSuffixBracket, BSRecPartial)
                                                 ValueRange := MarkAsGuesstimate(ValueRange)
                                             }
-                                        } 
+                                        }
                                         Else
                                         {
                                             AffixType := "Suffix"
@@ -4012,7 +4017,7 @@ ParseAffixes(ItemDataAffixes, Item)
                     PartialAffixString := "increased Armour"
                     BSRecAffixPath := "data\StunRecovery_Armour.txt"
                 }
-                If (HasIncrEvasion) 
+                If (HasIncrEvasion)
                 {
                     PartialAffixString := "increased Evasion Rating"
                     BSRecAffixPath := "data\StunRecovery_Evasion.txt"
@@ -4063,7 +4068,7 @@ ParseAffixes(ItemDataAffixes, Item)
                                         }
                                     }
 
-                                } 
+                                }
                                 Else
                                 {
                                     NumSuffixes += 1
@@ -4102,7 +4107,7 @@ ParseAffixes(ItemDataAffixes, Item)
             AppendAffixInfo(MakeAffixDetailLine(A_LoopField, AffixType, ValueRange, CurrTier), A_Index)
             Continue
         }
-        
+
         ; AR is one tough beast... currently there are the following affixes affecting AR:
         ;   1) "Accuracy Rating" (Suffix)
         ;   2) "Local Accuracy Rating" (Suffix)
@@ -4114,9 +4119,9 @@ ParseAffixes(ItemDataAffixes, Item)
         ; most special case to most normal, while subtracting the value that each case most likely contributes
         ; until you have a value left that can be found in the most nominal case.
         ;
-        ; Important to note here: 
+        ; Important to note here:
         ;   ARPartial will be set during the "increased Physical Damage" case above
-        
+
         IfInString, A_LoopField, to Accuracy Rating
         {
             ; Trickle-through order:
@@ -4128,11 +4133,11 @@ ParseAffixes(ItemDataAffixes, Item)
             ValueRangeAR := "0-0"
             AffixType := ""
             IPDAffixType := GetAffixTypeFromProcessedLine("increased Physical Damage")
-            If (HasIncrLightRadius and Not HasIncrAccuracyRating) 
+            If (HasIncrLightRadius and Not HasIncrAccuracyRating)
             {
                 ; "of Shining" and "of Light"
                 LightRadiusValue := ExtractValueFromAffixLine(ItemDataChunk, "increased Light Radius")
-                
+
                 ; Get bracket level of the light radius so we can look up the corresponding AR bracket
                 BracketLevel := 0
                 LookupAffixBracket("data\LightRadius_AccuracyRating.txt", ItemLevel, LightRadiusValue, BracketLevel)
@@ -4161,7 +4166,7 @@ ParseAffixes(ItemDataAffixes, Item)
                         {
                             CombinedRange := AddRange(ARLRBracket, ARPartial)
                             AffixType := "Comp. Prefix+Comp. Suffix"
-                            
+
                             If (WithinBounds(CombinedRange, CurrValue))
                             {
                                 If (NumPrefixes < 3)
@@ -4199,12 +4204,12 @@ ParseAffixes(ItemDataAffixes, Item)
                 ; This is one of the trickiest cases currently (EDIT: nope, I have seen trickier stuff still ;D)
                 ;
                 ; If this If-construct is reached that means the item has multiple composites:
-                ;   "To Accuracy Rating / Increased Light Radius" and 
-                ;   "Increased Physical Damage / To Accuracy Rating". 
-                ; 
-                ; On top of that it might also contain part "To Accuracy Rating" suffix, all of which are 
-                ; concatenated into one single "to Accuracy Rating" entry. 
-                ; Currently it handles most cases, if not all, but I still have a feeling I am missing 
+                ;   "To Accuracy Rating / Increased Light Radius" and
+                ;   "Increased Physical Damage / To Accuracy Rating".
+                ;
+                ; On top of that it might also contain part "To Accuracy Rating" suffix, all of which are
+                ; concatenated into one single "to Accuracy Rating" entry.
+                ; Currently it handles most cases, if not all, but I still have a feeling I am missing
                 ; something... (EDIT: a feeling I won't be able to shake ever with master crafted affixes now)
                 ;
                 ; GGG, if you are reading this: please add special markup for affix compositions!
@@ -4232,11 +4237,11 @@ ParseAffixes(ItemDataAffixes, Item)
                     {
                         ARBracket := LookupAffixBracket("data\AccuracyRating_Local.txt", ItemLevel, ARRest)
                     }
-                    
+
                     If (IsValidBracket(ARBracket))
                     {
                         AffixType := "Comp. Prefix+Suffix"
-                        If (NumSuffixes < 3) 
+                        If (NumSuffixes < 3)
                         {
                             NumSuffixes += 1
                         }
@@ -4403,11 +4408,11 @@ ParseAffixes(ItemDataAffixes, Item)
                 Continue
         }
     }
-    
+
     ; --- CRAFTED --- (Preliminary Support)
-    
+
     Loop, Parse, ItemDataChunk, `n, `r
-    {    
+    {
         If StrLen(A_LoopField) = 0
         {
             Break ; Not interested in blank lines
@@ -4416,7 +4421,7 @@ ParseAffixes(ItemDataAffixes, Item)
         {
             Break ; Not interested in unidentified items
         }
-                
+
         IfInString, A_LoopField, Can have multiple Crafted Mods
         {
             AppendAffixInfo(A_Loopfield, A_Index)
@@ -4426,14 +4431,14 @@ ParseAffixes(ItemDataAffixes, Item)
             AppendAffixInfo(A_Loopfield, A_Index)
         }
     }
-    
+
     AffixTotals.NumPrefixes := NumPrefixes
     AffixTotals.NumSuffixes := NumSuffixes
 }
 
-; Change a detail line that was already processed and added to the 
+; Change a detail line that was already processed and added to the
 ; AffixLines "stack". This can be used for example to change the
-; affix type when more is known about a possible affix combo. 
+; affix type when more is known about a possible affix combo.
 ;
 ; For example with a IPD / AR combo, if IPD was thought to be a
 ; Prefix but later (when processing AR) found to be a Composite
@@ -4508,24 +4513,24 @@ PreProcessContents(CBContents)
 
     ; Remove the line that indicates an item cannot be used due to missing character stats
     Needle := "You cannot use this item. Its stats will be ignored. Please remove it.`r`n--------`r`n"
-    StringReplace, CBContents, CBContents, %Needle%, 
+    StringReplace, CBContents, CBContents, %Needle%,
     ; Replace double seperator lines with one seperator line
     Needle := "--------`r`n--------`r`n"
     StringReplace, CBContents, CBContents, %Needle%, --------`r`n, All
-    
+
     return CBContents
 }
 
 PostProcessData(ParsedData)
 {
     Global Opts
-    
+
     Result := ParsedData
     If (Opts.CompactAffixTypes > 0)
     {
-        StringReplace, TempResult, ParsedData, --------`n, ``, All  
+        StringReplace, TempResult, ParsedData, --------`n, ``, All
         StringSplit, ParsedDataChunks, TempResult, ``
-        
+
         Result =
         Loop, %ParsedDataChunks0%
         {
@@ -4567,7 +4572,7 @@ ParseClipBoardChanges()
     CBContents := PreProcessContents(CBContents)
 
     Globals.Set("ItemText", CBContents)
-    
+
     If (GetKeyState("Shift"))
     {
         Globals.Set("TierRelativeToItemLevelOverride", !Opts.TierRelativeToItemLevel)
@@ -4604,7 +4609,7 @@ AssembleDamageDetails(FullItemData)
     LighHi := 0
 
     Loop, Parse, FullItemData, `n, `r
-    {        
+    {
         ; Get quality
         IfInString, A_LoopField, Quality:
         {
@@ -4612,7 +4617,7 @@ AssembleDamageDetails(FullItemData)
             Quality := Arr2
             Continue
         }
-        
+
         ; Get total physical damage
         IfInString, A_LoopField, Physical Damage:
         {
@@ -4622,7 +4627,7 @@ AssembleDamageDetails(FullItemData)
             PhysHi := Arr2
             Continue
         }
-        
+
         ; Fix for Elemental damage only weapons. Like the Oro's Sacrifice
         IfInString, A_LoopField, Elemental Damage:
         {
@@ -4636,7 +4641,7 @@ AssembleDamageDetails(FullItemData)
             AttackSpeed := Arr4
             Continue
         }
-        
+
         ; Get percentage physical damage increase
         IfInString, A_LoopField, increased Physical Damage
         {
@@ -4644,7 +4649,7 @@ AssembleDamageDetails(FullItemData)
             PhysMult := Arr1
             Continue
         }
-        
+
         ; Lines to skip fix for converted type damage. Like the Voltaxic Rift
         IfInString, A_LoopField, Converted to
             Goto, SkipDamageParse
@@ -4662,26 +4667,26 @@ AssembleDamageDetails(FullItemData)
         ParseElementalDamage(A_LoopField, "Cold", ColdLo, ColdHi)
         ParseElementalDamage(A_LoopField, "Fire", FireLo, FireHi)
         ParseElementalDamage(A_LoopField, "Lightning", LighLo, LighHi)
-        
+
         SkipDamageParse:
             DoNothing := True
     }
-    
+
     Result =
 
     SetFormat, FloatFast, 5.1
     PhysDps := ((PhysLo + PhysHi) / 2) * AttackSpeed
     EleDps := ((ChaoLo + ChaoHi + ColdLo + ColdHi + FireLo + FireHi + LighLo + LighHi) / 2) * AttackSpeed
     TotalDps := PhysDps + EleDps
-    
+
     Result = %Result%`nPhys DPS:   %PhysDps%`nElem DPS:   %EleDps%`nTotal DPS:  %TotalDps%
-    
+
     ; Only show Q20 values if item is not Q20
     If (Quality < 20) {
         TotalPhysMult := (PhysMult + Quality + 100) / 100
         BasePhysDps := PhysDps / TotalPhysMult
         Q20Dps := BasePhysDps * ((PhysMult + 120) / 100) + EleDps
-        
+
         Result = %Result%`nQ20 DPS:    %Q20Dps%
     }
 
@@ -4738,6 +4743,23 @@ GemIsValuable(ItemName)
 UniqueIsValuable(ItemName)
 {
     Loop, Read, %A_ScriptDir%\data\ValuableUniques.txt
+    {
+        Line := StripLineCommentRight(A_LoopReadLine)
+        If (SkipLine(Line))
+        {
+            Continue
+        }
+        IfInString, ItemName, %Line%
+        {
+            return True
+        }
+    }
+    return False
+}
+
+UniqueIsWorthless(ItemName)
+{
+    Loop, Read, %A_ScriptDir%\data\WorthlessUniques.txt
     {
         Line := StripLineCommentRight(A_LoopReadLine)
         If (SkipLine(Line))
@@ -4809,7 +4831,7 @@ ParseLinks(ItemDataText)
 
 ; TODO: find a way to poll this date from the web!
 
-; Converts a currency stack to Chaos by looking up the 
+; Converts a currency stack to Chaos by looking up the
 ; conversion ratio from CurrencyRates.txt
 ConvertCurrency(ItemName, ItemStats)
 {
@@ -4912,7 +4934,7 @@ SkipLine(Line)
 ParseUnique(ItemName)
 {
     Global Opts, AffixLines
-    
+
     Delim := "|"
     ResetAffixDetailVars()
     UniqueFound := False
@@ -4953,10 +4975,10 @@ ParseUnique(ItemName)
                         }
                         ; Make "Attacks per Second" float ranges to be like a double range.
                         ; Since a 2 decimal precision float value is 4 chars wide (#.##)
-                        ; when including the radix point this means a float value range 
+                        ; when including the radix point this means a float value range
                         ; is then 9 chars wide. Replacing the "-" with a "," effectively
                         ; makes it so that float ranges are treated as double ranges and
-                        ; distributes the bounds over both value range fields. This may 
+                        ; distributes the bounds over both value range fields. This may
                         ; or may not be desirable. On the plus side things will align
                         ; nicely, but on the negative side, it will be a bit unclearer that
                         ; both float values constitute a range and not two isolated values.
@@ -4973,7 +4995,7 @@ ParseUnique(ItemName)
                             LBMax := LowerBoundParts2
                             UBMin := UpperBoundParts1
                             UBMax := UpperBoundParts2
-                            If (Opts.CompactDoubleRanges) 
+                            If (Opts.CompactDoubleRanges)
                             {
                                 ValueRange := StrPad(LBMin . "-" . UBMax, Opts.ValueRangeFieldWidth, "left")
                             }
@@ -5022,7 +5044,7 @@ ItemIsMirrored(ItemDataText)
 ;   (timer watches clipboard contents)
 ;   (on clipboard changed) ->
 ;
-;   ParseClipBoardChanges() 
+;   ParseClipBoardChanges()
 ;       PreProcessContents()
 ;       ParseItemData()
 ;           (get item details by calling many other Parse... functions)
@@ -5040,15 +5062,15 @@ ItemIsMirrored(ItemDataText)
 ;       ShowToolTip()
 ;
 ParseItemData(ItemDataText, ByRef RarityLevel="")
-{    
+{
     Global Item, ItemData, AffixTotals, uniqueMapList, mapList, matchList
 
-    ItemDataPartsIndexLast = 
-    ItemDataPartsIndexAffixes = 
-    ItemDataPartsLast = 
+    ItemDataPartsIndexLast =
+    ItemDataPartsIndexAffixes =
+    ItemDataPartsLast =
     ItemDataNamePlate =
     ItemDataStats =
-    ItemDataAffixes = 
+    ItemDataAffixes =
     ItemDataRequirements =
     ItemDataRarity =
     ItemDataLinks =
@@ -5061,7 +5083,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     ItemSubType =
     ItemGripType =
     BaseLevel =
-    RarityLevel =  
+    RarityLevel =
     TempResult =
 
     Item.IsWeapon := False
@@ -5074,9 +5096,10 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     Item.IsRing := False
     Item.IsUnsetRing := False
     Item.IsBow := False
+    Item.IsWand := False
     Item.IsAmulet := False
     Item.IsSingleSocket := False
-    Item.IsFourSocket := False   
+    Item.IsFourSocket := False
     Item.IsThreeSocket := False
     Item.IsMap := False
     Item.IsUnique := False
@@ -5084,17 +5107,17 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     Item.IsCorrupted := False
     Item.IsMirrored := False
     Item.HasEffect := False
-    
+
     ResetAffixDetailVars()
-    
+
     ItemData.FullText := ItemDataText
 
     IfInString, ItemDataText, Corrupted
     {
         Item.IsCorrupted := True
     }
-    
-    ; AHK only allows splitting on single chars, so first 
+
+    ; AHK only allows splitting on single chars, so first
     ; replace the split string (\r\n--------\r\n) with AHK's escape char (`)
     ; then do the actual string splitting...
     StringReplace, TempResult, ItemDataText, `r`n--------`r`n, ``, All
@@ -5102,7 +5125,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
 
     ItemData.NamePlate := ItemDataParts1
     ItemData.Stats := ItemDataParts2
-    
+
     ItemDataIndexLast := ItemDataParts0
     ItemDataPartsLast := ItemDataParts%ItemDataIndexLast%
     ItemData.ClearParts()
@@ -5112,12 +5135,12 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     }
     ItemData.PartsLast := ItemDataPartsLast
     ItemData.IndexLast := ItemDataIndexLast
-    
+
     ; ItemData.Requirements := GetItemDataChunk(ItemDataText, "Requirements:")
     ; ParseRequirements(ItemData.Requirements, RequiredLevel, RequiredAttributes, RequiredAttributeValues)
 
     ParseItemName(ItemData.NamePlate, ItemName, ItemTypeName)
-    If (Not ItemName) 
+    If (Not ItemName)
     {
         return
     }
@@ -5133,7 +5156,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     }
 
     Item.Quality := ParseQuality(ItemData.Stats)
-    
+
     ; This function should return the second part of the "Rarity: ..." line
     ; in the case of "Rarity: Unique" it should return "Unique"
     ItemData.Rarity := ParseRarity(ItemData.NamePlate)
@@ -5151,14 +5174,14 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
         Item.IsRare := True
     }
 
-    Item.IsGem := (InStr(ItemData.Rarity, "Gem")) 
+    Item.IsGem := (InStr(ItemData.Rarity, "Gem"))
     Item.IsCurrency := (InStr(ItemData.Rarity, "Currency"))
-    
+
     If (Not (InStr(ItemDataText, "Itemlevel:") or InStr(ItemDataText, "Item Level:")) and Not Item.IsGem and Not Item.IsCurrency)
     {
         return Item.Name
     }
-    
+
     If (Item.IsGem)
     {
         RarityLevel := 0
@@ -5187,10 +5210,11 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             Item.GripType := ItemGripType
         }
     }
-    
+
     Item.RarityLevel := RarityLevel
 
     Item.IsBow := (Item.SubType == "Bow")
+    Item.IsWand := (Item.SubType == "Wand")
     Item.IsFlask := (Item.SubType == "Flask")
     Item.IsBelt := (Item.SubType == "Belt")
     Item.IsRing := (Item.SubType == "Ring")
@@ -5204,20 +5228,20 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     Item.IsMap := (Item.BaseType == "Map")
     Item.IsMirrored := (ItemIsMirrored(ItemDataText) and Not Item.IsCurrency)
     Item.HasEffect := (InStr(ItemData.PartsLast, "Has"))
-    
+
     ItemDataIndexAffixes := ItemData.IndexLast - GetNegativeAffixOffset(Item)
     If (ItemDataIndexAffixes <= 0)
     {
-        ; ItemDataParts doesn't have the parts/text we need. Bail. 
+        ; ItemDataParts doesn't have the parts/text we need. Bail.
         ; This might be because the clipboard is completely empty.
-        return 
+        return
     }
     ItemData.Affixes := ItemDataParts%ItemDataIndexAffixes%
     ItemData.IndexAffixes := ItemDataIndexAffixes
-    
+
     ItemData.Stats := ItemDataParts2
 
-    If (Item.IsFlask) 
+    If (Item.IsFlask)
     {
         ParseFlaskAffixes(ItemData.Affixes)
     }
@@ -5231,12 +5255,12 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     AffixTotals.NumTotals := TotalAffixes
 
     ; Start assembling the text for the tooltip
-    TT := Item.Name 
+    TT := Item.Name
     If (Item.TypeName)
     {
-        TT := TT . "`n" . Item.TypeName 
+        TT := TT . "`n" . Item.TypeName
     }
-    
+
     If (Item.IsCurrency)
     {
         TT := TT . "`n" . CurrencyDetails
@@ -5256,7 +5280,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             }
         }
     }
-    
+
     If (Opts.ShowMaxSockets == 1 and Not (Item.IsFlask or Item.IsGem or Item.IsCurrency or Item.IsBelt or Item.IsQuiver or Item.IsMap or Item.IsAmulet))
     {
         If (Item.Level >= 50)
@@ -5279,7 +5303,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
         {
             Item.MaxSockets := 2
         }
-        
+
         If(Item.IsFourSocket and Item.MaxSockets > 4)
         {
             Item.MaxSockets := 4
@@ -5300,7 +5324,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             TT := TT . Item.MaxSockets
         }
     }
-    
+
     If (Opts.ShowGemEvaluation == 1 and Item.IsGem)
     {
         SepAdded := False
@@ -5334,7 +5358,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     {
         TT := TT . AssembleDamageDetails(ItemDataText)
     }
- 
+
     If (Item.IsMap)
     {
         If (Item.IsUnique)
@@ -5348,14 +5372,64 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
 
         TT = %TT%`n%MapDescription%
     }
-    
-    If (RarityLevel > 1 and RarityLevel < 4) 
+
+    ; Implicit mod range only for non uniques and only if we should mirror affix lines
+    If (Opts.MirrorAffixLines == 1 and not Item.IsUnique)
+    {
+        Loop, Read, %A_WorkingDir%\data\Implicits.txt
+        {
+            ; comments and empty line processing, copied from above
+            IfInString, A_LoopReadLine, `;
+            {
+                Continue
+            }
+            If (StrLen(A_LoopReadLine) <= 2)
+            {
+                Continue
+            }
+            If (RarityLevel = 1)
+            {
+                ItemImplicitDataIndex := ItemDataIndexAffixes
+            } Else {
+                ItemImplicitDataIndex := ItemDataIndexAffixes - 1
+            }
+            If (Item.IsUnidentified or RarityLevel = 1) {
+                ItemTypeNameLocal := Item.Name
+            } Else {
+                ItemTypeNameLocal := Item.TypeName
+            }
+            IfInString, A_LoopReadLine, %ItemTypeNameLocal%
+            {
+                StringSplit, LineParts, A_LoopReadLine, |
+                ItemImplicitLine := ItemDataParts%ItemImplicitDataIndex%
+
+                Delim := Opts.AffixDetailDelimiter
+                Ellipsis := Opts.AffixDetailEllipsis
+
+                If (Opts.MirrorLineFieldWidth > 0)
+                {
+                    If(StrLen(ItemImplicitLine) > Opts.MirrorLineFieldWidth)
+                    {
+                        ItemImplicitLine := StrTrimSpaceRight(SubStr(ItemImplicitLine, 1, Opts.MirrorLineFieldWidth)) . Ellipsis
+                    }
+                    ItemImplicitLine := StrPad(ItemImplicitLine, Opts.MirrorLineFieldWidth + StrLen(Ellipsis))
+                }
+
+                ItemImplicitValue := StrPad(LineParts2, Opts.ValueRangeFieldWidth, "left")
+
+                TT := TT . "`n--------`n" . ItemImplicitLine . Delim . ItemImplicitValue
+                Break
+            }
+        }
+    }
+
+    If (RarityLevel > 1 and RarityLevel < 4)
     {
         ; Append affix info if rarity is greater than normal (white)
         ; Affix total statistic
         If (Opts.ShowAffixTotals = 1)
         {
-            If (NumPrefixes = 1) 
+            If (NumPrefixes = 1)
             {
                 WordPrefixes = Prefix
             }
@@ -5363,7 +5437,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             {
                 WordPrefixes = Prefixes
             }
-            If (NumSuffixes = 1) 
+            If (NumSuffixes = 1)
             {
                 WordSuffixes = Suffix
             }
@@ -5372,8 +5446,8 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
                 WordSuffixes = Suffixes
             }
 
-            PrefixLine = 
-            If (NumPrefixes > 0) 
+            PrefixLine =
+            If (NumPrefixes > 0)
             {
                 PrefixLine = `n   %NumPrefixes% %WordPrefixes%
             }
@@ -5391,7 +5465,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
                 TT = %TT%`n--------`n%AffixStats%
             }
         }
-        
+
         ; Detailed affix range infos
         If (Opts.ShowAffixDetails == 1)
         {
@@ -5415,15 +5489,31 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
             TT = %TT%`n--------%AffixDetails%
         }
     }
-    
+
+
     If (Item.IsUnidentified and (Item.Name != "Scroll of Wisdom") and Not Item.IsMap)
     {
         TT = %TT%`n--------`nUnidentified
     }
 
-    If ((Item.IsUnique and (Opts.ShowUniqueEvaluation == 1) and UniqueIsValuable(Item.Name)) or (Opts.MarkHighLinksAsValuable == 1 and (Item.IsUnique or Item.IsRare) and ItemData.Links >= 5))
+    If (Opts.MarkHighLinksAsValuable == 1 and (Item.IsUnique or Item.IsRare) and ItemData.Links >= 5)
     {
         TT = %TT%`n--------`nValuable
+    }
+    If (Item.IsUnique and (Opts.ShowUniqueEvaluation == 1))
+    {
+		If UniqueIsValuable(Item.Name)
+		{
+			TT = %TT%`n--------`nValuable
+		}
+		Else If UniqueIsWorthless(Item.Name)
+		{
+			TT = %TT%`n--------`nWorthless
+		}
+		Else
+		{
+			TT = %TT%`n--------`nValue not listed
+		}
     }
 
     If (Item.IsMirrored)
@@ -5432,7 +5522,7 @@ ParseItemData(ItemDataText, ByRef RarityLevel="")
     }
 
     return TT
-    
+
     ParseItemDataEnd:
         return TT
 }
@@ -5446,17 +5536,17 @@ GetNegativeAffixOffset(Item)
         ; so decrement item index to get to the item before last one
         NegativeAffixOffset := NegativeAffixOffset + 1
     }
-    If (Item.HasEffect) 
+    If (Item.HasEffect)
     {
         ; Same with weapon skins or other effects
         NegativeAffixOffset := NegativeAffixOffset + 1
     }
-    If (Item.IsCorrupted) 
+    If (Item.IsCorrupted)
     {
         ; And corrupted items
         NegativeAffixOffset := NegativeAffixOffset + 1
     }
-    If (Item.IsMirrored) 
+    If (Item.IsMirrored)
     {
         ; And mirrored items
         NegativeAffixOffset := NegativeAffixOffset + 1
@@ -5475,12 +5565,15 @@ ExtractRareItemTypeName(ItemName)
 ShowToolTip(String)
 {
     Global X, Y, ToolTipTimeout, Opts
-    
+
     ; Get position of mouse cursor
     MouseGetPos, X, Y
 
-    If (Not Opts.DisplayToolTipAtFixedCoords) 
+    If (Not Opts.DisplayToolTipAtFixedCoords)
     {
+        ; Workaround for issue #2 (tooltip quickly disappears in Windows 7+)
+        ToolTip, %String%, X - 135, Y + 35
+        Fonts.SetFixedFont()
         ToolTip, %String%, X - 135, Y + 35
     }
     Else
@@ -5489,19 +5582,23 @@ ShowToolTip(String)
         ;~ GetScreenInfo()
         ;~ TotalScreenWidth := Globals.Get("TotalScreenWidth", 0)
         ;~ HalfWidth := Round(TotalScreenWidth / 2)
-        
+
         ;~ SecondMonitorTopLeftX := HalfWidth
         ;~ SecondMonitorTopLeftY := 0
         ScreenOffsetY := Opts.ScreenOffsetY
         ScreenOffsetX := Opts.ScreenOffsetX
-        
+
         XCoord := 0 + ScreenOffsetX
         YCoord := 0 + ScreenOffsetY
-        
+
+        ; Workaround for issue #2 (tooltip quickly disappears in Windows 7+)
         ToolTip, %String%, XCoord, YCoord
     }    
-    Fonts.SetFixedFont()
-    
+        Fonts.SetFixedFont()
+        ToolTip, %String%, XCoord, YCoord
+    }    
+    Fonts.SetFixedFont(
+
     ; Set up count variable and start timer for tooltip timeout
     ToolTipTimeout := 0
     SetTimer, ToolTipTimer, 100
@@ -5514,10 +5611,10 @@ Globals.Set("TestCaseSeparator", "####################")
 RunRareTestSuite(Path, SuiteNumber)
 {
     Global AffixTotals
-    
+
     NumTestCases := 0
     Loop, Read, %Path%
-    {  
+    {
         IfInString, A_LoopReadLine, % Globals.TestCaseSeparator
         {
             NumTestCases += 1
@@ -5540,7 +5637,7 @@ RunRareTestSuite(Path, SuiteNumber)
         NumPrefixes := AffixTotals.NumPrefixes
         NumSuffixes := AffixTotals.NumSuffixes
 
-        StringReplace, TempResult, TestCaseResult, --------, ``, All  
+        StringReplace, TempResult, TestCaseResult, --------, ``, All
         StringSplit, TestCaseResultParts, TempResult, ``
 
         NameAndDPSPart := TestCaseResultParts1
@@ -5582,8 +5679,8 @@ RunRareTestSuite(Path, SuiteNumber)
         {
             Successes += 1
         }
-        ; needed so global variables can be yanked from memory and reset between calls 
-        ; (if you reload the script really fast globals vars that are out of date can 
+        ; needed so global variables can be yanked from memory and reset between calls
+        ; (if you reload the script really fast globals vars that are out of date can
         ; cause failures when there are none)
         Sleep, 1
     }
@@ -5600,10 +5697,10 @@ RunRareTestSuite(Path, SuiteNumber)
 RunUniqueTestSuite(Path, SuiteNumber)
 {
     Global AffixTotals
-    
+
     NumTestCases := 0
     Loop, Read, %Path%
-    {  
+    {
         IfInString, A_LoopReadLine, % Globals.TestCaseSeparator
         {
             NumTestCases += 1
@@ -5634,8 +5731,8 @@ RunUniqueTestSuite(Path, SuiteNumber)
         {
             Successes += 1
         }
-        ; needed so global variables can be yanked from memory and reset between calls 
-        ; (if you reload the script really fast globals vars that are out of date can 
+        ; needed so global variables can be yanked from memory and reset between calls
+        ; (if you reload the script really fast globals vars that are out of date can
         ; cause failures where there are none)
         Sleep, 1
     }
@@ -5690,7 +5787,7 @@ If (RunTests)
 
 ; ############ GUI #############
 
-GuiSet(ControlID, Param3="", SubCmd="") 
+GuiSet(ControlID, Param3="", SubCmd="")
 {
     If (!(SubCmd == "")) {
         GuiControl, %SubCmd%, %ControlID%, %Param3%
@@ -5706,7 +5803,7 @@ GuiGet(ControlID, DefaultValue="")
     return curVal
 }
 
-GuiAdd(ControlType, Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Param4="") 
+GuiAdd(ControlType, Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Param4="")
 {
     Global
     Local av, ah, al
@@ -5721,22 +5818,22 @@ GuiAddButton(Contents, PositionInfo, AssocLabel="", AssocVar="", AssocHwnd="", O
     GuiAdd("Button", Contents, PositionInfo, AssocVar, AssocHwnd, AssocLabel, Options)
 }
 
-GuiAddGroupBox(Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Options="") 
+GuiAddGroupBox(Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Options="")
 {
     GuiAdd("GroupBox", Contents, PositionInfo, AssocVar, AssocHwnd, AssocLabel, Options)
 }
 
-GuiAddCheckbox(Contents, PositionInfo, CheckedState=0, AssocVar="", AssocHwnd="", AssocLabel="", Options="") 
+GuiAddCheckbox(Contents, PositionInfo, CheckedState=0, AssocVar="", AssocHwnd="", AssocLabel="", Options="")
 {
     GuiAdd("Checkbox", Contents, PositionInfo, AssocVar, AssocHwnd, AssocLabel, "Checked" . CheckedState . " " . Options)
 }
 
-GuiAddText(Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Options="") 
+GuiAddText(Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Options="")
 {
     GuiAdd("Text", Contents, PositionInfo, AssocVar, AssocHwnd, AssocLabel, Options)
 }
 
-GuiAddEdit(Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Options="") 
+GuiAddEdit(Contents, PositionInfo, AssocVar="", AssocHwnd="", AssocLabel="", Options="")
 {
     GuiAdd("Edit", Contents, PositionInfo, AssocVar, AssocHwnd, AssocLabel, Options)
 }
@@ -5795,12 +5892,12 @@ AddToolTip(con, text, Modify=0){
             ,UInt,TTM_ADDTOOL
             ,Ptr,0
             ,Ptr,&TInfo
-            ,Ptr) 
+            ,Ptr)
         DllCall("SendMessage"
             ,Ptr,TThwnd
             ,UInt,TTM_SETMAXTIPWIDTH
             ,Ptr,0
-            ,Ptr,A_ScreenWidth) 
+            ,Ptr,A_ScreenWidth)
     }
     DllCall("SendMessage"
         ,Ptr,TThwnd
@@ -5816,10 +5913,10 @@ GetScreenInfo()
     SysGet, TotalScreenWidth, 78
     SysGet, TotalscreenHeight, 79
     SysGet, MonitorCount, 80
-    
+
     Globals.Set("MonitorCount", MonitorCount)
     Globals.Set("TotalScreenWidth", TotalScreenWidth)
-    Globals.Set("TotalScreenHeight", TotalscreenHeight)    
+    Globals.Set("TotalScreenHeight", TotalscreenHeight)
 }
 
 ; ######### UNHANDLED CASE DIALOG ############
@@ -5828,19 +5925,19 @@ ShowUnhandledCaseDialog()
 {
     Global Msg, Globals
     Static UnhDlg_EditItemText
-    
+
     Gui, 3:New,, Unhandled Case
     Gui, 3:Color, FFFFFF
     Gui, 3:Add, Picture, x25 y25 w36 h36, %A_ScriptDir%\data\info.png
     Gui, 3:Add, Text, x65 y31 w500 h100, % Msg.Unhandled
     Gui, 3:Add, Edit, x65 y96 w400 h120 ReadOnly vUnhDlg_EditItemText, % Globals.Get("ItemText", "Error: could'nt get item text (system clipboard modified?). Please try again or report the item manually.")
-    Gui, 3:Add, Text, x-5 y230 w500 h50 -Background 
+    Gui, 3:Add, Text, x-5 y230 w500 h50 -Background
     Gui, 3:Add, Button, x195 y245 w100 h25 gUnhandledDlg_ShowItemText, Show In Notepad
     Gui, 3:Add, Button, x300 y245 w90 h25 gVisitForumsThread, Forums Thread
     Gui, 3:Add, Button, x395 y245 w86 h25 gUnhandledDlg_OK Default, OK
     Gui, 3:Show, Center w490 h280,
     Gui, Font, s10, Courier New
-    Gui, Font, s9, Consolas  
+    Gui, Font, s9, Consolas
     GuiControl, Font, UnhDlg_EditItemText
     return
 }
@@ -5861,41 +5958,41 @@ ShowUnhandledCaseDialog()
 ; Button
 ;   Gui, Add, Button, (.+?) g(.+?), (.+) -> GuiAddButton("$3", "$1", "", "$2", "")
 
-CreateSettingsUI() 
+CreateSettingsUI()
 {
     Global
-    ; General 
+    ; General
 
     GuiAddGroupBox("General", "x7 y15 w260 h90")
-    
+
     ; Note: window handles (hwnd) are only needed if a UI tooltip should be attached.
-    
+
     GuiAddCheckbox("Only show tooltip if PoE is frontmost", "x17 y35 w210 h30", Opts.OnlyActiveIfPOEIsFront, "OnlyActiveIfPOEIsFront", "OnlyActiveIfPOEIsFrontH")
     AddToolTip(OnlyActiveIfPOEIsFrontH, "If checked the script does nothing if the`nPath of Exile window isn't the frontmost")
     GuiAddCheckbox("Put tooltip results on clipboard", "x17 y65 w210 h30", Opts.PutResultsOnClipboard, "PutResultsOnClipboard", "PutResultsOnClipboardH")
     AddToolTip(PutResultsOnClipboardH, "Put tooltip result text onto the system clipboard`n(overwriting the item info text PoE put there to begin with)")
-    
-    ; Display - All Gear 
+
+    ; Display - All Gear
 
     GuiAddGroupBox("Display - All Gear", "x7 y115 w260 h90")
-    
+
     GuiAddCheckbox("Show item level", "x17 y135 w210 h30", Opts.ShowItemLevel, "ShowItemLevel")
     GuiAddCheckbox("Show max sockets based on item lvl", "x17 y165 w210 h30", Opts.ShowMaxSockets, "ShowMaxSockets", "ShowMaxSocketsH")
     AddToolTip(ShowMaxSocketsH, "Show maximum amount of sockets the item can have`nbased on its item level")
 
-    ; Display - Weapons 
+    ; Display - Weapons
 
     GuiAddGroupBox("Display - Weapons", "x7 y215 w260 h60")
 
     GuiAddCheckbox("Show damage calculations", "x17 y235 w210 h30", Opts.ShowDamageCalculations, "ShowDamageCalculations")
 
-    ; Display - Other 
+    ; Display - Other
 
     GuiAddGroupBox("Display - Other", "x7 y285 w260 h60")
 
     GuiAddCheckbox("Show currency value in chaos", "x17 y305 w210 h30", Opts.ShowCurrencyValueInChaos, "ShowCurrencyValueInChaos")
 
-    ; Valuable Evaluations 
+    ; Valuable Evaluations
 
     GuiAddGroupBox("Valuable Evaluations", "x7 y355 w260 h150")
 
@@ -5906,8 +6003,8 @@ CreateSettingsUI()
         GuiAddText("Gem quality valuable threshold:", "x37 y439 w150 h20", "LblGemQualityThreshold")
         GuiAddEdit(Opts.GemQualityValueThreshold, "x197 y437 w40 h20", "GemQualityValueThreshold")
     GuiAddCheckbox("Mark high number of links as valuable", "x17 y465 w210 h30", Opts.MarkHighLinksAsValuable, "MarkHighLinksAsValuable")
-    
-    ; Display - Affixes 
+
+    ; Display - Affixes
 
     GuiAddGroupBox("Display - Affixes", "x277 y15 w260 h330")
 
@@ -5932,11 +6029,11 @@ CreateSettingsUI()
         AddToolTip(TierRelativeToItemLevelH, "When showing affix bracket tier, make T1 being best possible`ntaking item level into account.")
         GuiAddCheckbox("Show affix bracket tier total", "x307 y315 w190 h20", Opts.ShowAffixBracketTierTotal, "ShowAffixBracketTierTotal", "ShowAffixBracketTierTotalH")
         AddToolTip(ShowAffixBracketTierTotalH, "Show number of total affix bracket tiers in format T/N,`n where T = tier on item, N = number of total tiers available")
-        
-    ; Display - Results 
+
+    ; Display - Results
 
     GuiAddGroupBox("Display - Results", "x277 y355 w260 h210")
-    
+
     GuiAddCheckbox("Compact double ranges", "x287 y375 w210 h30", Opts.CompactDoubleRanges, "CompactDoubleRanges", "CompactDoubleRangesH")
     AddToolTip(CompactDoubleRangesH, "Show double ranges as one range,`ne.g. x-y (to) z-w becomes x-w")
     GuiAddCheckbox("Compact affix types", "x287 y405 w210 h30", Opts.CompactAffixTypes, "CompactAffixTypes", "CompactAffixTypesH")
@@ -5950,11 +6047,11 @@ CreateSettingsUI()
     GuiAddEdit(Opts.AffixDetailDelimiter, "x407 y505 w40 h20", "AffixDetailDelimiter")
     GuiAddText("Affix detail ellipsis:", "x287 y537 w120 h20", "LblAffixDetailEllipsis")
     GuiAddEdit(Opts.AffixDetailEllipsis, "x407 y535 w40 h20", "AffixDetailEllipsis")
-    
-    ; Tooltip 
+
+    ; Tooltip
 
     GuiAddGroupBox("Tooltip", "x7 y515 w260 h185")
-    
+
     GuiAddCheckBox("Use tooltip timeout", "x17 y530 w210 h30", Opts.UseTooltipTimeout, "UseTooltipTimeout", "UseTooltipTimeoutH", "SettingsUI_ChkUseTooltipTimeout")
     AddToolTip(UseTooltipTimeoutH, "Hide tooltip automatically after x amount of ticks have passed")
         GuiAddText("Timeout ticks (1 tick = 100ms):", "x27 y562 w150 h20", "LblToolTipTimeoutTicks")
@@ -5982,7 +6079,7 @@ CreateSettingsUI()
 }
 
 UpdateSettingsUI()
-{    
+{
     Global
 
     GuiControl,, OnlyActiveIfPOEIsFront, % Opts.OnlyActiveIfPOEIsFront
@@ -5992,12 +6089,12 @@ UpdateSettingsUI()
     GuiControl,, ShowDamageCalculations, % Opts.ShowDamageCalculations
     GuiControl,, ShowCurrencyValueInChaos, % Opts.ShowCurrencyValueInChaos
     GuiControl,, DisplayToolTipAtFixedCoords, % Opts.DisplayToolTipAtFixedCoords
-    If (Opts.DisplayToolTipAtFixedCoords == False) 
+    If (Opts.DisplayToolTipAtFixedCoords == False)
     {
         GuiControl, Disable, LblScreenOffsetX
         GuiControl, Disable, ScreenOffsetX
         GuiControl, Disable, LblScreenOffsetY
-        GuiControl, Disable, ScreenOffsetY        
+        GuiControl, Disable, ScreenOffsetY
     }
     Else
     {
@@ -6007,7 +6104,7 @@ UpdateSettingsUI()
         GuiControl, Enable, ScreenOffsetY
     }
     ;~ GetScreenInfo()
-    ;~ If (Globals.Get("MonitorCount", 1) > 1) 
+    ;~ If (Globals.Get("MonitorCount", 1) > 1)
     ;~ {
         ;~ GuiControl,, DisplayToolTipAtFixedCoords, % Opts.DisplayToolTipAtFixedCoords
         ;~ GuiControl,, ScreenOffsetX, % Opts.ScreenOffsetX
@@ -6029,10 +6126,10 @@ UpdateSettingsUI()
         ;~ GuiControl, Disable, LblScreenOffsetY
         ;~ GuiControl, Disable, ScreenOffsetY
     ;~ }
-    
+
     GuiControl,, ShowUniqueEvaluation, % Opts.ShowUniqueEvaluation
     GuiControl,, ShowGemEvaluation, % Opts.ShowGemEvaluation
-    If (Opts.ShowGemEvaluation == False) 
+    If (Opts.ShowGemEvaluation == False)
     {
         GuiControl, Disable, LblGemQualityThreshold
         GuiControl, Disable, GemQualityValueThreshold
@@ -6044,10 +6141,10 @@ UpdateSettingsUI()
     }
     GuiControl,, GemQualityValueThreshold, % Opts.GemQualityValueThreshold
     GuiControl,, MarkHighLinksAsValuable, % Opts.MarkHighLinksAsValuable
-    
+
     GuiControl,, ShowAffixTotals, % Opts.ShowAffixTotals
     GuiControl,, ShowAffixDetails, % Opts.ShowAffixDetails
-    If (Opts.ShowAffixDetails == False) 
+    If (Opts.ShowAffixDetails == False)
     {
         GuiControl, Disable, MirrorAffixLines
     }
@@ -6059,7 +6156,7 @@ UpdateSettingsUI()
     GuiControl,, ShowAffixLevel, % Opts.ShowAffixLevel
     GuiControl,, ShowAffixBracket, % Opts.ShowAffixBracket
     GuiControl,, ShowAffixMaxPossible, % Opts.ShowAffixMaxPossible
-    If (Opts.ShowAffixMaxPossible == False) 
+    If (Opts.ShowAffixMaxPossible == False)
     {
         GuiControl, Disable, MaxSpanStartingFromFirst
     }
@@ -6070,7 +6167,7 @@ UpdateSettingsUI()
     GuiControl,, MaxSpanStartingFromFirst, % Opts.MaxSpanStartingFromFirst
     GuiControl,, ShowAffixBracketTier, % Opts.ShowAffixBracketTier
     GuiControl,, ShowAffixBracketTierTotal, % Opts.ShowAffixBracketTierTotal
-    If (Opts.ShowAffixBracketTier == False) 
+    If (Opts.ShowAffixBracketTier == False)
     {
         GuiControl, Disable, TierRelativeToItemLevel
         GuiControl, Disable, ShowAffixBracketTierTotal
@@ -6087,9 +6184,9 @@ UpdateSettingsUI()
     GuiControl,, ValueRangeFieldWidth, % Opts.ValueRangeFieldWidth
     GuiControl,, AffixDetailDelimiter, % Opts.AffixDetailDelimiter
     GuiControl,, AffixDetailEllipsis, % Opts.AffixDetailEllipsis
-    
+
     GuiControl,, UseTooltipTimeout, % Opts.UseTooltipTimeout
-    If (Opts.UseTooltipTimeout == False) 
+    If (Opts.UseTooltipTimeout == False)
     {
         GuiControl, Disable, LblToolTipTimeoutTicks
         GuiControl, Disable, ToolTipTimeoutTicks
@@ -6113,7 +6210,7 @@ ShowSettingsUI()
     Gui, Show, w545 h710, PoE Item Info Settings
 }
 
-IniRead(ConfigPath, Section_, Key, Default_) 
+IniRead(ConfigPath, Section_, Key, Default_)
 {
     Result := ""
     IniRead, Result, %ConfigPath%, %Section_%, %Key%, %Default_%
@@ -6131,32 +6228,32 @@ ReadConfig(ConfigPath="config.ini")
     IfExist, %ConfigPath%
     {
         ; General
-        
+
         Opts.OnlyActiveIfPOEIsFront := IniRead(ConfigPath, "General", "OnlyActiveIfPOEIsFront", Opts.OnlyActiveIfPOEIsFront)
         Opts.PutResultsOnClipboard := IniRead(ConfigPath, "General", "PutResultsOnClipboard", Opts.PutResultsOnClipboard)
-        
+
         ; Display - All Gear
-        
+
         Opts.ShowItemLevel := IniRead(ConfigPath, "DisplayAllGear", "ShowItemLevel", Opts.ShowItemLevel)
         Opts.ShowMaxSockets := IniRead(ConfigPath, "DisplayAllGear", "ShowMaxSockets", Opts.ShowMaxSockets)
-        
+
         ; Display - Weapons
-        
+
         Opts.ShowDamageCalculations := IniRead(ConfigPath, "DisplayWeapons", "ShowDamageCalculations", Opts.ShowDamageCalculations)
-        
+
         ; Display - Other
-        
+
         Opts.ShowCurrencyValueInChaos := IniRead(ConfigPath, "DisplayOther", "ShowCurrencyValueInChaos", Opts.ShowCurrencyValueInChaos)
-        
+
         ; Valuable Evaluations
-        
+
         Opts.ShowUniqueEvaluation := IniRead(ConfigPath, "ValuableEvaluations", "ShowUniqueEvaluation", Opts.ShowUniqueEvaluation)
         Opts.ShowGemEvaluation := IniRead(ConfigPath, "ValuableEvaluations", "ShowGemEvaluation", Opts.ShowGemEvaluation)
         Opts.GemQualityValueThreshold := IniRead(ConfigPath, "ValuableEvaluations", "GemQualityValueThreshold", Opts.GemQualityValueThreshold)
         Opts.MarkHighLinksAsValuable := IniRead(ConfigPath, "ValuableEvaluations", "MarkHighLinksAsValuable", Opts.MarkHighLinksAsValuable)
-        
+
         ; Display - Affixes
-        
+
         Opts.ShowAffixTotals := IniRead(ConfigPath, "DisplayAffixes", "ShowAffixTotals", Opts.ShowAffixTotals)
         Opts.ShowAffixDetails := IniRead(ConfigPath, "DisplayAffixes", "ShowAffixDetails", Opts.ShowAffixDetails)
         Opts.MirrorAffixLines := IniRead(ConfigPath, "DisplayAffixes", "MirrorAffixLines", Opts.MirrorAffixLines)
@@ -6167,18 +6264,18 @@ ReadConfig(ConfigPath="config.ini")
         Opts.ShowAffixBracketTier := IniRead(ConfigPath, "DisplayAffixes", "ShowAffixBracketTier", Opts.ShowAffixBracketTier)
         Opts.TierRelativeToItemLevel := IniRead(ConfigPath, "DisplayAffixes", "TierRelativeToItemLevel", Opts.TierRelativeToItemLevel)
         Opts.ShowAffixBracketTierTotal := IniRead(ConfigPath, "DisplayAffixes", "ShowAffixBracketTierTotal", Opts.ShowAffixBracketTierTotal)
-        
+
         ; Display - Results
-        
+
         Opts.CompactDoubleRanges := IniRead(ConfigPath, "DisplayResults", "CompactDoubleRanges", Opts.CompactDoubleRanges)
         Opts.CompactAffixTypes := IniRead(ConfigPath, "DisplayResults", "CompactAffixTypes", Opts.CompactAffixTypes)
         Opts.MirrorLineFieldWidth := IniRead(ConfigPath, "DisplayResults", "MirrorLineFieldWidth", Opts.MirrorLineFieldWidth)
         Opts.ValueRangeFieldWidth := IniRead(ConfigPath, "DisplayResults", "ValueRangeFieldWidth", Opts.ValueRangeFieldWidth)
         Opts.AffixDetailDelimiter := IniRead(ConfigPath, "DisplayResults", "AffixDetailDelimiter", Opts.AffixDetailDelimiter)
         Opts.AffixDetailEllipsis := IniRead(ConfigPath, "DisplayResults", "AffixDetailEllipsis", Opts.AffixDetailEllipsis)
-        
+
         ; Tooltip
-        
+
         Opts.MouseMoveThreshold := IniRead(ConfigPath, "Tooltip", "MouseMoveThreshold", Opts.MouseMoveThreshold)
         Opts.UseTooltipTimeout := IniRead(ConfigPath, "Tooltip", "UseTooltipTimeout", Opts.UseTooltipTimeout)
         Opts.DisplayToolTipAtFixedCoords := IniRead(ConfigPath, "Tooltip", "DisplayToolTipAtFixedCoords", Opts.DisplayToolTipAtFixedCoords)
@@ -6193,34 +6290,34 @@ WriteConfig(ConfigPath="config.ini")
 {
     Global
     Opts.ScanUI()
-    
+
     ; General
-    
+
     IniWrite(Opts.OnlyActiveIfPOEIsFront, ConfigPath, "General", "OnlyActiveIfPOEIsFront")
     IniWrite(Opts.PutResultsOnClipboard, ConfigPath, "General", "PutResultsOnClipboard")
-    
+
     ; Display - All Gear
-    
+
     IniWrite(Opts.ShowItemLevel, ConfigPath, "DisplayAllGear", "ShowItemLevel")
     IniWrite(Opts.ShowMaxSockets, ConfigPath, "DisplayAllGear", "ShowMaxSockets")
-    
+
     ; Display - Weapons
-    
+
     IniWrite(Opts.ShowDamageCalculations, ConfigPath, "DisplayWeapons", "ShowDamageCalculations")
-    
+
     ; Display - Other
-    
+
     IniWrite(Opts.ShowCurrencyValueInChaos, ConfigPath, "DisplayOther", "ShowCurrencyValueInChaos")
-    
+
     ; Valuable Evaluations
-    
+
     IniWrite(Opts.ShowUniqueEvaluation, ConfigPath, "ValuableEvaluations", "ShowUniqueEvaluation")
     IniWrite(Opts.ShowGemEvaluation, ConfigPath, "ValuableEvaluations", "ShowGemEvaluation")
     IniWrite(Opts.GemQualityValueThreshold, ConfigPath, "ValuableEvaluations", "GemQualityValueThreshold")
     IniWrite(Opts.MarkHighLinksAsValuable, ConfigPath, "ValuableEvaluations", "MarkHighLinksAsValuable")
-    
+
     ; Display - Affixes
-    
+
     IniWrite(Opts.ShowAffixTotals, ConfigPath, "DisplayAffixes", "ShowAffixTotals")
     IniWrite(Opts.ShowAffixDetails, ConfigPath, "DisplayAffixes", "ShowAffixDetails")
     IniWrite(Opts.MirrorAffixLines, ConfigPath, "DisplayAffixes", "MirrorAffixLines")
@@ -6231,9 +6328,9 @@ WriteConfig(ConfigPath="config.ini")
     IniWrite(Opts.ShowAffixBracketTier, ConfigPath, "DisplayAffixes", "ShowAffixBracketTier")
     IniWrite(Opts.TierRelativeToItemLevel, ConfigPath, "DisplayAffixes", "TierRelativeToItemLevel")
     IniWrite(Opts.ShowAffixBracketTierTotal, ConfigPath, "DisplayAffixes", "ShowAffixBracketTierTotal")
-    
+
     ; Display - Results
-    
+
     IniWrite(Opts.CompactDoubleRanges, ConfigPath, "DisplayResults", "CompactDoubleRanges")
     IniWrite(Opts.CompactAffixTypes, ConfigPath, "DisplayResults", "CompactAffixTypes")
     IniWrite(Opts.MirrorLineFieldWidth, ConfigPath, "DisplayResults", "MirrorLineFieldWidth")
@@ -6247,16 +6344,16 @@ WriteConfig(ConfigPath="config.ini")
         IniWrite(Opts.AffixDetailDelimiter, ConfigPath, "DisplayResults", "AffixDetailDelimiter")
     }
     IniWrite(Opts.AffixDetailEllipsis, ConfigPath, "DisplayResults", "AffixDetailEllipsis")
-    
+
     ; Tooltip
-    
+
     IniWrite(Opts.MouseMoveThreshold, ConfigPath, "Tooltip", "MouseMoveThreshold")
     IniWrite(Opts.UseTooltipTimeout, ConfigPath, "Tooltip", "UseTooltipTimeout")
     IniWrite(Opts.DisplayToolTipAtFixedCoords, ConfigPath, "Tooltip", "DisplayToolTipAtFixedCoords")
     IniWrite(Opts.ScreenOffsetX, ConfigPath, "Tooltip", "ScreenOffsetX")
     IniWrite(Opts.ScreenOffsetY, ConfigPath, "Tooltip", "ScreenOffsetY")
     IniWrite(Opts.ToolTipTimeoutTicks, ConfigPath, "Tooltip", "ToolTipTimeoutTicks")
-    IniWrite(Opts.FontSize, ConfigPath, "Tooltip", "FontSize") 
+    IniWrite(Opts.FontSize, ConfigPath, "Tooltip", "FontSize")
 }
 
 CopyDefaultConfig()
@@ -6275,7 +6372,7 @@ CreateDefaultConfig()
     WriteConfig(A_ScriptDir . "\data\defaults.ini")
 }
 
-GetContributors(AuthorsPerLine=0) 
+GetContributors(AuthorsPerLine=0)
 {
     IfNotExist, %A_ScriptDir%\AUTHORS.txt
     {
@@ -6336,7 +6433,7 @@ ShowSettingsUI:
     Sleep, 50
     ShowSettingsUI()
     return
-    
+
 SettingsUI_BtnOK:
     Global Opts
     Gui, Submit
@@ -6361,10 +6458,10 @@ SettingsUI_BtnDefaults:
     UpdateSettingsUI()
     ShowSettingsUI()
     return
-    
+
 SettingsUI_ChkShowGemEvaluation:
     GuiControlGet, IsChecked,, ShowGemEvaluation
-    If (Not IsChecked) 
+    If (Not IsChecked)
     {
         GuiControl, Disable, LblGemQualityThreshold
         GuiControl, Disable, GemQualityValueThreshold
@@ -6375,10 +6472,10 @@ SettingsUI_ChkShowGemEvaluation:
         GuiControl, Enable, GemQualityValueThreshold
     }
     return
-    
+
 SettingsUI_ChkShowAffixDetails:
     GuiControlGet, IsChecked,, ShowAffixDetails
-    If (Not IsChecked) 
+    If (Not IsChecked)
     {
         GuiControl, Disable, MirrorAffixLines
     }
@@ -6390,7 +6487,7 @@ SettingsUI_ChkShowAffixDetails:
 
 SettingsUI_ChkShowAffixMaxPossible:
     GuiControlGet, IsChecked,, ShowAffixMaxPossible
-    If (Not IsChecked) 
+    If (Not IsChecked)
     {
         GuiControl, Disable, MaxSpanStartingFromFirst
     }
@@ -6399,10 +6496,10 @@ SettingsUI_ChkShowAffixMaxPossible:
         GuiControl, Enable, MaxSpanStartingFromFirst
     }
     return
-    
+
 SettingsUI_ChkShowAffixBracketTier:
     GuiControlGet, IsChecked,, ShowAffixBracketTier
-    If (Not IsChecked) 
+    If (Not IsChecked)
     {
         GuiControl, Disable, TierRelativeToItemLevel
         GuiControl, Disable, ShowAffixBracketTierTotal
@@ -6413,10 +6510,10 @@ SettingsUI_ChkShowAffixBracketTier:
         GuiControl, Enable, ShowAffixBracketTierTotal
     }
     return
-    
+
 SettingsUI_ChkUseTooltipTimeout:
     GuiControlGet, IsChecked,, UseTooltipTimeout
-    If (Not IsChecked) 
+    If (Not IsChecked)
     {
         GuiControl, Disable, LblToolTipTimeoutTicks
         GuiControl, Disable, ToolTipTimeoutTicks
@@ -6427,10 +6524,10 @@ SettingsUI_ChkUseTooltipTimeout:
         GuiControl, Enable, ToolTipTimeoutTicks
     }
     return
-    
+
 SettingsUI_ChkDisplayToolTipAtFixedCoords:
     GuiControlGet, IsChecked,, DisplayToolTipAtFixedCoords
-    If (Not IsChecked) 
+    If (Not IsChecked)
     {
         GuiControl, Disable, LblScreenOffsetX
         GuiControl, Disable, ScreenOffsetX
@@ -6464,18 +6561,18 @@ MenuTray_About:
 		Gui, 2:Add, Text, x16 y207 w410 h80,
 		(LTrim
         Shows affix breakdowns and other useful infos for any item or item link.
-        
+
         Usage: Set PoE to Windowed Fullscreen mode and hover over any item or item link. Press Ctrl+C to show a tooltip.
-        
+
         (c) %A_YYYY% Hazydoc, Nipper4369 and contributors:
         )
 		Gui, 2:Add, Text, x16 y277 w270 h80, %Authors%
-        
+
 		FirstTimeA = No
 	}
-	
+
 	Gui, 2:Show, h340 w435, About..
-	
+
 	; Release counter animation
 	tmpH = 0
 	Loop, 20
@@ -6490,15 +6587,15 @@ AboutDlg_Fishing:
     ; See, GGG Chris, I have your best interests at heart. Hire me! :)
     MsgBox, 32, Did You Know?, Fishing is reel!
     return
-    
+
 AboutDlg_AhkHome:
 	Run, http://ahkscript.org
     return
 
 AboutDlg_GitHub:
     Run, http://github.com/andreberg/PoE-Item-Info
-    return 
-    
+    return
+
 VisitForumsThread:
     Run, http://www.pathofexile.com/forum/view-thread/790438
     return
@@ -6517,11 +6614,11 @@ EditValuableUniques:
 EditValuableGems:
     OpenCreateDataTextFile("ValuableGems.txt")
     return
-    
+
 EditCurrencyRates:
     OpenCreateDataTextFile("CurrencyRates.txt")
     return
-    
+
 EditDropOnlyGems:
     OpenCreateDataTextFile("DropOnlyGems.txt")
     return
@@ -6535,7 +6632,7 @@ UnhandledDlg_ShowItemText:
     WinActivate
     Send, ^v
     return
-    
+
 UnhandledDlg_OK:
     Gui, 3:Submit
     return
